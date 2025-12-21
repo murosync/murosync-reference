@@ -1,0 +1,14 @@
+# Existing .gitignore content
+*
+
+# Exclude these from being ignored
+!.gitignore
+!murosync_poc_v1.xpr
+!murosync_poc_platform.xsa
+!/murosync_poc_v1.srcs/
+!/murosync_poc_v1.srcs/**
+
+# Add the specific .bit file from a path relative to the .gitignore location
+!/murosync_poc_v1.runs/
+!/pmurosync_poc_v1.runs/impl_1/
+!/murosync_poc_v1.runs/impl_1/murosync_poc_top.bit
