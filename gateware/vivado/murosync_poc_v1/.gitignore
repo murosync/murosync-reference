@@ -10,5 +10,5 @@
 
 # Add the specific .bit file from a path relative to the .gitignore location
 !/murosync_poc_v1.runs/
-!/pmurosync_poc_v1.runs/impl_1/
+!/murosync_poc_v1.runs/impl_1/
 !/murosync_poc_v1.runs/impl_1/murosync_poc_top.bit
