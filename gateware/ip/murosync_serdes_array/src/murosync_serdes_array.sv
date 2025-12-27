@@ -37,11 +37,15 @@ module murosync_serdes_array (
   // Link status ports
   input  wire link_down_latched_reset_in,
   output wire link_status_out,
-  output reg  link_down_latched_out = 1'b1
+  output reg  link_down_latched_out = 1'b1,
+
+  // Debug outputs for ILA (connect these to ILA probes in top project)
+  output wire [63:0] dbg,
+  output wire        refclk_out     // optional, convenient probe
 );
 
   // ============================================================
-  // PER-CHANNEL SIGNAL ASSIGNMENTS (????????? ??? ????)
+  // PER-CHANNEL SIGNAL ASSIGNMENTS
   // ============================================================
 
   wire [3:0] gthrxn_int;
@@ -69,7 +73,7 @@ module murosync_serdes_array (
   assign ch3_gthtxp_out = gthtxp_int[3];
 
   // ============================================================
-  // BUFFERS (????????? ?????? ??????)
+  // BUFFERS
   // ============================================================
 
   wire hb_gtwiz_reset_all_buf_int;
@@ -99,14 +103,16 @@ module murosync_serdes_array (
     .ODIV2 ()
   );
 
+  assign refclk_out = mgtrefclk0_x0y1_int;
+
   wire [0:0] gtrefclk00_int;
   assign gtrefclk00_int[0] = mgtrefclk0_x0y1_int;
 
-  // ???????? reset, ???? ?????? from pin
+  // Reset used by this wrapper (simple)
   wire hb_gtwiz_reset_all_int = hb_gtwiz_reset_all_buf_int;
 
   // ============================================================
-  // GTWIZ signals (????????? ?????????? ???????????)
+  // GTWIZ signals (minimal set)
   // ============================================================
 
   // userclk helper i/f
@@ -146,7 +152,7 @@ module murosync_serdes_array (
   wire [3:0] rx8b10ben_int = 4'b1111;
   wire [3:0] tx8b10ben_int = 4'b1111;
 
-  // data/control (???? ? ????)
+  // data/control (drive zeros for bring-up)
   wire [63:0] gtwiz_userdata_tx_int = 64'h0;
   wire [63:0] gtwiz_userdata_rx_int;
 
@@ -159,18 +165,18 @@ module murosync_serdes_array (
   wire [31:0] rxctrl2_int;
   wire [31:0] rxctrl3_int;
 
-  // USER CLOCKING RESETS (????????? ??? ? ???????)
+  // USER CLOCKING RESETS (simple: hold userclk helper in reset until all channels report resetdone)
   assign gtwiz_userclk_tx_reset_int[0] = ~(&txpmaresetdone_int);
   assign gtwiz_userclk_rx_reset_int[0] = ~(&rxpmaresetdone_int);
 
-  // reset requests to GT wizard (???? ?????? ????? reset)
+  // reset requests to GT wizard (simple: tie to global reset)
   assign gtwiz_reset_tx_pll_and_datapath_int[0] = hb_gtwiz_reset_all_int;
   assign gtwiz_reset_tx_datapath_int[0]         = hb_gtwiz_reset_all_int;
   assign gtwiz_reset_rx_pll_and_datapath_int[0] = hb_gtwiz_reset_all_int;
   assign gtwiz_reset_rx_datapath_int[0]         = hb_gtwiz_reset_all_int;
 
   // ============================================================
-  // LINK STATUS (??? PRBS)
+  // LINK STATUS (bring-up definition: "GT is alive")
   // ============================================================
 
   wire link_up_raw =
@@ -178,7 +184,9 @@ module murosync_serdes_array (
       (&txpmaresetdone_int) &
       (&rxpmaresetdone_int) &
       gtwiz_reset_tx_done_int[0] &
-      gtwiz_reset_rx_done_int[0];
+      gtwiz_reset_rx_done_int[0] &
+      gtwiz_userclk_tx_active_int[0] &
+      gtwiz_userclk_rx_active_int[0];
 
   assign link_status_out = link_up_raw;
 
@@ -193,7 +201,54 @@ module murosync_serdes_array (
   end
 
   // ============================================================
-  // EXAMPLE WRAPPER INSTANCE (Xilinx ?? ???????)
+  // DEBUG BUS (connect to ILA probes)
+  // ============================================================
+  // dbg[ 0]    = reset_all (internal)
+  // dbg[ 1]    = link_up_raw
+  // dbg[ 2]    = link_down_latched_out
+  // dbg[ 3]    = link_down_latched_reset_in
+  // dbg[ 7:4]  = gtpowergood[3:0]
+  // dbg[11:8]  = txpmaresetdone[3:0]
+  // dbg[15:12] = rxpmaresetdone[3:0]
+  // dbg[16]    = gtwiz_reset_tx_done
+  // dbg[17]    = gtwiz_reset_rx_done
+  // dbg[18]    = gtwiz_reset_rx_cdr_stable
+  // dbg[19]    = gtwiz_userclk_tx_active
+  // dbg[20]    = gtwiz_userclk_rx_active
+  // dbg[21]    = gtwiz_userclk_tx_reset (into helper)
+  // dbg[22]    = gtwiz_userclk_rx_reset (into helper)
+  // dbg[23]    = hb_gtwiz_reset_clk_freerun_in (raw, before BUFG)
+  // dbg[24]    = hb_gtwiz_reset_clk_freerun_buf_int (after BUFG)
+  // dbg[25]    = refclk_out (after IBUFDS_GTE4)
+  // dbg[63:26] = reserved
+
+  assign dbg[0]    = hb_gtwiz_reset_all_int;
+  assign dbg[1]    = link_up_raw;
+  assign dbg[2]    = link_down_latched_out;
+  assign dbg[3]    = link_down_latched_reset_in;
+
+  assign dbg[7:4]  = gtpowergood_int;
+  assign dbg[11:8] = txpmaresetdone_int;
+  assign dbg[15:12]= rxpmaresetdone_int;
+
+  assign dbg[16]   = gtwiz_reset_tx_done_int[0];
+  assign dbg[17]   = gtwiz_reset_rx_done_int[0];
+  assign dbg[18]   = gtwiz_reset_rx_cdr_stable_int[0];
+
+  assign dbg[19]   = gtwiz_userclk_tx_active_int[0];
+  assign dbg[20]   = gtwiz_userclk_rx_active_int[0];
+
+  assign dbg[21]   = gtwiz_userclk_tx_reset_int[0];
+  assign dbg[22]   = gtwiz_userclk_rx_reset_int[0];
+
+  assign dbg[23]   = hb_gtwiz_reset_clk_freerun_in;
+  assign dbg[24]   = hb_gtwiz_reset_clk_freerun_buf_int;
+  assign dbg[25]   = refclk_out;
+
+  assign dbg[63:26]= '0;
+
+  // ============================================================
+  // Xilinx wrapper instance (unchanged)
   // ============================================================
 
   gtwizard_ultrascale_0_example_wrapper example_wrapper_inst (
