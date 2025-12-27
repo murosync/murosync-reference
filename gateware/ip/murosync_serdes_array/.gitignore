@@ -1,0 +1,40 @@
+# ignore everything by default
+*
+
+# local backups / archives (never commit)
+*.7z
+*.zip
+*.tar
+*.gz
+*.rar
+
+# keep this file
+!.gitignore
+
+# keep IP packager essentials
+!component.xml
+!src/
+!src/**
+!xgui/
+!xgui/**
+
+# keep GT wizard config "recipe"
+!prj/
+!prj/gtwizard_ultrascale_0.xci
+
+# optional (can keep, but not required)
+!prj/gtwizard_ultrascale_0_ex.xpr
+
+# ====== DO NOT TRACK generated/vendor/example outputs ======
+prj/.Xil/
+prj/*.jou
+prj/*.log
+prj/*.str
+prj/*backup*
+prj/*_ex.cache/
+prj/*_ex.gen/
+prj/*_ex.hw/
+prj/*_ex.ip_user_files/
+prj/*_ex.sim/
+prj/*_ex.srcs/
+prj/*_ex.runs/
