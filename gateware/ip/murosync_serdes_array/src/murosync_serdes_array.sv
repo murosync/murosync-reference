@@ -1,5 +1,3 @@
-`timescale 1ps/1ps
-
 module murosync_serdes_array (
 
   // Differential reference clock inputs
@@ -41,7 +39,7 @@ module murosync_serdes_array (
 
   // Debug outputs for ILA (connect these to ILA probes in top project)
   output wire [63:0] dbg,
-  output wire        refclk_out     // fabric-legal refclk/2 (ODIV2)
+  output wire        refclk_out     // fabric-legal refclk/2 AFTER BUFG_GT
 );
 
   // ============================================================
@@ -91,11 +89,11 @@ module murosync_serdes_array (
 
   // ----------------------------------------------------------------
   // Refclk:
-  //  - O     : GTREFCLK ONLY (must NOT drive fabric/ILA)  ?
-  //  - ODIV2 : fabric-legal copy of refclk/2 (OK for ILA) ?
+  //  - O     : GTREFCLK ONLY (must NOT drive fabric)
+  //  - ODIV2 : may ONLY drive BUFG_GT/BUFG_GT_SYNC
   // ----------------------------------------------------------------
-  wire mgtrefclk0_x0y1_int;        // GT-only clock
-  wire mgtrefclk0_x0y1_odiv2_int;  // fabric clock (refclk/2)
+  wire mgtrefclk0_x0y1_int;        // GT-only clock (O)
+  wire mgtrefclk0_x0y1_odiv2_int;  // divider output (ODIV2) -> BUFG_GT only
 
   IBUFDS_GTE4 #(
     .REFCLK_EN_TX_PATH  (1'b0),
@@ -106,11 +104,26 @@ module murosync_serdes_array (
     .IB    (mgtrefclk0_x0y1_n),
     .CEB   (1'b0),
     .O     (mgtrefclk0_x0y1_int),         // GTREFCLK only
-    .ODIV2 (mgtrefclk0_x0y1_odiv2_int)    // fabric-legal
+    .ODIV2 (mgtrefclk0_x0y1_odiv2_int)    // must go to BUFG_GT
   );
 
-  // Export a probe-friendly version (refclk/2)
-  assign refclk_out = mgtrefclk0_x0y1_odiv2_int;
+  // ------------------------------------------------------------
+  // ADDITIONAL BUFFER (required by DRC):
+  //   ODIV2 -> BUFG_GT -> refclk_out (fabric legal)
+  // ------------------------------------------------------------
+  wire mgtrefclk0_x0y1_div2_bufg;
+
+  BUFG_GT u_bufg_gt_refclk_div2 (
+    .I       (mgtrefclk0_x0y1_odiv2_int),
+    .CE      (1'b1),
+    .CEMASK  (1'b0),
+    .CLR     (1'b0),
+    .CLRMASK (1'b0),
+    .DIV     (3'b000),   // no extra division
+    .O       (mgtrefclk0_x0y1_div2_bufg)
+  );
+
+  assign refclk_out = mgtrefclk0_x0y1_div2_bufg;
 
   wire [0:0] gtrefclk00_int;
   assign gtrefclk00_int[0] = mgtrefclk0_x0y1_int;
@@ -210,7 +223,7 @@ module murosync_serdes_array (
   // ============================================================
   // DEBUG BUS (connect to ILA probes)
   // ============================================================
-  // dbg[25] now = refclk/2 (ODIV2) ? fabric-legal
+  // dbg[25] = refclk_out (ODIV2 -> BUFG_GT)
   assign dbg[0]    = hb_gtwiz_reset_all_int;
   assign dbg[1]    = link_up_raw;
   assign dbg[2]    = link_down_latched_out;
@@ -232,7 +245,7 @@ module murosync_serdes_array (
 
   assign dbg[23]   = hb_gtwiz_reset_clk_freerun_in;
   assign dbg[24]   = hb_gtwiz_reset_clk_freerun_buf_int;
-  assign dbg[25]   = refclk_out; // refclk/2
+  assign dbg[25]   = refclk_out;
 
   assign dbg[63:26]= '0;
 
@@ -296,355 +309,4 @@ module murosync_serdes_array (
   );
 
 endmodule
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

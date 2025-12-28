@@ -21,7 +21,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>5826cddc</spirit:value>
+            <spirit:value>cb910b9c</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -40,7 +40,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>9267bdb0</spirit:value>
+            <spirit:value>37403019</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -441,7 +441,7 @@
       <spirit:file>
         <spirit:name>src/murosync_serdes_array.sv</spirit:name>
         <spirit:fileType>systemVerilogSource</spirit:fileType>
-        <spirit:userFileType>CHECKSUM_0b50005f</spirit:userFileType>
+        <spirit:userFileType>CHECKSUM_4d2867a6</spirit:userFileType>
       </spirit:file>
     </spirit:fileSet>
     <spirit:fileSet>
@@ -530,11 +530,11 @@
       <xilinx:displayName>murosync_serdes_array_v1_0</xilinx:displayName>
       <xilinx:definitionSource>package_project</xilinx:definitionSource>
       <xilinx:coreRevision>2</xilinx:coreRevision>
-      <xilinx:coreCreationDateTime>2025-12-27T19:09:39Z</xilinx:coreCreationDateTime>
+      <xilinx:coreCreationDateTime>2025-12-28T01:00:53Z</xilinx:coreCreationDateTime>
     </xilinx:coreExtensions>
     <xilinx:packagingInfo>
       <xilinx:xilinxVersion>2022.2</xilinx:xilinxVersion>
-      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="1611dc34"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="6648dfec"/>
       <xilinx:checksum xilinx:scope="ports" xilinx:value="1821144e"/>
       <xilinx:checksum xilinx:scope="parameters" xilinx:value="a7ff2531"/>
     </xilinx:packagingInfo>
