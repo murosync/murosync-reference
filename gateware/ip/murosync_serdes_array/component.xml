@@ -21,7 +21,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>cb910b9c</spirit:value>
+            <spirit:value>ad25f0be</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -40,7 +40,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>37403019</spirit:value>
+            <spirit:value>0bf68fa8</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -419,7 +419,7 @@
       <spirit:file>
         <spirit:name>prj/gtwizard_ultrascale_0_ex.srcs/sources_1/ip/gtwizard_ultrascale_0/gtwizard_ultrascale_0.xci</spirit:name>
         <spirit:userFileType>xci</spirit:userFileType>
-        <spirit:userFileType>CELL_NAME_example_wrapper_inst/gtwizard_ultrascale_0_inst/gtwizard_ultrascale_0</spirit:userFileType>
+        <spirit:userFileType>CELL_NAME_u_gtw/u_gt/gtwizard_ultrascale_0</spirit:userFileType>
       </spirit:file>
       <spirit:file>
         <spirit:name>prj/imports/gtwizard_ultrascale_0_example_gtwiz_userclk_rx.v</spirit:name>
@@ -430,18 +430,13 @@
         <spirit:fileType>verilogSource</spirit:fileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>prj/imports/gtwizard_ultrascale_0_example_wrapper_functions.v</spirit:name>
-        <spirit:fileType>verilogSource</spirit:fileType>
-        <spirit:isIncludeFile>true</spirit:isIncludeFile>
-      </spirit:file>
-      <spirit:file>
-        <spirit:name>prj/imports/gtwizard_ultrascale_0_example_wrapper.v</spirit:name>
-        <spirit:fileType>verilogSource</spirit:fileType>
+        <spirit:name>src/murosync_gt_wrapper.sv</spirit:name>
+        <spirit:fileType>systemVerilogSource</spirit:fileType>
       </spirit:file>
       <spirit:file>
         <spirit:name>src/murosync_serdes_array.sv</spirit:name>
         <spirit:fileType>systemVerilogSource</spirit:fileType>
-        <spirit:userFileType>CHECKSUM_4d2867a6</spirit:userFileType>
+        <spirit:userFileType>CHECKSUM_9ca978c1</spirit:userFileType>
       </spirit:file>
     </spirit:fileSet>
     <spirit:fileSet>
@@ -459,7 +454,7 @@
       <spirit:file>
         <spirit:name>prj/gtwizard_ultrascale_0_ex.srcs/sources_1/ip/gtwizard_ultrascale_0/gtwizard_ultrascale_0.xci</spirit:name>
         <spirit:userFileType>xci</spirit:userFileType>
-        <spirit:userFileType>CELL_NAME_example_wrapper_inst/gtwizard_ultrascale_0_inst/gtwizard_ultrascale_0</spirit:userFileType>
+        <spirit:userFileType>CELL_NAME_u_gtw/u_gt/gtwizard_ultrascale_0</spirit:userFileType>
       </spirit:file>
       <spirit:file>
         <spirit:name>prj/imports/gtwizard_ultrascale_0_example_gtwiz_userclk_rx.v</spirit:name>
@@ -470,13 +465,8 @@
         <spirit:fileType>verilogSource</spirit:fileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>prj/imports/gtwizard_ultrascale_0_example_wrapper_functions.v</spirit:name>
-        <spirit:fileType>verilogSource</spirit:fileType>
-        <spirit:isIncludeFile>true</spirit:isIncludeFile>
-      </spirit:file>
-      <spirit:file>
-        <spirit:name>prj/imports/gtwizard_ultrascale_0_example_wrapper.v</spirit:name>
-        <spirit:fileType>verilogSource</spirit:fileType>
+        <spirit:name>src/murosync_gt_wrapper.sv</spirit:name>
+        <spirit:fileType>systemVerilogSource</spirit:fileType>
       </spirit:file>
       <spirit:file>
         <spirit:name>src/murosync_serdes_array.sv</spirit:name>
@@ -529,12 +519,12 @@
       </xilinx:taxonomies>
       <xilinx:displayName>murosync_serdes_array_v1_0</xilinx:displayName>
       <xilinx:definitionSource>package_project</xilinx:definitionSource>
-      <xilinx:coreRevision>2</xilinx:coreRevision>
-      <xilinx:coreCreationDateTime>2025-12-28T01:00:53Z</xilinx:coreCreationDateTime>
+      <xilinx:coreRevision>3</xilinx:coreRevision>
+      <xilinx:coreCreationDateTime>2025-12-28T02:40:36Z</xilinx:coreCreationDateTime>
     </xilinx:coreExtensions>
     <xilinx:packagingInfo>
       <xilinx:xilinxVersion>2022.2</xilinx:xilinxVersion>
-      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="6648dfec"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="e554195f"/>
       <xilinx:checksum xilinx:scope="ports" xilinx:value="1821144e"/>
       <xilinx:checksum xilinx:scope="parameters" xilinx:value="a7ff2531"/>
     </xilinx:packagingInfo>

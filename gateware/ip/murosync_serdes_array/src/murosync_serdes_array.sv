@@ -135,20 +135,7 @@ module murosync_serdes_array (
   // GTWIZ signals (minimal set)
   // ============================================================
 
-  // userclk helper i/f
-  wire [0:0] gtwiz_userclk_tx_reset_int;
-  wire [0:0] gtwiz_userclk_tx_srcclk_int;
-  wire [0:0] gtwiz_userclk_tx_usrclk_int;
-  wire [0:0] gtwiz_userclk_tx_usrclk2_int;
-  wire [0:0] gtwiz_userclk_tx_active_int;
-
-  wire [0:0] gtwiz_userclk_rx_reset_int;
-  wire [0:0] gtwiz_userclk_rx_srcclk_int;
-  wire [0:0] gtwiz_userclk_rx_usrclk_int;
-  wire [0:0] gtwiz_userclk_rx_usrclk2_int;
-  wire [0:0] gtwiz_userclk_rx_active_int;
-
-  // reset i/f
+  // reset i/f (kept to preserve your dbg/link logic)
   wire [0:0] gtwiz_reset_tx_pll_and_datapath_int;
   wire [0:0] gtwiz_reset_tx_datapath_int;
   wire [0:0] gtwiz_reset_rx_pll_and_datapath_int;
@@ -159,9 +146,9 @@ module murosync_serdes_array (
   wire [0:0] gtwiz_reset_rx_done_int;
   wire [0:0] gtwiz_reset_rx_cdr_stable_int;
 
-  // clocks from common
-  wire [0:0] qpll0outclk_int;
-  wire [0:0] qpll0outrefclk_int;
+  // userclk active (comes from our wrapper)
+  wire [0:0] gtwiz_userclk_tx_active_int;
+  wire [0:0] gtwiz_userclk_rx_active_int;
 
   // per-channel status
   wire [3:0] gtpowergood_int;
@@ -180,12 +167,17 @@ module murosync_serdes_array (
   wire [63:0] txctrl1_int = 64'h0;
   wire [31:0] txctrl2_int = 32'h0;
 
+  // We don't currently consume RX ctrl buses in this module, keep as optional debug hookups
   wire [63:0] rxctrl0_int;
   wire [63:0] rxctrl1_int;
   wire [31:0] rxctrl2_int;
   wire [31:0] rxctrl3_int;
 
-  // USER CLOCKING RESETS
+  // For dbg continuity (same semantics as before)
+  // NOTE: Previously these were "into helper" resets. Now helpers live inside murosync_gt_wrapper.
+  // We preserve equivalent intent: "helpers held reset until all channels pmaresetdone".
+  wire [0:0] gtwiz_userclk_tx_reset_int;
+  wire [0:0] gtwiz_userclk_rx_reset_int;
   assign gtwiz_userclk_tx_reset_int[0] = ~(&txpmaresetdone_int);
   assign gtwiz_userclk_rx_reset_int[0] = ~(&rxpmaresetdone_int);
 
@@ -250,63 +242,67 @@ module murosync_serdes_array (
   assign dbg[63:26]= '0;
 
   // ============================================================
-  // Xilinx wrapper instance (unchanged)
+  // Murosync GT wrapper instance (replaces Xilinx example_wrapper)
   // ============================================================
+  //
+  // Expects a module:
+  //   murosync_gt_wrapper #(.NCH(4), .TX_MASTER_CH(0), .RX_MASTER_CH(0)) u_gtw ( ... )
+  //
+  // This wrapper should:
+  //   - instantiate gtwizard_ultrascale_0 core
+  //   - instantiate gtwizard_ultrascale_0_example_gtwiz_userclk_tx/rx helpers
+  //   - feed txusrclk/rxusrclk buses to the core
+  //   - export gtwiz_userclk_tx_active_out / gtwiz_userclk_rx_active_out
+  //
+  
+  murosync_gt_wrapper #(
+    .NCH          (4),
+    .TX_MASTER_CH (0),
+    .RX_MASTER_CH (0)
+  ) u_gtw (
+    .gthrxn_in                          (gthrxn_int),
+    .gthrxp_in                          (gthrxp_int),
+    .gthtxn_out                         (gthtxn_int),
+    .gthtxp_out                         (gthtxp_int),
 
-  gtwizard_ultrascale_0_example_wrapper example_wrapper_inst (
-    .gthrxn_in                               (gthrxn_int)
-   ,.gthrxp_in                               (gthrxp_int)
-   ,.gthtxn_out                              (gthtxn_int)
-   ,.gthtxp_out                              (gthtxp_int)
+    .gtwiz_reset_clk_freerun_in         (hb_gtwiz_reset_clk_freerun_buf_int),
+    .gtwiz_reset_all_in                 (hb_gtwiz_reset_all_int),
 
-   ,.gtwiz_userclk_tx_reset_in               (gtwiz_userclk_tx_reset_int)
-   ,.gtwiz_userclk_tx_srcclk_out             (gtwiz_userclk_tx_srcclk_int)
-   ,.gtwiz_userclk_tx_usrclk_out             (gtwiz_userclk_tx_usrclk_int)
-   ,.gtwiz_userclk_tx_usrclk2_out            (gtwiz_userclk_tx_usrclk2_int)
-   ,.gtwiz_userclk_tx_active_out             (gtwiz_userclk_tx_active_int)
+    .gtwiz_reset_tx_pll_and_datapath_in (gtwiz_reset_tx_pll_and_datapath_int[0]),
+    .gtwiz_reset_tx_datapath_in         (gtwiz_reset_tx_datapath_int[0]),
+    .gtwiz_reset_rx_pll_and_datapath_in (gtwiz_reset_rx_pll_and_datapath_int[0]),
+    .gtwiz_reset_rx_datapath_in         (gtwiz_reset_rx_datapath_int[0]),
 
-   ,.gtwiz_userclk_rx_reset_in               (gtwiz_userclk_rx_reset_int)
-   ,.gtwiz_userclk_rx_srcclk_out             (gtwiz_userclk_rx_srcclk_int)
-   ,.gtwiz_userclk_rx_usrclk_out             (gtwiz_userclk_rx_usrclk_int)
-   ,.gtwiz_userclk_rx_usrclk2_out            (gtwiz_userclk_rx_usrclk2_int)
-   ,.gtwiz_userclk_rx_active_out             (gtwiz_userclk_rx_active_int)
+    .gtwiz_reset_rx_cdr_stable_out      (gtwiz_reset_rx_cdr_stable_int[0]),
+    .gtwiz_reset_tx_done_out            (gtwiz_reset_tx_done_int[0]),
+    .gtwiz_reset_rx_done_out            (gtwiz_reset_rx_done_int[0]),
 
-   ,.gtwiz_reset_clk_freerun_in              ({1{hb_gtwiz_reset_clk_freerun_buf_int}})
-   ,.gtwiz_reset_all_in                      ({1{hb_gtwiz_reset_all_int}})
+    .gtwiz_userdata_tx_in               (gtwiz_userdata_tx_int),
+    .gtwiz_userdata_rx_out              (gtwiz_userdata_rx_int),
 
-   ,.gtwiz_reset_tx_pll_and_datapath_in      (gtwiz_reset_tx_pll_and_datapath_int)
-   ,.gtwiz_reset_tx_datapath_in              (gtwiz_reset_tx_datapath_int)
-   ,.gtwiz_reset_rx_pll_and_datapath_in      (gtwiz_reset_rx_pll_and_datapath_int)
-   ,.gtwiz_reset_rx_datapath_in              (gtwiz_reset_rx_datapath_int)
+    .gtrefclk00_in                      (gtrefclk00_int[0]),
+    .qpll0outclk_out                    (), // optional
+    .qpll0outrefclk_out                 (), // optional
 
-   ,.gtwiz_reset_rx_cdr_stable_out           (gtwiz_reset_rx_cdr_stable_int)
-   ,.gtwiz_reset_tx_done_out                 (gtwiz_reset_tx_done_int)
-   ,.gtwiz_reset_rx_done_out                 (gtwiz_reset_rx_done_int)
+    .rx8b10ben_in                       (rx8b10ben_int),
+    .tx8b10ben_in                       (tx8b10ben_int),
 
-   ,.gtwiz_userdata_tx_in                    (gtwiz_userdata_tx_int)
-   ,.gtwiz_userdata_rx_out                   (gtwiz_userdata_rx_int)
+    .txctrl0_in                         (txctrl0_int),
+    .txctrl1_in                         (txctrl1_int),
+    .txctrl2_in                         (txctrl2_int),
 
-   ,.gtrefclk00_in                           (gtrefclk00_int)
-   ,.qpll0outclk_out                         (qpll0outclk_int)
-   ,.qpll0outrefclk_out                      (qpll0outrefclk_int)
+    .gtpowergood_out                    (gtpowergood_int),
 
-   ,.rx8b10ben_in                            (rx8b10ben_int)
-   ,.tx8b10ben_in                            (tx8b10ben_int)
+    .rxctrl0_out                        (rxctrl0_int),
+    .rxctrl1_out                        (rxctrl1_int),
+    .rxctrl2_out                        (rxctrl2_int),
+    .rxctrl3_out                        (rxctrl3_int),
 
-   ,.txctrl0_in                              (txctrl0_int)
-   ,.txctrl1_in                              (txctrl1_int)
-   ,.txctrl2_in                              (txctrl2_int)
+    .rxpmaresetdone_out                 (rxpmaresetdone_int),
+    .txpmaresetdone_out                 (txpmaresetdone_int),
 
-   ,.gtpowergood_out                         (gtpowergood_int)
-
-   ,.rxctrl0_out                             (rxctrl0_int)
-   ,.rxctrl1_out                             (rxctrl1_int)
-   ,.rxctrl2_out                             (rxctrl2_int)
-   ,.rxctrl3_out                             (rxctrl3_int)
-
-   ,.rxpmaresetdone_out                      (rxpmaresetdone_int)
-   ,.txpmaresetdone_out                      (txpmaresetdone_int)
+    .gtwiz_userclk_tx_active_out        (gtwiz_userclk_tx_active_int[0]),
+    .gtwiz_userclk_rx_active_out        (gtwiz_userclk_rx_active_int[0])
   );
 
 endmodule
-
