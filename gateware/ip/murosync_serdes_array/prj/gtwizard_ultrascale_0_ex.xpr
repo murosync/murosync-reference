@@ -98,14 +98,14 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PPRDIR/imports/gtwizard_ultrascale_0_example_gtwiz_userclk_rx.v">
+      <File Path="$PPRDIR/../src/murosync_gt_userclk_rx.sv">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PPRDIR/imports/gtwizard_ultrascale_0_example_gtwiz_userclk_tx.v">
+      <File Path="$PPRDIR/../src/murosync_gt_userclk_tx.sv">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
