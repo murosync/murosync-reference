@@ -4,7 +4,7 @@
     "xci_name": "bd_murosync_poc_murosync_serdes_array_0_1",
     "cell_name": "murosync_serdes_array_0",
     "component_reference": "xilinx.com:user:murosync_serdes_array:1.0",
-    "ip_revision": "3",
+    "ip_revision": "2",
     "gen_directory": "../../../../../../murosync_poc_v1.gen/sources_1/bd/bd_murosync_poc/ip/bd_murosync_poc_murosync_serdes_array_0_1",
     "parameters": {
       "component_parameters": {
@@ -27,7 +27,7 @@
       },
       "runtime_parameters": {
         "IPCONTEXT": [ { "value": "IP_Integrator" } ],
-        "IPREVISION": [ { "value": "3" } ],
+        "IPREVISION": [ { "value": "2" } ],
         "MANAGED": [ { "value": "TRUE" } ],
         "OUTPUTDIR": [ { "value": "../../../../../../murosync_poc_v1.gen/sources_1/bd/bd_murosync_poc/ip/bd_murosync_poc_murosync_serdes_array_0_1" } ],
         "SELECTEDSIMMODEL": [ { "value": "" } ],
