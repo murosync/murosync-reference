@@ -1,7 +1,7 @@
 {
   "design": {
     "design_info": {
-      "boundary_crc": "0x33F00013FE45BE7D",
+      "boundary_crc": "0xBA23AC337A97C3EB",
       "device": "xcau15p-ffvb676-2-i",
       "gen_directory": "../../../../murosync_poc_v1.gen/sources_1/bd/bd_murosync_poc",
       "name": "bd_murosync_poc",
@@ -25,7 +25,10 @@
       "rst_clk_wiz_0_100M": "",
       "microblaze_0_axi_periph": {
         "s00_couplers": {}
-      }
+      },
+      "murosync_serdes_array_0": "",
+      "ila_0": "",
+      "xlconstant_0": ""
     },
     "interface_ports": {
       "uart_rtl_0": {
@@ -95,6 +98,60 @@
             "value_src": "const_prop"
           }
         }
+      },
+      "GTH_REF_P": {
+        "direction": "I"
+      },
+      "GTH_REF_N": {
+        "direction": "I"
+      },
+      "GTH_IN_CH0_RX_N": {
+        "direction": "I"
+      },
+      "GTH_IN_CH0_RX_P": {
+        "direction": "I"
+      },
+      "GTH_IN_CH1_RX_N": {
+        "direction": "I"
+      },
+      "GTH_IN_CH1_RX_P": {
+        "direction": "I"
+      },
+      "GTH_IN_CH2_RX_N": {
+        "direction": "I"
+      },
+      "GTH_IN_CH2_RX_P": {
+        "direction": "I"
+      },
+      "GTH_IN_CH3_RX_N": {
+        "direction": "I"
+      },
+      "GTH_IN_CH3_RX_P": {
+        "direction": "I"
+      },
+      "GTH_OUT_CH0_TX_N": {
+        "direction": "O"
+      },
+      "GTH_OUT_CH0_TX_P": {
+        "direction": "O"
+      },
+      "GTH_OUT_CH1_TX_N": {
+        "direction": "O"
+      },
+      "GTH_OUT_CH1_TX_P": {
+        "direction": "O"
+      },
+      "GTH_OUT_CH2_TX_N": {
+        "direction": "O"
+      },
+      "GTH_OUT_CH2_TX_P": {
+        "direction": "O"
+      },
+      "GTH_OUT_CH3_TX_N": {
+        "direction": "O"
+      },
+      "GTH_OUT_CH3_TX_P": {
+        "direction": "O"
       }
     },
     "components": {
@@ -555,6 +612,43 @@
             ]
           }
         }
+      },
+      "murosync_serdes_array_0": {
+        "vlnv": "xilinx.com:user:murosync_serdes_array:1.0",
+        "xci_name": "bd_murosync_poc_murosync_serdes_array_0_0",
+        "xci_path": "ip\\bd_murosync_poc_murosync_serdes_array_0_0\\bd_murosync_poc_murosync_serdes_array_0_0.xci",
+        "inst_hier_path": "murosync_serdes_array_0"
+      },
+      "ila_0": {
+        "vlnv": "xilinx.com:ip:ila:6.2",
+        "xci_name": "bd_murosync_poc_ila_0_0",
+        "xci_path": "ip\\bd_murosync_poc_ila_0_0\\bd_murosync_poc_ila_0_0.xci",
+        "inst_hier_path": "ila_0",
+        "parameters": {
+          "C_MONITOR_TYPE": {
+            "value": "Native"
+          },
+          "C_NUM_OF_PROBES": {
+            "value": "4"
+          },
+          "C_PROBE3_WIDTH": {
+            "value": "64"
+          }
+        }
+      },
+      "xlconstant_0": {
+        "vlnv": "xilinx.com:ip:xlconstant:1.1",
+        "xci_name": "bd_murosync_poc_xlconstant_0_0",
+        "xci_path": "ip\\bd_murosync_poc_xlconstant_0_0\\bd_murosync_poc_xlconstant_0_0.xci",
+        "inst_hier_path": "xlconstant_0",
+        "parameters": {
+          "CONST_VAL": {
+            "value": "0"
+          },
+          "CONST_WIDTH": {
+            "value": "1"
+          }
+        }
       }
     },
     "interface_nets": {
@@ -602,6 +696,66 @@
       }
     },
     "nets": {
+      "GTH_IN_CH0_RX_N_1": {
+        "ports": [
+          "GTH_IN_CH0_RX_N",
+          "murosync_serdes_array_0/ch0_gthrxn_in"
+        ]
+      },
+      "GTH_IN_CH0_RX_P_1": {
+        "ports": [
+          "GTH_IN_CH0_RX_P",
+          "murosync_serdes_array_0/ch0_gthrxp_in"
+        ]
+      },
+      "GTH_IN_CH1_RX_N_1": {
+        "ports": [
+          "GTH_IN_CH1_RX_N",
+          "murosync_serdes_array_0/ch1_gthrxn_in"
+        ]
+      },
+      "GTH_IN_CH1_RX_P_1": {
+        "ports": [
+          "GTH_IN_CH1_RX_P",
+          "murosync_serdes_array_0/ch1_gthrxp_in"
+        ]
+      },
+      "GTH_IN_CH2_RX_N_1": {
+        "ports": [
+          "GTH_IN_CH2_RX_N",
+          "murosync_serdes_array_0/ch2_gthrxn_in"
+        ]
+      },
+      "GTH_IN_CH2_RX_P_1": {
+        "ports": [
+          "GTH_IN_CH2_RX_P",
+          "murosync_serdes_array_0/ch2_gthrxp_in"
+        ]
+      },
+      "GTH_IN_CH3_RX_N_1": {
+        "ports": [
+          "GTH_IN_CH3_RX_N",
+          "murosync_serdes_array_0/ch3_gthrxn_in"
+        ]
+      },
+      "GTH_IN_CH3_RX_P_1": {
+        "ports": [
+          "GTH_IN_CH3_RX_P",
+          "murosync_serdes_array_0/ch3_gthrxp_in"
+        ]
+      },
+      "GTH_REF_N_1": {
+        "ports": [
+          "GTH_REF_N",
+          "murosync_serdes_array_0/mgtrefclk0_x0y1_n"
+        ]
+      },
+      "GTH_REF_P_1": {
+        "ports": [
+          "GTH_REF_P",
+          "murosync_serdes_array_0/mgtrefclk0_x0y1_p"
+        ]
+      },
       "clk_wiz_0_locked": {
         "ports": [
           "clk_wiz_0/locked",
@@ -625,7 +779,81 @@
           "microblaze_0_axi_periph/S00_ACLK",
           "axi_uartlite_0/s_axi_aclk",
           "microblaze_0_axi_periph/M00_ACLK",
-          "microblaze_0_axi_periph/ACLK"
+          "microblaze_0_axi_periph/ACLK",
+          "ila_0/clk",
+          "murosync_serdes_array_0/hb_gtwiz_reset_clk_freerun_in"
+        ]
+      },
+      "murosync_serdes_array_0_ch0_gthtxn_out": {
+        "ports": [
+          "murosync_serdes_array_0/ch0_gthtxn_out",
+          "GTH_OUT_CH0_TX_N"
+        ]
+      },
+      "murosync_serdes_array_0_ch0_gthtxp_out": {
+        "ports": [
+          "murosync_serdes_array_0/ch0_gthtxp_out",
+          "GTH_OUT_CH0_TX_P"
+        ]
+      },
+      "murosync_serdes_array_0_ch1_gthtxn_out": {
+        "ports": [
+          "murosync_serdes_array_0/ch1_gthtxn_out",
+          "GTH_OUT_CH1_TX_N"
+        ]
+      },
+      "murosync_serdes_array_0_ch1_gthtxp_out": {
+        "ports": [
+          "murosync_serdes_array_0/ch1_gthtxp_out",
+          "GTH_OUT_CH1_TX_P"
+        ]
+      },
+      "murosync_serdes_array_0_ch2_gthtxn_out": {
+        "ports": [
+          "murosync_serdes_array_0/ch2_gthtxn_out",
+          "GTH_OUT_CH2_TX_N"
+        ]
+      },
+      "murosync_serdes_array_0_ch2_gthtxp_out": {
+        "ports": [
+          "murosync_serdes_array_0/ch2_gthtxp_out",
+          "GTH_OUT_CH2_TX_P"
+        ]
+      },
+      "murosync_serdes_array_0_ch3_gthtxn_out": {
+        "ports": [
+          "murosync_serdes_array_0/ch3_gthtxn_out",
+          "GTH_OUT_CH3_TX_N"
+        ]
+      },
+      "murosync_serdes_array_0_ch3_gthtxp_out": {
+        "ports": [
+          "murosync_serdes_array_0/ch3_gthtxp_out",
+          "GTH_OUT_CH3_TX_P"
+        ]
+      },
+      "murosync_serdes_array_0_dbg": {
+        "ports": [
+          "murosync_serdes_array_0/dbg",
+          "ila_0/probe3"
+        ]
+      },
+      "murosync_serdes_array_0_link_down_latched_out": {
+        "ports": [
+          "murosync_serdes_array_0/link_down_latched_out",
+          "ila_0/probe1"
+        ]
+      },
+      "murosync_serdes_array_0_link_status_out": {
+        "ports": [
+          "murosync_serdes_array_0/link_status_out",
+          "ila_0/probe2"
+        ]
+      },
+      "murosync_serdes_array_0_refclk_out": {
+        "ports": [
+          "murosync_serdes_array_0/refclk_out",
+          "ila_0/probe0"
         ]
       },
       "reset_rtl_0_1": {
@@ -643,7 +871,8 @@
       "rst_clk_wiz_0_100M_mb_reset": {
         "ports": [
           "rst_clk_wiz_0_100M/mb_reset",
-          "microblaze_0/Reset"
+          "microblaze_0/Reset",
+          "murosync_serdes_array_0/hb_gtwiz_reset_all_in"
         ]
       },
       "rst_clk_wiz_0_100M_peripheral_aresetn": {
@@ -654,6 +883,12 @@
           "microblaze_0_axi_periph/M00_ARESETN",
           "microblaze_0_axi_periph/ARESETN",
           "axi_rst_tst"
+        ]
+      },
+      "xlconstant_0_dout": {
+        "ports": [
+          "xlconstant_0/dout",
+          "murosync_serdes_array_0/link_down_latched_reset_in"
         ]
       }
     },
