@@ -45,6 +45,9 @@
 ##################################################################################
 
 # SYS_CLK 200 MHz differential
+set_property PACKAGE_PIN T7 [get_ports gth_ref_p]
+set_property PACKAGE_PIN T6 [get_ports gth_ref_n]
+
 set_property PACKAGE_PIN T24 [get_ports sys_clk_p]
 set_property PACKAGE_PIN U24 [get_ports sys_clk_n]
 set_property IOSTANDARD DIFF_SSTL15 [get_ports {sys_clk_p sys_clk_n}]
@@ -66,3 +69,24 @@ set_property PACKAGE_PIN A12     [get_ports uart_rx]
 set_property IOSTANDARD LVCMOS33 [get_ports uart_rx]
 set_property PACKAGE_PIN A13     [get_ports uart_tx]
 set_property IOSTANDARD LVCMOS33 [get_ports uart_tx]
+
+# GTH pins
+set_property PACKAGE_PIN Y2  [get_ports sfp0_rx_p]
+set_property PACKAGE_PIN Y1  [get_ports sfp0_rx_n]
+set_property PACKAGE_PIN AA5 [get_ports sfp0_tx_p]
+set_property PACKAGE_PIN AA4 [get_ports sfp0_tx_n]
+
+set_property PACKAGE_PIN V2  [get_ports sfp1_rx_p]
+set_property PACKAGE_PIN V1  [get_ports sfp1_rx_n]
+set_property PACKAGE_PIN W5  [get_ports sfp1_tx_p]
+set_property PACKAGE_PIN W4  [get_ports sfp1_tx_n]
+
+set_property PACKAGE_PIN T2  [get_ports sfp2_rx_p]
+set_property PACKAGE_PIN T1  [get_ports sfp2_rx_n]
+set_property PACKAGE_PIN U5  [get_ports sfp2_tx_p]
+set_property PACKAGE_PIN U4  [get_ports sfp2_tx_n]
+
+set_property PACKAGE_PIN P2  [get_ports sfp3_rx_p]
+set_property PACKAGE_PIN P1  [get_ports sfp3_rx_n]
+set_property PACKAGE_PIN R5  [get_ports sfp3_tx_p]
+set_property PACKAGE_PIN R4  [get_ports sfp3_tx_n]

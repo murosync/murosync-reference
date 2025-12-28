@@ -3,7 +3,7 @@
 <!--                                                         -->
 <!-- Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.   -->
 
-<Project Version="7" Minor="61" Path="C:/murosync/murosync-reference/gateware/vivado/murosync_poc_v1/murosync_poc_v1.xpr">
+<Project Version="7" Minor="61" Path="C:/_vivado/murosync_poc_v1/murosync_poc_v1.xpr">
   <DefaultLaunch Dir="$PRUNDIR"/>
   <Configuration>
     <Option Name="Id" Val="479272e6b1c74ed689203c7ebfb0cce6"/>
@@ -46,7 +46,7 @@
     <Option Name="ActiveSimSet" Val="sim_1"/>
     <Option Name="DefaultLib" Val="xil_defaultlib"/>
     <Option Name="ProjectType" Val="Default"/>
-    <Option Name="IPRepoPath" Val="$PPRDIR/../../ip"/>
+    <Option Name="IPRepoPath" Val="$PPRDIR/../../murosync/murosync-reference/gateware/ip"/>
     <Option Name="IPOutputRepo" Val="$PCACHEDIR/ip"/>
     <Option Name="IPDefaultOutputPath" Val="$PGENDIR/sources_1"/>
     <Option Name="IPCachePermission" Val="read"/>
@@ -65,13 +65,13 @@
     <Option Name="WTVcsLaunchSim" Val="0"/>
     <Option Name="WTRivieraLaunchSim" Val="0"/>
     <Option Name="WTActivehdlLaunchSim" Val="0"/>
-    <Option Name="WTXSimExportSim" Val="5"/>
-    <Option Name="WTModelSimExportSim" Val="5"/>
-    <Option Name="WTQuestaExportSim" Val="5"/>
+    <Option Name="WTXSimExportSim" Val="7"/>
+    <Option Name="WTModelSimExportSim" Val="7"/>
+    <Option Name="WTQuestaExportSim" Val="7"/>
     <Option Name="WTIesExportSim" Val="0"/>
-    <Option Name="WTVcsExportSim" Val="5"/>
-    <Option Name="WTRivieraExportSim" Val="5"/>
-    <Option Name="WTActivehdlExportSim" Val="5"/>
+    <Option Name="WTVcsExportSim" Val="7"/>
+    <Option Name="WTRivieraExportSim" Val="7"/>
+    <Option Name="WTActivehdlExportSim" Val="7"/>
     <Option Name="GenerateIPUpgradeLog" Val="TRUE"/>
     <Option Name="XSimRadix" Val="hex"/>
     <Option Name="XSimTimeUnit" Val="ns"/>
@@ -98,20 +98,17 @@
         <CompFileExtendedInfo CompFileName="bd_murosync_poc.bd" FileRelPathName="ip/bd_murosync_poc_lmb_bram_0/bd_murosync_poc_lmb_bram_0.xci">
           <Proxy FileSetName="bd_murosync_poc_lmb_bram_0"/>
         </CompFileExtendedInfo>
+        <CompFileExtendedInfo CompFileName="bd_murosync_poc.bd" FileRelPathName="ip/bd_murosync_poc_ila_0_0/bd_murosync_poc_ila_0_0.xci">
+          <Proxy FileSetName="bd_murosync_poc_ila_0_0"/>
+        </CompFileExtendedInfo>
+        <CompFileExtendedInfo CompFileName="bd_murosync_poc.bd" FileRelPathName="ip/bd_murosync_poc_rst_clk_wiz_0_100M_0/bd_murosync_poc_rst_clk_wiz_0_100M_0.xci">
+          <Proxy FileSetName="bd_murosync_poc_rst_clk_wiz_0_100M_0"/>
+        </CompFileExtendedInfo>
         <CompFileExtendedInfo CompFileName="bd_murosync_poc.bd" FileRelPathName="ip/bd_murosync_poc_ilmb_bram_if_cntlr_0/bd_murosync_poc_ilmb_bram_if_cntlr_0.xci">
           <Proxy FileSetName="bd_murosync_poc_ilmb_bram_if_cntlr_0"/>
         </CompFileExtendedInfo>
         <CompFileExtendedInfo CompFileName="bd_murosync_poc.bd" FileRelPathName="ip/bd_murosync_poc_mdm_1_0/bd_murosync_poc_mdm_1_0.xci">
           <Proxy FileSetName="bd_murosync_poc_mdm_1_0"/>
-        </CompFileExtendedInfo>
-        <CompFileExtendedInfo CompFileName="bd_murosync_poc.bd" FileRelPathName="ip/bd_murosync_poc_rst_clk_wiz_0_100M_0/bd_murosync_poc_rst_clk_wiz_0_100M_0.xci">
-          <Proxy FileSetName="bd_murosync_poc_rst_clk_wiz_0_100M_0"/>
-        </CompFileExtendedInfo>
-        <CompFileExtendedInfo CompFileName="bd_murosync_poc.bd" FileRelPathName="ip/bd_murosync_poc_clk_wiz_0_0/bd_murosync_poc_clk_wiz_0_0.xci">
-          <Proxy FileSetName="bd_murosync_poc_clk_wiz_0_0"/>
-        </CompFileExtendedInfo>
-        <CompFileExtendedInfo CompFileName="bd_murosync_poc.bd" FileRelPathName="ip/bd_murosync_poc_axi_uartlite_0_0/bd_murosync_poc_axi_uartlite_0_0.xci">
-          <Proxy FileSetName="bd_murosync_poc_axi_uartlite_0_0"/>
         </CompFileExtendedInfo>
         <CompFileExtendedInfo CompFileName="bd_murosync_poc.bd" FileRelPathName="ip/bd_murosync_poc_dlmb_v10_0/bd_murosync_poc_dlmb_v10_0.xci">
           <Proxy FileSetName="bd_murosync_poc_dlmb_v10_0"/>
@@ -119,11 +116,20 @@
         <CompFileExtendedInfo CompFileName="bd_murosync_poc.bd" FileRelPathName="ip/bd_murosync_poc_ilmb_v10_0/bd_murosync_poc_ilmb_v10_0.xci">
           <Proxy FileSetName="bd_murosync_poc_ilmb_v10_0"/>
         </CompFileExtendedInfo>
-        <CompFileExtendedInfo CompFileName="bd_murosync_poc.bd" FileRelPathName="ip/bd_murosync_poc_microblaze_0_0/bd_murosync_poc_microblaze_0_0.xci">
-          <Proxy FileSetName="bd_murosync_poc_microblaze_0_0"/>
+        <CompFileExtendedInfo CompFileName="bd_murosync_poc.bd" FileRelPathName="ip/bd_murosync_poc_axi_uartlite_0_0/bd_murosync_poc_axi_uartlite_0_0.xci">
+          <Proxy FileSetName="bd_murosync_poc_axi_uartlite_0_0"/>
         </CompFileExtendedInfo>
         <CompFileExtendedInfo CompFileName="bd_murosync_poc.bd" FileRelPathName="ip/bd_murosync_poc_dlmb_bram_if_cntlr_0/bd_murosync_poc_dlmb_bram_if_cntlr_0.xci">
           <Proxy FileSetName="bd_murosync_poc_dlmb_bram_if_cntlr_0"/>
+        </CompFileExtendedInfo>
+        <CompFileExtendedInfo CompFileName="bd_murosync_poc.bd" FileRelPathName="ip/bd_murosync_poc_microblaze_0_0/bd_murosync_poc_microblaze_0_0.xci">
+          <Proxy FileSetName="bd_murosync_poc_microblaze_0_0"/>
+        </CompFileExtendedInfo>
+        <CompFileExtendedInfo CompFileName="bd_murosync_poc.bd" FileRelPathName="ip/bd_murosync_poc_clk_wiz_0_0/bd_murosync_poc_clk_wiz_0_0.xci">
+          <Proxy FileSetName="bd_murosync_poc_clk_wiz_0_0"/>
+        </CompFileExtendedInfo>
+        <CompFileExtendedInfo CompFileName="bd_murosync_poc.bd" FileRelPathName="ip/bd_murosync_poc_murosync_serdes_array_0_1/bd_murosync_poc_murosync_serdes_array_0_1.xci">
+          <Proxy FileSetName="bd_murosync_poc_murosync_serdes_array_0_1"/>
         </CompFileExtendedInfo>
       </File>
       <File Path="$PSRCDIR/sources_1/new/murosync_poc_top.sv">
@@ -249,6 +255,20 @@
         <Option Name="UseBlackboxStub" Val="1"/>
       </Config>
     </FileSet>
+    <FileSet Name="bd_murosync_poc_ila_0_0" Type="BlockSrcs" RelSrcDir="$PSRCDIR/bd_murosync_poc_ila_0_0" RelGenDir="$PGENDIR/bd_murosync_poc_ila_0_0">
+      <Config>
+        <Option Name="TopModule" Val="bd_murosync_poc_ila_0_0"/>
+        <Option Name="dataflowViewerSettings" Val="min_width=16"/>
+        <Option Name="UseBlackboxStub" Val="1"/>
+      </Config>
+    </FileSet>
+    <FileSet Name="bd_murosync_poc_murosync_serdes_array_0_1" Type="BlockSrcs" RelSrcDir="$PSRCDIR/bd_murosync_poc_murosync_serdes_array_0_1" RelGenDir="$PGENDIR/bd_murosync_poc_murosync_serdes_array_0_1">
+      <Config>
+        <Option Name="TopModule" Val="bd_murosync_poc_murosync_serdes_array_0_1"/>
+        <Option Name="dataflowViewerSettings" Val="min_width=16"/>
+        <Option Name="UseBlackboxStub" Val="1"/>
+      </Config>
+    </FileSet>
   </FileSets>
   <Simulators>
     <Simulator Name="XSim">
@@ -269,13 +289,14 @@
     </Simulator>
   </Simulators>
   <Runs Version="1" Minor="19">
-    <Run Id="synth_1" Type="Ft3:Synth" SrcSet="sources_1" Part="xcau15p-ffvb676-2-i" ConstrsSet="constrs_1" Description="Vivado Synthesis Defaults" AutoIncrementalCheckpoint="true" IncrementalCheckpoint="$PSRCDIR/utils_1/imports/synth_1/murosync_poc_top.dcp" WriteIncrSynthDcp="false" State="current" IncludeInArchive="true" IsChild="false" AutoIncrementalDir="$PSRCDIR/utils_1/imports/synth_1" AutoRQSDir="$PSRCDIR/utils_1/imports/synth_1">
+    <Run Id="synth_1" Type="Ft3:Synth" SrcSet="sources_1" Part="xcau15p-ffvb676-2-i" ConstrsSet="constrs_1" Description="Vivado Synthesis Defaults" AutoIncrementalCheckpoint="true" IncrementalCheckpoint="$PSRCDIR/utils_1/imports/synth_1/murosync_poc_top.dcp" WriteIncrSynthDcp="false" State="current" Dir="$PRUNDIR/synth_1" IncludeInArchive="true" IsChild="false" AutoIncrementalDir="$PSRCDIR/utils_1/imports/synth_1" AutoRQSDir="$PSRCDIR/utils_1/imports/synth_1">
       <Strategy Version="1" Minor="2">
         <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2022">
           <Desc>Vivado Synthesis Defaults</Desc>
         </StratHandle>
         <Step Id="synth_design"/>
       </Strategy>
+      <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
       <ReportStrategy Name="Vivado Synthesis Default Reports" Flow="Vivado Synthesis 2022"/>
       <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
       <RQSFiles/>
@@ -373,6 +394,28 @@
     <Run Id="bd_murosync_poc_rst_clk_wiz_0_100M_0_synth_1" Type="Ft3:Synth" SrcSet="bd_murosync_poc_rst_clk_wiz_0_100M_0" Part="xcau15p-ffvb676-2-i" ConstrsSet="bd_murosync_poc_rst_clk_wiz_0_100M_0" Description="Vivado Synthesis Defaults" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" Dir="$PRUNDIR/bd_murosync_poc_rst_clk_wiz_0_100M_0_synth_1" IncludeInArchive="true" IsChild="false" AutoIncrementalDir="$PSRCDIR/utils_1/imports/bd_murosync_poc_rst_clk_wiz_0_100M_0_synth_1" AutoRQSDir="$PSRCDIR/utils_1/imports/bd_murosync_poc_rst_clk_wiz_0_100M_0_synth_1">
       <Strategy Version="1" Minor="2">
         <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2022"/>
+        <Step Id="synth_design"/>
+      </Strategy>
+      <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
+      <ReportStrategy Name="Vivado Synthesis Default Reports" Flow="Vivado Synthesis 2022"/>
+      <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
+      <RQSFiles/>
+    </Run>
+    <Run Id="bd_murosync_poc_ila_0_0_synth_1" Type="Ft3:Synth" SrcSet="bd_murosync_poc_ila_0_0" Part="xcau15p-ffvb676-2-i" ConstrsSet="bd_murosync_poc_ila_0_0" Description="Vivado Synthesis Defaults" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" Dir="$PRUNDIR/bd_murosync_poc_ila_0_0_synth_1" IncludeInArchive="true" IsChild="false" AutoIncrementalDir="$PSRCDIR/utils_1/imports/bd_murosync_poc_ila_0_0_synth_1" AutoRQSDir="$PSRCDIR/utils_1/imports/bd_murosync_poc_ila_0_0_synth_1">
+      <Strategy Version="1" Minor="2">
+        <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2022"/>
+        <Step Id="synth_design"/>
+      </Strategy>
+      <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
+      <ReportStrategy Name="Vivado Synthesis Default Reports" Flow="Vivado Synthesis 2022"/>
+      <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
+      <RQSFiles/>
+    </Run>
+    <Run Id="bd_murosync_poc_murosync_serdes_array_0_1_synth_1" Type="Ft3:Synth" SrcSet="bd_murosync_poc_murosync_serdes_array_0_1" Part="xcau15p-ffvb676-2-i" ConstrsSet="bd_murosync_poc_murosync_serdes_array_0_1" Description="Vivado Synthesis Defaults" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" Dir="$PRUNDIR/bd_murosync_poc_murosync_serdes_array_0_1_synth_1" IncludeInArchive="true" IsChild="false" AutoIncrementalDir="$PSRCDIR/utils_1/imports/bd_murosync_poc_murosync_serdes_array_0_1_synth_1" AutoRQSDir="$PSRCDIR/utils_1/imports/bd_murosync_poc_murosync_serdes_array_0_1_synth_1">
+      <Strategy Version="1" Minor="2">
+        <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2022">
+          <Desc>Vivado Synthesis Defaults</Desc>
+        </StratHandle>
         <Step Id="synth_design"/>
       </Strategy>
       <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
@@ -556,6 +599,42 @@
     <Run Id="bd_murosync_poc_rst_clk_wiz_0_100M_0_impl_1" Type="Ft2:EntireDesign" Part="xcau15p-ffvb676-2-i" ConstrsSet="bd_murosync_poc_rst_clk_wiz_0_100M_0" Description="Default settings for Implementation." AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" SynthRun="bd_murosync_poc_rst_clk_wiz_0_100M_0_synth_1" IncludeInArchive="false" IsChild="false" GenFullBitstream="true" AutoIncrementalDir="$PSRCDIR/utils_1/imports/bd_murosync_poc_rst_clk_wiz_0_100M_0_impl_1" AutoRQSDir="$PSRCDIR/utils_1/imports/bd_murosync_poc_rst_clk_wiz_0_100M_0_impl_1">
       <Strategy Version="1" Minor="2">
         <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2022"/>
+        <Step Id="init_design"/>
+        <Step Id="opt_design"/>
+        <Step Id="power_opt_design"/>
+        <Step Id="place_design"/>
+        <Step Id="post_place_power_opt_design"/>
+        <Step Id="phys_opt_design"/>
+        <Step Id="route_design"/>
+        <Step Id="post_route_phys_opt_design"/>
+        <Step Id="write_bitstream"/>
+      </Strategy>
+      <ReportStrategy Name="Vivado Implementation Default Reports" Flow="Vivado Implementation 2022"/>
+      <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
+      <RQSFiles/>
+    </Run>
+    <Run Id="bd_murosync_poc_ila_0_0_impl_1" Type="Ft2:EntireDesign" Part="xcau15p-ffvb676-2-i" ConstrsSet="bd_murosync_poc_ila_0_0" Description="Default settings for Implementation." AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" SynthRun="bd_murosync_poc_ila_0_0_synth_1" IncludeInArchive="false" IsChild="false" GenFullBitstream="true" AutoIncrementalDir="$PSRCDIR/utils_1/imports/bd_murosync_poc_ila_0_0_impl_1" AutoRQSDir="$PSRCDIR/utils_1/imports/bd_murosync_poc_ila_0_0_impl_1">
+      <Strategy Version="1" Minor="2">
+        <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2022"/>
+        <Step Id="init_design"/>
+        <Step Id="opt_design"/>
+        <Step Id="power_opt_design"/>
+        <Step Id="place_design"/>
+        <Step Id="post_place_power_opt_design"/>
+        <Step Id="phys_opt_design"/>
+        <Step Id="route_design"/>
+        <Step Id="post_route_phys_opt_design"/>
+        <Step Id="write_bitstream"/>
+      </Strategy>
+      <ReportStrategy Name="Vivado Implementation Default Reports" Flow="Vivado Implementation 2022"/>
+      <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
+      <RQSFiles/>
+    </Run>
+    <Run Id="bd_murosync_poc_murosync_serdes_array_0_1_impl_1" Type="Ft2:EntireDesign" Part="xcau15p-ffvb676-2-i" ConstrsSet="bd_murosync_poc_murosync_serdes_array_0_1" Description="Default settings for Implementation." AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" SynthRun="bd_murosync_poc_murosync_serdes_array_0_1_synth_1" IncludeInArchive="false" IsChild="false" GenFullBitstream="true" AutoIncrementalDir="$PSRCDIR/utils_1/imports/bd_murosync_poc_murosync_serdes_array_0_1_impl_1" AutoRQSDir="$PSRCDIR/utils_1/imports/bd_murosync_poc_murosync_serdes_array_0_1_impl_1">
+      <Strategy Version="1" Minor="2">
+        <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2022">
+          <Desc>Default settings for Implementation.</Desc>
+        </StratHandle>
         <Step Id="init_design"/>
         <Step Id="opt_design"/>
         <Step Id="power_opt_design"/>

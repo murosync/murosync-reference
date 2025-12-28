@@ -26,9 +26,9 @@
       "microblaze_0_axi_periph": {
         "s00_couplers": {}
       },
-      "murosync_serdes_array_0": "",
       "ila_0": "",
-      "xlconstant_0": ""
+      "xlconstant_0": "",
+      "murosync_serdes_array_0": ""
     },
     "interface_ports": {
       "uart_rtl_0": {
@@ -613,12 +613,6 @@
           }
         }
       },
-      "murosync_serdes_array_0": {
-        "vlnv": "xilinx.com:user:murosync_serdes_array:1.0",
-        "xci_name": "bd_murosync_poc_murosync_serdes_array_0_0",
-        "xci_path": "ip\\bd_murosync_poc_murosync_serdes_array_0_0\\bd_murosync_poc_murosync_serdes_array_0_0.xci",
-        "inst_hier_path": "murosync_serdes_array_0"
-      },
       "ila_0": {
         "vlnv": "xilinx.com:ip:ila:6.2",
         "xci_name": "bd_murosync_poc_ila_0_0",
@@ -649,6 +643,12 @@
             "value": "1"
           }
         }
+      },
+      "murosync_serdes_array_0": {
+        "vlnv": "xilinx.com:user:murosync_serdes_array:1.0",
+        "xci_name": "bd_murosync_poc_murosync_serdes_array_0_1",
+        "xci_path": "ip\\bd_murosync_poc_murosync_serdes_array_0_1\\bd_murosync_poc_murosync_serdes_array_0_1.xci",
+        "inst_hier_path": "murosync_serdes_array_0"
       }
     },
     "interface_nets": {
@@ -847,13 +847,13 @@
       "murosync_serdes_array_0_link_status_out": {
         "ports": [
           "murosync_serdes_array_0/link_status_out",
-          "ila_0/probe2"
+          "ila_0/probe0"
         ]
       },
       "murosync_serdes_array_0_refclk_out": {
         "ports": [
           "murosync_serdes_array_0/refclk_out",
-          "ila_0/probe0"
+          "ila_0/probe2"
         ]
       },
       "reset_rtl_0_1": {

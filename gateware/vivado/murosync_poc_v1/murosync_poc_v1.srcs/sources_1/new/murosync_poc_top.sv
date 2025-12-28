@@ -62,6 +62,33 @@ module murosync_poc_top(
     input  wire        sys_clk_n,
     input  wire        rst_n,
     output reg  [1:0]  led,
+
+    input  wire        gth_ref_p,
+    input  wire        gth_ref_n,
+
+    input  wire        sfp0_rx_p,
+    input  wire        sfp0_rx_n,
+
+    input  wire        sfp1_rx_p,
+    input  wire        sfp1_rx_n,
+
+    input  wire        sfp2_rx_p,
+    input  wire        sfp2_rx_n,
+
+    input  wire        sfp3_rx_p,
+    input  wire        sfp3_rx_n,
+
+    output wire        sfp0_tx_p,
+    output wire        sfp0_tx_n,
+
+    output wire        sfp1_tx_p,
+    output wire        sfp1_tx_n,
+
+    output wire        sfp2_tx_p,
+    output wire        sfp2_tx_n,
+
+    output wire        sfp3_tx_p,
+    output wire        sfp3_tx_n,
     
     output wire        uart_tx,
     input  wire        uart_rx
@@ -72,6 +99,29 @@ module murosync_poc_top(
         
     bd_murosync_poc
         bd_murosync_poc(
+
+        /*[i] */    .GTH_REF_P(gth_ref_p),
+        /*[i] */    .GTH_REF_N(gth_ref_n),
+
+        /*[i] */    .GTH_IN_CH0_RX_P(sfp0_rx_p),
+        /*[i] */    .GTH_IN_CH0_RX_N(sfp0_rx_n),
+        /*[o] */    .GTH_OUT_CH0_TX_P(sfp0_tx_p),
+        /*[o] */    .GTH_OUT_CH0_TX_N(sfp0_tx_n),
+
+        /*[i] */    .GTH_IN_CH1_RX_P(sfp1_rx_p),
+        /*[i] */    .GTH_IN_CH1_RX_N(sfp1_rx_n),
+        /*[o] */    .GTH_OUT_CH1_TX_P(sfp1_tx_p),
+        /*[o] */    .GTH_OUT_CH1_TX_N(sfp1_tx_n),
+
+        /*[i] */    .GTH_IN_CH2_RX_P(sfp2_rx_p),
+        /*[i] */    .GTH_IN_CH2_RX_N(sfp2_rx_n),
+        /*[o] */    .GTH_OUT_CH2_TX_P(sfp2_tx_p),
+        /*[o] */    .GTH_OUT_CH2_TX_N(sfp2_tx_n),
+
+        /*[i] */    .GTH_IN_CH3_RX_P(sfp3_rx_p),
+        /*[i] */    .GTH_IN_CH3_RX_N(sfp3_rx_n),
+        /*[o] */    .GTH_OUT_CH3_TX_P(sfp3_tx_p),
+        /*[o] */    .GTH_OUT_CH3_TX_N(sfp3_tx_n),
         
         /*[i] */    .diff_clock_rtl_0_clk_p(sys_clk_p),
         /*[i] */    .diff_clock_rtl_0_clk_n(sys_clk_n),
@@ -90,3 +140,4 @@ module murosync_poc_top(
     assign led[1] = locked_tst;
 
 endmodule
+

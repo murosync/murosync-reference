@@ -49,26 +49,7 @@
 # ------------------------------------------------------------------------------
 
 # SYS_CLK: 200 MHz => 5.000 ns period
-# Note: Apply create_clock to the top-level port (sys_clk_p).
-#       Vivado will propagate through IBUFDS/BUFG as appropriate.
-create_clock -name sys_clk -period 5.000 -waveform {0.000 2.500} [get_ports sys_clk_p]
+# create_clock -period 5.000 -waveform {0.000 2.500} [get_ports sys_clk_p]
 
-# ------------------------------------------------------------------------------
-# (Optional placeholder) Generated clocks
-#   Add later when you introduce MMCM/PLL outputs, e.g.:
-#   create_generated_clock -name clk_100m -source [get_clocks sys_clk] ...
-# ------------------------------------------------------------------------------
-
-# ------------------------------------------------------------------------------
-# (Optional placeholder) Clock domain relationships
-#   Add later when you have multiple unrelated clocks (e.g. sys_clk vs gt_refclk)
-#   Example:
-#   set_clock_groups -asynchronous -group [get_clocks sys_clk] -group [get_clocks gt_refclk]
-# ------------------------------------------------------------------------------
-
-# ------------------------------------------------------------------------------
-# (Optional placeholder) Timing exceptions policy
-#   Keep exceptions minimal and documented, e.g.:
-#   set_false_path -from ... -to ...
-#   set_multicycle_path ...
-# ------------------------------------------------------------------------------
+# MGT_REFCLK: 156.25 MHz => 6.400 ns period
+# create_clock -name gth_refclk -period 6.400 -waveform {0.000 3.200} [get_ports GTH_REF_P]
