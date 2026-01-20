@@ -1,308 +1,372 @@
-module murosync_serdes_array (
+/******************************************************************************
+ * Project    : MuroSync
+ * File       : murosync_serdes_array.sv
+ * Created    : 2026-01-20
+ * Author     : Mikhail Vasilev
+ *
+ * Description:
+ *   Top-level 4-channel GT SERDES array with integrated AXI4-Lite control.
+ *
+ *   Provides reference clock buffering, GT wrapper integration, link-up/latch
+ *   logic, and a compact AXI register map for firmware bring-up and health
+ *   telemetry (LINK_UP, sticky LINK_DOWN_LATCHED, per-channel lock/powergood/
+ *   resetdone vectors). A 64-bit dbg bus is exported for ILA/telemetry only.
+ *
+ * Notes:
+ *   - Rollback-safe: AXI can generate GT reset/loopback controls, but they may
+ *     be intentionally not applied to the GT during debug.
+ *   - `default_nettype none` is used for stricter compile-time checks.
+ *
+ *  Copyright (c) 2026 Mikhail Vasilev / MuroSync
+ *
+ *  License:
+ *  This file is currently released under a restricted research license.
+ *  Licensing terms may change in future revisions of the project.
+ *
+ *  Commercial use, redistribution, or integration into commercial products
+ *  requires an explicit license agreement.
+ *
+ *  For licensing inquiries, please contact:
+ *      info@murosync.com
+ *
+ *****************************************************************************/
 
-  // Differential reference clock inputs
-  input  wire mgtrefclk0_x0y1_p,
-  input  wire mgtrefclk0_x0y1_n,
+`default_nettype none
 
-  // Serial data ports for transceiver channel 0
-  input  wire ch0_gthrxn_in,
-  input  wire ch0_gthrxp_in,
-  output wire ch0_gthtxn_out,
-  output wire ch0_gthtxp_out,
+module murosync_serdes_array #(
+    parameter integer C_S00_AXI_DATA_WIDTH = 32,
 
-  // Serial data ports for transceiver channel 1
-  input  wire ch1_gthrxn_in,
-  input  wire ch1_gthrxp_in,
-  output wire ch1_gthtxn_out,
-  output wire ch1_gthtxp_out,
+    // CTRL, LOOPBACK, STATUS, DBG_LO, DBG_HI, TEST_CONST, TEST_SCRATCH
+    parameter integer C_S00_AXI_NUM_REGS   = 7,
 
-  // Serial data ports for transceiver channel 2
-  input  wire ch2_gthrxn_in,
-  input  wire ch2_gthrxp_in,
-  output wire ch2_gthtxn_out,
-  output wire ch2_gthtxp_out,
+    // Pattern copied from axis_wavecap_streamer.sv
+    parameter integer OPT_MEM_ADDR_BITS    = $clog2(C_S00_AXI_NUM_REGS),
+    parameter integer ADDR_WIDTH_NEEDED    = OPT_MEM_ADDR_BITS + 3
+)(
+    // Differential reference clock inputs
+    input  wire mgtrefclk0_x0y1_p,
+    input  wire mgtrefclk0_x0y1_n,
 
-  // Serial data ports for transceiver channel 3
-  input  wire ch3_gthrxn_in,
-  input  wire ch3_gthrxp_in,
-  output wire ch3_gthtxn_out,
-  output wire ch3_gthtxp_out,
+    // Serial data ports for transceiver channel 0..3
+    input  wire ch0_gthrxn_in,
+    input  wire ch0_gthrxp_in,
+    output wire ch0_gthtxn_out,
+    output wire ch0_gthtxp_out,
 
-  // User-provided ports for reset helper block(s)
-  input  wire hb_gtwiz_reset_clk_freerun_in,
-  input  wire hb_gtwiz_reset_all_in,
+    input  wire ch1_gthrxn_in,
+    input  wire ch1_gthrxp_in,
+    output wire ch1_gthtxn_out,
+    output wire ch1_gthtxp_out,
 
-  // Link status ports
-  input  wire link_down_latched_reset_in,
-  output wire link_status_out,
-  output reg  link_down_latched_out = 1'b1,
+    input  wire ch2_gthrxn_in,
+    input  wire ch2_gthrxp_in,
+    output wire ch2_gthtxn_out,
+    output wire ch2_gthtxp_out,
 
-  // Debug outputs for ILA (connect these to ILA probes in top project)
-  output wire [63:0] dbg,
-  output wire        refclk_out     // fabric-legal refclk/2 AFTER BUFG_GT
+    input  wire ch3_gthrxn_in,
+    input  wire ch3_gthrxp_in,
+    output wire ch3_gthtxn_out,
+    output wire ch3_gthtxp_out,
+
+    // Free-running clock + global reset
+    input  wire hb_gtwiz_reset_clk_freerun_in,
+    input  wire hb_gtwiz_reset_all_in,
+
+    // Link status ports (external optional pulse)
+    input  wire link_down_latched_reset_in,
+    output wire link_status_out,
+    output reg  link_down_latched_out = 1'b1,
+
+    // PLL lock status
+    output wire [3:0] pll_lock_out,
+
+    // Debug outputs for ILA
+    output wire [63:0] dbg,
+    output wire        refclk_out,    // fabric-legal refclk/2 AFTER BUFG_GT
+
+    // ============================================================
+    // AXI4-Lite slave interface (INTEGRATED)
+    // ============================================================
+    input  wire                         s00_axi_aclk,
+    input  wire                         s00_axi_aresetn,
+    input  wire [ADDR_WIDTH_NEEDED-1:0] s00_axi_awaddr,
+    input  wire [2:0]                   s00_axi_awprot,
+    input  wire                         s00_axi_awvalid,
+    output wire                         s00_axi_awready,
+    input  wire [C_S00_AXI_DATA_WIDTH-1:0] s00_axi_wdata,
+    input  wire [(C_S00_AXI_DATA_WIDTH/8)-1:0] s00_axi_wstrb,
+    input  wire                         s00_axi_wvalid,
+    output wire                         s00_axi_wready,
+    output wire [1:0]                   s00_axi_bresp,
+    output wire                         s00_axi_bvalid,
+    input  wire                         s00_axi_bready,
+    input  wire [ADDR_WIDTH_NEEDED-1:0] s00_axi_araddr,
+    input  wire [2:0]                   s00_axi_arprot,
+    input  wire                         s00_axi_arvalid,
+    output wire                         s00_axi_arready,
+    output wire [C_S00_AXI_DATA_WIDTH-1:0] s00_axi_rdata,
+    output wire [1:0]                   s00_axi_rresp,
+    output wire                         s00_axi_rvalid,
+    input  wire                         s00_axi_rready
 );
 
-  // ============================================================
-  // PER-CHANNEL SIGNAL ASSIGNMENTS
-  // ============================================================
+    // ============================================================
+    // PER-CHANNEL SIGNAL ASSIGNMENTS
+    // ============================================================
+    wire [3:0] gthrxn_int = {ch3_gthrxn_in, ch2_gthrxn_in, ch1_gthrxn_in, ch0_gthrxn_in};
+    wire [3:0] gthrxp_int = {ch3_gthrxp_in, ch2_gthrxp_in, ch1_gthrxp_in, ch0_gthrxp_in};
 
-  wire [3:0] gthrxn_int;
-  assign gthrxn_int[0] = ch0_gthrxn_in;
-  assign gthrxn_int[1] = ch1_gthrxn_in;
-  assign gthrxn_int[2] = ch2_gthrxn_in;
-  assign gthrxn_int[3] = ch3_gthrxn_in;
+    wire [3:0] gthtxn_int;
+    wire [3:0] gthtxp_int;
 
-  wire [3:0] gthrxp_int;
-  assign gthrxp_int[0] = ch0_gthrxp_in;
-  assign gthrxp_int[1] = ch1_gthrxp_in;
-  assign gthrxp_int[2] = ch2_gthrxp_in;
-  assign gthrxp_int[3] = ch3_gthrxp_in;
+    assign {ch3_gthtxn_out, ch2_gthtxn_out, ch1_gthtxn_out, ch0_gthtxn_out} = gthtxn_int;
+    assign {ch3_gthtxp_out, ch2_gthtxp_out, ch1_gthtxp_out, ch0_gthtxp_out} = gthtxp_int;
 
-  wire [3:0] gthtxn_int;
-  assign ch0_gthtxn_out = gthtxn_int[0];
-  assign ch1_gthtxn_out = gthtxn_int[1];
-  assign ch2_gthtxn_out = gthtxn_int[2];
-  assign ch3_gthtxn_out = gthtxn_int[3];
+    // ============================================================
+    // BUFFERS
+    // ============================================================
+    wire hb_gtwiz_reset_all_buf_int;
+    IBUF u_ibuf_reset_all 
+    (
+        .I (hb_gtwiz_reset_all_in),
+        .O (hb_gtwiz_reset_all_buf_int)
+    );
 
-  wire [3:0] gthtxp_int;
-  assign ch0_gthtxp_out = gthtxp_int[0];
-  assign ch1_gthtxp_out = gthtxp_int[1];
-  assign ch2_gthtxp_out = gthtxp_int[2];
-  assign ch3_gthtxp_out = gthtxp_int[3];
+    wire hb_gtwiz_reset_clk_freerun_buf_int;
+    BUFG u_bufg_freerun 
+    (
+        .I (hb_gtwiz_reset_clk_freerun_in),
+        .O (hb_gtwiz_reset_clk_freerun_buf_int)
+    );
 
-  // ============================================================
-  // BUFFERS
-  // ============================================================
+    // Refclk (GT-only + ODIV2 -> BUFG_GT)
+    wire mgtrefclk0_x0y1_int;
+    wire mgtrefclk0_x0y1_odiv2_int;
 
-  wire hb_gtwiz_reset_all_buf_int;
-  IBUF u_ibuf_reset_all (
-    .I (hb_gtwiz_reset_all_in),
-    .O (hb_gtwiz_reset_all_buf_int)
-  );
+    IBUFDS_GTE4 #(
+        .REFCLK_EN_TX_PATH  (1'b0),
+        .REFCLK_HROW_CK_SEL (2'b00),
+        .REFCLK_ICNTL_RX    (2'b00)
+    ) u_ibufds_gte4_refclk 
+    (
+        .I     (mgtrefclk0_x0y1_p),
+        .IB    (mgtrefclk0_x0y1_n),
+        .CEB   (1'b0),
+        .O     (mgtrefclk0_x0y1_int),
+        .ODIV2 (mgtrefclk0_x0y1_odiv2_int)
+    );
 
-  // Free-running clock
-  wire hb_gtwiz_reset_clk_freerun_buf_int;
-  BUFG u_bufg_freerun (
-    .I (hb_gtwiz_reset_clk_freerun_in),
-    .O (hb_gtwiz_reset_clk_freerun_buf_int)
-  );
+    wire mgtrefclk0_x0y1_div2_bufg;
+    BUFG_GT u_bufg_gt_refclk_div2 
+    (
+        .I       (mgtrefclk0_x0y1_odiv2_int),
+        .CE      (1'b1),
+        .CEMASK  (1'b0),
+        .CLR     (1'b0),
+        .CLRMASK (1'b0),
+        .DIV     (3'b000),
+        .O       (mgtrefclk0_x0y1_div2_bufg)
+    );
+    assign refclk_out = mgtrefclk0_x0y1_div2_bufg;
 
-  // ----------------------------------------------------------------
-  // Refclk:
-  //  - O     : GTREFCLK ONLY (must NOT drive fabric)
-  //  - ODIV2 : may ONLY drive BUFG_GT/BUFG_GT_SYNC
-  // ----------------------------------------------------------------
-  wire mgtrefclk0_x0y1_int;        // GT-only clock (O)
-  wire mgtrefclk0_x0y1_odiv2_int;  // divider output (ODIV2) -> BUFG_GT only
+    wire hb_gtwiz_reset_all_int = hb_gtwiz_reset_all_buf_int;
 
-  IBUFDS_GTE4 #(
-    .REFCLK_EN_TX_PATH  (1'b0),
-    .REFCLK_HROW_CK_SEL (2'b00),
-    .REFCLK_ICNTL_RX    (2'b00)
-  ) u_ibufds_gte4_refclk (
-    .I     (mgtrefclk0_x0y1_p),
-    .IB    (mgtrefclk0_x0y1_n),
-    .CEB   (1'b0),
-    .O     (mgtrefclk0_x0y1_int),         // GTREFCLK only
-    .ODIV2 (mgtrefclk0_x0y1_odiv2_int)    // must go to BUFG_GT
-  );
+    // ============================================================
+    // Signals to/from GT wrapper
+    // ============================================================
+    wire [3:0] gtpowergood_int;
+    wire [3:0] rxpmaresetdone_int;
+    wire [3:0] txpmaresetdone_int;
 
-  // ------------------------------------------------------------
-  // ADDITIONAL BUFFER (required by DRC):
-  //   ODIV2 -> BUFG_GT -> refclk_out (fabric legal)
-  // ------------------------------------------------------------
-  wire mgtrefclk0_x0y1_div2_bufg;
+    wire       gtwiz_reset_tx_done_int;
+    wire       gtwiz_reset_rx_done_int;
+    wire       gtwiz_reset_rx_cdr_stable_int;
+    wire       gtwiz_userclk_tx_active_int;
+    wire       gtwiz_userclk_rx_active_int;
 
-  BUFG_GT u_bufg_gt_refclk_div2 (
-    .I       (mgtrefclk0_x0y1_odiv2_int),
-    .CE      (1'b1),
-    .CEMASK  (1'b0),
-    .CLR     (1'b0),
-    .CLRMASK (1'b0),
-    .DIV     (3'b000),   // no extra division
-    .O       (mgtrefclk0_x0y1_div2_bufg)
-  );
+    wire [3:0] pll_lock_int;
 
-  assign refclk_out = mgtrefclk0_x0y1_div2_bufg;
+    // AXI-driven control (generated, but GT application is currently disabled)
+    wire [2:0] loopback_ctrl;
+    wire       link_latch_reset_axi;
+    wire       gt_reset_all_pulse_axi;
 
-  wire [0:0] gtrefclk00_int;
-  assign gtrefclk00_int[0] = mgtrefclk0_x0y1_int;
+    // ============================================================
+    // LINK STATUS (bring-up definition: "GT is alive")
+    // ============================================================
+    wire link_up_raw = (&gtpowergood_int) &
+                       (&txpmaresetdone_int) &
+                       (&rxpmaresetdone_int) &
+                       gtwiz_reset_tx_done_int &
+                       gtwiz_reset_rx_done_int &
+                       gtwiz_userclk_tx_active_int &
+                       gtwiz_userclk_rx_active_int;
 
-  // Reset used by this wrapper (simple)
-  wire hb_gtwiz_reset_all_int = hb_gtwiz_reset_all_buf_int; // ACTIVE HIGH
+    assign link_status_out = link_up_raw;
+    assign pll_lock_out    = pll_lock_int;
 
-  // ============================================================
-  // GTWIZ signals (minimal set)
-  // ============================================================
+    // ============================================================
+    // LINK LATCH
+    // ============================================================
+    wire link_latch_reset_comb = link_down_latched_reset_in | link_latch_reset_axi;
 
-  // reset i/f (kept to preserve your dbg/link logic)
-  wire [0:0] gtwiz_reset_tx_pll_and_datapath_int;
-  wire [0:0] gtwiz_reset_tx_datapath_int;
-  wire [0:0] gtwiz_reset_rx_pll_and_datapath_int;
-  wire [0:0] gtwiz_reset_rx_datapath_int;
-
-  // status
-  wire [0:0] gtwiz_reset_tx_done_int;
-  wire [0:0] gtwiz_reset_rx_done_int;
-  wire [0:0] gtwiz_reset_rx_cdr_stable_int;
-
-  // userclk active (comes from our wrapper)
-  wire [0:0] gtwiz_userclk_tx_active_int;
-  wire [0:0] gtwiz_userclk_rx_active_int;
-
-  // per-channel status
-  wire [3:0] gtpowergood_int;
-  wire [3:0] rxpmaresetdone_int;
-  wire [3:0] txpmaresetdone_int;
-
-  // 8b10b enable
-  wire [3:0] rx8b10ben_int = 4'b1111;
-  wire [3:0] tx8b10ben_int = 4'b1111;
-
-  // data/control (drive zeros for bring-up)
-  wire [63:0] gtwiz_userdata_tx_int = 64'h0;
-  wire [63:0] gtwiz_userdata_rx_int;
-
-  wire [63:0] txctrl0_int = 64'h0;
-  wire [63:0] txctrl1_int = 64'h0;
-  wire [31:0] txctrl2_int = 32'h0;
-
-  // We don't currently consume RX ctrl buses in this module, keep as optional debug hookups
-  wire [63:0] rxctrl0_int;
-  wire [63:0] rxctrl1_int;
-  wire [31:0] rxctrl2_int;
-  wire [31:0] rxctrl3_int;
-
-  // For dbg continuity (same semantics as before)
-  // NOTE: Previously these were "into helper" resets. Now helpers live inside murosync_gt_wrapper.
-  // We preserve equivalent intent: "helpers held reset until all channels pmaresetdone".
-  wire [0:0] gtwiz_userclk_tx_reset_int;
-  wire [0:0] gtwiz_userclk_rx_reset_int;
-  assign gtwiz_userclk_tx_reset_int[0] = ~(&txpmaresetdone_int);
-  assign gtwiz_userclk_rx_reset_int[0] = ~(&rxpmaresetdone_int);
-
-  // reset requests to GT wizard (simple: tie to global reset)
-  assign gtwiz_reset_tx_pll_and_datapath_int[0] = hb_gtwiz_reset_all_int;
-  assign gtwiz_reset_tx_datapath_int[0]         = hb_gtwiz_reset_all_int;
-  assign gtwiz_reset_rx_pll_and_datapath_int[0] = hb_gtwiz_reset_all_int;
-  assign gtwiz_reset_rx_datapath_int[0]         = hb_gtwiz_reset_all_int;
-
-  // ============================================================
-  // LINK STATUS (bring-up definition: "GT is alive")
-  // ============================================================
-
-  wire link_up_raw =
-      (&gtpowergood_int) &
-      (&txpmaresetdone_int) &
-      (&rxpmaresetdone_int) &
-      gtwiz_reset_tx_done_int[0] &
-      gtwiz_reset_rx_done_int[0] &
-      gtwiz_userclk_tx_active_int[0] &
-      gtwiz_userclk_rx_active_int[0];
-
-  assign link_status_out = link_up_raw;
-
-  always @(posedge hb_gtwiz_reset_clk_freerun_buf_int) begin
-    if (hb_gtwiz_reset_all_int) begin
-      link_down_latched_out <= 1'b1;
-    end else if (link_down_latched_reset_in) begin
-      link_down_latched_out <= 1'b0;
-    end else if (!link_up_raw) begin
-      link_down_latched_out <= 1'b1;
+    always @(posedge hb_gtwiz_reset_clk_freerun_buf_int)
+    begin
+        if (hb_gtwiz_reset_all_int)      link_down_latched_out <= 1'b1;
+        else if (link_latch_reset_comb)  link_down_latched_out <= 1'b0;
+        else if (!link_up_raw)           link_down_latched_out <= 1'b1;
     end
-  end
 
-  // ============================================================
-  // DEBUG BUS (connect to ILA probes)
-  // ============================================================
-  // dbg[25] = refclk_out (ODIV2 -> BUFG_GT)
-  assign dbg[0]    = hb_gtwiz_reset_all_int;
-  assign dbg[1]    = link_up_raw;
-  assign dbg[2]    = link_down_latched_out;
-  assign dbg[3]    = link_down_latched_reset_in;
+    // ============================================================
+    // DEBUG BUS (core domain)
+    // NOTE:
+    //  - dbg is for ILA/telemetry only
+    //  - SERDES_STATUS is now built from dedicated inputs to axi_ctrl
+    // ============================================================
+    assign dbg[0]     = hb_gtwiz_reset_all_int;
+    assign dbg[1]     = link_up_raw;
+    assign dbg[2]     = link_down_latched_out;
+    assign dbg[3]     = link_latch_reset_comb;
 
-  assign dbg[7:4]  = gtpowergood_int;
-  assign dbg[11:8] = txpmaresetdone_int;
-  assign dbg[15:12]= rxpmaresetdone_int;
+    assign dbg[7:4]   = gtpowergood_int;
+    assign dbg[11:8]  = txpmaresetdone_int;
+    assign dbg[15:12] = rxpmaresetdone_int;
 
-  assign dbg[16]   = gtwiz_reset_tx_done_int[0];
-  assign dbg[17]   = gtwiz_reset_rx_done_int[0];
-  assign dbg[18]   = gtwiz_reset_rx_cdr_stable_int[0];
+    assign dbg[16]    = gtwiz_reset_tx_done_int;
+    assign dbg[17]    = gtwiz_reset_rx_done_int;
+    assign dbg[18]    = gtwiz_reset_rx_cdr_stable_int;
 
-  assign dbg[19]   = gtwiz_userclk_tx_active_int[0];
-  assign dbg[20]   = gtwiz_userclk_rx_active_int[0];
+    assign dbg[19]    = gtwiz_userclk_tx_active_int;
+    assign dbg[20]    = gtwiz_userclk_rx_active_int;
 
-  assign dbg[21]   = gtwiz_userclk_tx_reset_int[0];
-  assign dbg[22]   = gtwiz_userclk_rx_reset_int[0];
+    assign dbg[25]    = refclk_out;
 
-  assign dbg[23]   = hb_gtwiz_reset_clk_freerun_in;
-  assign dbg[24]   = hb_gtwiz_reset_clk_freerun_buf_int;
-  assign dbg[25]   = refclk_out;
+    assign dbg[29:26] = pll_lock_out;
+    assign dbg[63:30] = '0;
 
-  assign dbg[63:26]= '0;
+    // ============================================================
+    // AXI CTRL
+    // ============================================================
+    murosync_serdes_array_axi_ctrl #(
+        .C_S00_AXI_DATA_WIDTH (C_S00_AXI_DATA_WIDTH),
+        .C_S00_AXI_NUM_REGS   (C_S00_AXI_NUM_REGS)
+    ) u_axi_ctrl 
+    (
+        // AXI
+        .s00_axi_aclk     (s00_axi_aclk),
+        .s00_axi_aresetn  (s00_axi_aresetn),
+        .s00_axi_awaddr   (s00_axi_awaddr),
+        .s00_axi_awprot   (s00_axi_awprot),
+        .s00_axi_awvalid  (s00_axi_awvalid),
+        .s00_axi_awready  (s00_axi_awready),
+        .s00_axi_wdata    (s00_axi_wdata),
+        .s00_axi_wstrb    (s00_axi_wstrb),
+        .s00_axi_wvalid   (s00_axi_wvalid),
+        .s00_axi_wready   (s00_axi_wready),
+        .s00_axi_bresp    (s00_axi_bresp),
+        .s00_axi_bvalid   (s00_axi_bvalid),
+        .s00_axi_bready   (s00_axi_bready),
+        .s00_axi_araddr   (s00_axi_araddr),
+        .s00_axi_arprot   (s00_axi_arprot),
+        .s00_axi_arvalid  (s00_axi_arvalid),
+        .s00_axi_arready  (s00_axi_arready),
+        .s00_axi_rdata    (s00_axi_rdata),
+        .s00_axi_rresp    (s00_axi_rresp),
+        .s00_axi_rvalid   (s00_axi_rvalid),
+        .s00_axi_rready   (s00_axi_rready),
 
-  // ============================================================
-  // Murosync GT wrapper instance (replaces Xilinx example_wrapper)
-  // ============================================================
-  //
-  // Expects a module:
-  //   murosync_gt_wrapper #(.NCH(4), .TX_MASTER_CH(0), .RX_MASTER_CH(0)) u_gtw ( ... )
-  //
-  // This wrapper should:
-  //   - instantiate gtwizard_ultrascale_0 core
-  //   - instantiate gtwizard_ultrascale_0_example_gtwiz_userclk_tx/rx helpers
-  //   - feed txusrclk/rxusrclk buses to the core
-  //   - export gtwiz_userclk_tx_active_out / gtwiz_userclk_rx_active_out
-  //
-  
-  murosync_gt_wrapper #(
-    .NCH          (4),
-    .TX_MASTER_CH (0),
-    .RX_MASTER_CH (0)
-  ) u_gtw (
-    .gthrxn_in                          (gthrxn_int),
-    .gthrxp_in                          (gthrxp_int),
-    .gthtxn_out                         (gthtxn_int),
-    .gthtxp_out                         (gthtxp_int),
+        // Core domain
+        .core_clk          (hb_gtwiz_reset_clk_freerun_buf_int),
+        .core_reset_all_in (hb_gtwiz_reset_all_int),
 
-    .gtwiz_reset_clk_freerun_in         (hb_gtwiz_reset_clk_freerun_buf_int),
-    .gtwiz_reset_all_in                 (hb_gtwiz_reset_all_int),
+        // CONTROL OUT
+        .loopback_ctrl                (loopback_ctrl),
+        .link_down_latched_reset_pulse (link_latch_reset_axi),
+        .gt_reset_all_pulse            (gt_reset_all_pulse_axi),
 
-    .gtwiz_reset_tx_pll_and_datapath_in (gtwiz_reset_tx_pll_and_datapath_int[0]),
-    .gtwiz_reset_tx_datapath_in         (gtwiz_reset_tx_datapath_int[0]),
-    .gtwiz_reset_rx_pll_and_datapath_in (gtwiz_reset_rx_pll_and_datapath_int[0]),
-    .gtwiz_reset_rx_datapath_in         (gtwiz_reset_rx_datapath_int[0]),
+        // STATUS IN (core_clk domain)
+        .link_up           (link_status_out),
+        .link_down_latched (link_down_latched_out),
+        .pll_lock_in       (pll_lock_int),
 
-    .gtwiz_reset_rx_cdr_stable_out      (gtwiz_reset_rx_cdr_stable_int[0]),
-    .gtwiz_reset_tx_done_out            (gtwiz_reset_tx_done_int[0]),
-    .gtwiz_reset_rx_done_out            (gtwiz_reset_rx_done_int[0]),
+        // New dedicated status vectors (core_clk domain)
+        .gtpowergood_in    (gtpowergood_int),
+        .txpmaresetdone_in (txpmaresetdone_int),
+        .rxpmaresetdone_in (rxpmaresetdone_int),
 
-    .gtwiz_userdata_tx_in               (gtwiz_userdata_tx_int),
-    .gtwiz_userdata_rx_out              (gtwiz_userdata_rx_int),
+        // Debug-only bus
+        .dbg_in            (dbg)
+    );
 
-    .gtrefclk00_in                      (gtrefclk00_int[0]),
-    .qpll0outclk_out                    (), // optional
-    .qpll0outrefclk_out                 (), // optional
+    // ============================================================
+    // GT wrapper (simplified wrapper internally uses murosync_gtwizard_ports)
+    // ============================================================
+    murosync_gt_wrapper #(
+        .NCH          (4),
+        .TX_MASTER_CH (0),
+        .RX_MASTER_CH (0)
+    ) u_gtw 
+    (
+        .gthrxn_in  (gthrxn_int),
+        .gthrxp_in  (gthrxp_int),
+        .gthtxn_out (gthtxn_int),
+        .gthtxp_out (gthtxp_int),
 
-    .rx8b10ben_in                       (rx8b10ben_int),
-    .tx8b10ben_in                       (tx8b10ben_int),
+        .gtwiz_reset_clk_freerun_in (hb_gtwiz_reset_clk_freerun_buf_int),
 
-    .txctrl0_in                         (txctrl0_int),
-    .txctrl1_in                         (txctrl1_int),
-    .txctrl2_in                         (txctrl2_int),
+        // rollback-safe: keep ONLY external reset applied to GT
+        .gtwiz_reset_all_in (hb_gtwiz_reset_all_int),
+        //.gtwiz_reset_all_in (hb_gtwiz_reset_all_int | gt_reset_all_pulse_axi),
 
-    .gtpowergood_out                    (gtpowergood_int),
+        // Tie off extra reset controls (unused in this top-level right now)
+        .gtwiz_reset_tx_pll_and_datapath_in (1'b0),
+        .gtwiz_reset_tx_datapath_in         (1'b0),
+        .gtwiz_reset_rx_pll_and_datapath_in (1'b0),
+        .gtwiz_reset_rx_datapath_in         (1'b0),
 
-    .rxctrl0_out                        (rxctrl0_int),
-    .rxctrl1_out                        (rxctrl1_int),
-    .rxctrl2_out                        (rxctrl2_int),
-    .rxctrl3_out                        (rxctrl3_int),
+        // Tie off datapath/userdata (not used for bring-up)
+        .gtwiz_userdata_tx_in (64'h0),
+        .gtwiz_userdata_rx_out(),
 
-    .rxpmaresetdone_out                 (rxpmaresetdone_int),
-    .txpmaresetdone_out                 (txpmaresetdone_int),
+        // Feed the GT reference clock (raw from IBUFDS_GTE4)
+        .gtrefclk00_in      (mgtrefclk0_x0y1_int),
+        .qpll0outclk_out    (),
+        .qpll0outrefclk_out (),
 
-    .gtwiz_userclk_tx_active_out        (gtwiz_userclk_tx_active_int[0]),
-    .gtwiz_userclk_rx_active_out        (gtwiz_userclk_rx_active_int[0])
-  );
+        // 8b10b and TXCTRL defaults (safe)
+        .rx8b10ben_in ({4{1'b0}}),
+        .tx8b10ben_in ({4{1'b0}}),
+        .txctrl0_in   (64'h0),
+        .txctrl1_in   (64'h0),
+        .txctrl2_in   (32'h0),
+
+        .gtpowergood_out            (gtpowergood_int),
+        .rxctrl0_out                (),
+        .rxctrl1_out                (),
+        .rxctrl2_out                (),
+        .rxctrl3_out                (),
+
+        .rxpmaresetdone_out         (rxpmaresetdone_int),
+        .txpmaresetdone_out         (txpmaresetdone_int),
+
+        .gtwiz_reset_rx_cdr_stable_out (gtwiz_reset_rx_cdr_stable_int),
+        .gtwiz_reset_tx_done_out       (gtwiz_reset_tx_done_int),
+        .gtwiz_reset_rx_done_out       (gtwiz_reset_rx_done_int),
+
+        .gtwiz_userclk_tx_active_out   (gtwiz_userclk_tx_active_int),
+        .gtwiz_userclk_rx_active_out   (gtwiz_userclk_rx_active_int),
+
+        // rollback-safe: force normal mode while debugging (3 bits per channel)
+        .loopback_in ({4{3'b000}}),
+        //.loopback_in ({4{loopback_ctrl}})
+
+        // raw lock outs (optional, reserved for future debug)
+        .cplllock_out  (),
+        .qpll0lock_out (),
+        .qpll1lock_out (),
+
+        .pll_lock_out (pll_lock_int)
+    );
 
 endmodule
+`default_nettype wire

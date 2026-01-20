@@ -1,164 +1,228 @@
+/******************************************************************************
+ * Project    : MuroSync
+ * File       : murosync_gt_wrapper.sv
+ * Created    : 2026-01-20
+ * Author     : Mikhail Vasilev
+ *
+ * Description:
+ *   N-channel GT Wizard wrapper with deterministic user-clock generation.
+ *
+ *   Selects one TX and one RX master channel for outclk sourcing, generates
+ *   TXUSRCLK/TXUSRCLK2 and RXUSRCLK/RXUSRCLK2 via dedicated helper blocks,
+ *   and fan-outs the resulting user clocks to all GT channels. The actual
+ *   GT Wizard instance is isolated behind `murosync_gtwizard_ports` to keep
+ *   the top-level stable across Wizard re-generation/port changes.
+ *
+ *   Exposes firmware-friendly status/telemetry: per-channel gtpowergood,
+ *   rxcdrlock, pmaresetdone, and PLL lock vectors, plus reset-done and
+ *   userclk-active flags.
+ *
+ * Notes:
+ *   - `default_nettype none` is used to prevent implicit nets.
+ *   - Loopback is provided as 3 bits per channel (standard GT loopback bus).
+ *
+ *  Copyright (c) 2026 Mikhail Vasilev / MuroSync
+ *
+ *  License:
+ *  This file is currently released under a restricted research license.
+ *  Licensing terms may change in future revisions of the project.
+ *
+ *  Commercial use, redistribution, or integration into commercial products
+ *  requires an explicit license agreement.
+ *
+ *  For licensing inquiries, please contact:
+ *      info@murosync.com
+ *
+ *****************************************************************************/
+
+`default_nettype none
+
 module murosync_gt_wrapper #(
-  parameter int NCH = 4,
-  parameter int TX_MASTER_CH = 0,
-  parameter int RX_MASTER_CH = 0,
 
-  // userclk ratios (match Xilinx helper behavior)
-  // TXUSRCLK  = srcclk / P_TX_FREQ_RATIO_SOURCE_TO_USRCLK
-  // TXUSRCLK2 = TXUSRCLK / P_TX_FREQ_RATIO_USRCLK_TO_USRCLK2
-  parameter int P_TX_FREQ_RATIO_SOURCE_TO_USRCLK  = 1,
-  parameter int P_TX_FREQ_RATIO_USRCLK_TO_USRCLK2 = 1,
-  parameter int P_RX_FREQ_RATIO_SOURCE_TO_USRCLK  = 1,
-  parameter int P_RX_FREQ_RATIO_USRCLK_TO_USRCLK2 = 1
+    parameter int NCH = 4,
+    parameter int TX_MASTER_CH = 0,
+    parameter int RX_MASTER_CH = 0,
+
+    parameter int P_TX_FREQ_RATIO_SOURCE_TO_USRCLK  = 1,
+    parameter int P_TX_FREQ_RATIO_USRCLK_TO_USRCLK2 = 1,
+    parameter int P_RX_FREQ_RATIO_SOURCE_TO_USRCLK  = 1,
+    parameter int P_RX_FREQ_RATIO_USRCLK_TO_USRCLK2 = 1
 )(
-  input  wire [NCH-1:0] gthrxn_in,
-  input  wire [NCH-1:0] gthrxp_in,
-  output wire [NCH-1:0] gthtxn_out,
-  output wire [NCH-1:0] gthtxp_out,
+    input  wire [NCH-1:0] gthrxn_in,
+    input  wire [NCH-1:0] gthrxp_in,
+    output wire [NCH-1:0] gthtxn_out,
+    output wire [NCH-1:0] gthtxp_out,
 
-  input  wire           gtwiz_reset_clk_freerun_in,
-  input  wire           gtwiz_reset_all_in,
+    input  wire           gtwiz_reset_clk_freerun_in,
+    input  wire           gtwiz_reset_all_in,
 
-  input  wire           gtwiz_reset_tx_pll_and_datapath_in,
-  input  wire           gtwiz_reset_tx_datapath_in,
-  input  wire           gtwiz_reset_rx_pll_and_datapath_in,
-  input  wire           gtwiz_reset_rx_datapath_in,
+    input  wire           gtwiz_reset_tx_pll_and_datapath_in,
+    input  wire           gtwiz_reset_tx_datapath_in,
+    input  wire           gtwiz_reset_rx_pll_and_datapath_in,
+    input  wire           gtwiz_reset_rx_datapath_in,
 
-  output wire           gtwiz_reset_rx_cdr_stable_out,
-  output wire           gtwiz_reset_tx_done_out,
-  output wire           gtwiz_reset_rx_done_out,
+    output wire           gtwiz_reset_rx_cdr_stable_out,
+    output wire           gtwiz_reset_tx_done_out,
+    output wire           gtwiz_reset_rx_done_out,
 
-  input  wire [63:0]    gtwiz_userdata_tx_in,
-  output wire [63:0]    gtwiz_userdata_rx_out,
+    input  wire [63:0]    gtwiz_userdata_tx_in,
+    output wire [63:0]    gtwiz_userdata_rx_out,
 
-  input  wire           gtrefclk00_in,
-  output wire           qpll0outclk_out,
-  output wire           qpll0outrefclk_out,
+    input  wire           gtrefclk00_in,
+    output wire           qpll0outclk_out,
+    output wire           qpll0outrefclk_out,
 
-  input  wire [NCH-1:0] rx8b10ben_in,
-  input  wire [NCH-1:0] tx8b10ben_in,
+    input  wire [NCH-1:0] rx8b10ben_in,
+    input  wire [NCH-1:0] tx8b10ben_in,
 
-  input  wire [63:0]    txctrl0_in,
-  input  wire [63:0]    txctrl1_in,
-  input  wire [31:0]    txctrl2_in,
+    input  wire [63:0]    txctrl0_in,
+    input  wire [63:0]    txctrl1_in,
+    input  wire [31:0]    txctrl2_in,
 
-  output wire [NCH-1:0] gtpowergood_out,
-  output wire [63:0]    rxctrl0_out,
-  output wire [63:0]    rxctrl1_out,
-  output wire [31:0]    rxctrl2_out,
-  output wire [31:0]    rxctrl3_out,
+    output wire [NCH-1:0] gtpowergood_out,  
+    output wire [NCH-1:0] rxcdrlock_out,
+    output wire [63:0]    rxctrl0_out,
+    output wire [63:0]    rxctrl1_out,
+    output wire [31:0]    rxctrl2_out,
+    output wire [31:0]    rxctrl3_out,
 
-  output wire [NCH-1:0] rxpmaresetdone_out,
-  output wire [NCH-1:0] txpmaresetdone_out,
+    output wire [NCH-1:0] rxpmaresetdone_out,
+    output wire [NCH-1:0] txpmaresetdone_out,
 
-  // optional status from userclk helpers
-  output wire           gtwiz_userclk_tx_active_out,
-  output wire           gtwiz_userclk_rx_active_out
+    output wire           gtwiz_userclk_tx_active_out,
+    output wire           gtwiz_userclk_rx_active_out,
+
+    // 3 bits per channel (GT loopback bus)
+    input  wire [3*NCH-1:0] loopback_in,
+
+    // Raw lock indicators (useful for AXI status)
+    output wire [NCH-1:0] cplllock_out,
+    output wire           qpll0lock_out,
+    output wire           qpll1lock_out,
+
+    // Unified lock per-channel (derived)
+    output wire [NCH-1:0] pll_lock_out
 );
 
-  // ------------------------------------------------------------
-  // Clocks from GT core
-  // ------------------------------------------------------------
-  wire [NCH-1:0] txoutclk_int;
-  wire [NCH-1:0] rxoutclk_int;
+    // --------------------------------------------------------------------------
+    // GT outclks (from wizard) used as sources for userclk generation
+    // --------------------------------------------------------------------------
+    wire [NCH-1:0] txoutclk_int;
+    wire [NCH-1:0] rxoutclk_int;
 
-  // ------------------------------------------------------------
-  // User clock helper blocks (source = master channel outclk)
-  // ------------------------------------------------------------
-  wire gtwiz_userclk_tx_usrclk;
-  wire gtwiz_userclk_tx_usrclk2;
+    // --------------------------------------------------------------------------
+    // User clocks generated from selected master channel
+    // --------------------------------------------------------------------------
+    wire gtwiz_userclk_tx_usrclk;
+    wire gtwiz_userclk_tx_usrclk2;
+    wire gtwiz_userclk_rx_usrclk;
+    wire gtwiz_userclk_rx_usrclk2;
 
-  wire gtwiz_userclk_rx_usrclk;
-  wire gtwiz_userclk_rx_usrclk2;
+    wire gtwiz_userclk_tx_reset_int =
+         gtwiz_reset_all_in |
+         gtwiz_reset_tx_pll_and_datapath_in |
+         gtwiz_reset_tx_datapath_in;
 
-  // Hold helper blocks in reset until the GT says PMA reset done
-  wire gtwiz_userclk_tx_reset = ~(&txpmaresetdone_out);
-  wire gtwiz_userclk_rx_reset = ~(&rxpmaresetdone_out);
+    wire gtwiz_userclk_rx_reset_int =
+         gtwiz_reset_all_in |
+         gtwiz_reset_rx_pll_and_datapath_in |
+         gtwiz_reset_rx_datapath_in;
 
-  // ------------------ UPDATED: use murosync_gt_userclk_* ------------------
-  murosync_gt_userclk_tx #(
-    .P_FREQ_RATIO_SOURCE_TO_USRCLK  (P_TX_FREQ_RATIO_SOURCE_TO_USRCLK),
-    .P_FREQ_RATIO_USRCLK_TO_USRCLK2 (P_TX_FREQ_RATIO_USRCLK_TO_USRCLK2)
-  ) u_userclk_tx (
-    .gtwiz_userclk_tx_srcclk_in   (txoutclk_int[TX_MASTER_CH]),
-    .gtwiz_userclk_tx_reset_in    (gtwiz_userclk_tx_reset),
-    .gtwiz_userclk_tx_usrclk_out  (gtwiz_userclk_tx_usrclk),
-    .gtwiz_userclk_tx_usrclk2_out (gtwiz_userclk_tx_usrclk2),
-    .gtwiz_userclk_tx_active_out  (gtwiz_userclk_tx_active_out)
-  );
+    murosync_gt_userclk_tx #(
+        .P_FREQ_RATIO_SOURCE_TO_USRCLK  (P_TX_FREQ_RATIO_SOURCE_TO_USRCLK),
+        .P_FREQ_RATIO_USRCLK_TO_USRCLK2 (P_TX_FREQ_RATIO_USRCLK_TO_USRCLK2)
+    ) u_userclk_tx (
+        .gtwiz_userclk_tx_srcclk_in   (txoutclk_int[TX_MASTER_CH]),
+        .gtwiz_userclk_tx_reset_in    (gtwiz_userclk_tx_reset_int),
+        .gtwiz_userclk_tx_usrclk_out  (gtwiz_userclk_tx_usrclk),
+        .gtwiz_userclk_tx_usrclk2_out (gtwiz_userclk_tx_usrclk2),
+        .gtwiz_userclk_tx_active_out  (gtwiz_userclk_tx_active_out)
+    );
 
-  murosync_gt_userclk_rx #(
-    .P_FREQ_RATIO_SOURCE_TO_USRCLK  (P_RX_FREQ_RATIO_SOURCE_TO_USRCLK),
-    .P_FREQ_RATIO_USRCLK_TO_USRCLK2 (P_RX_FREQ_RATIO_USRCLK_TO_USRCLK2)
-  ) u_userclk_rx (
-    .gtwiz_userclk_rx_srcclk_in   (rxoutclk_int[RX_MASTER_CH]),
-    .gtwiz_userclk_rx_reset_in    (gtwiz_userclk_rx_reset),
-    .gtwiz_userclk_rx_usrclk_out  (gtwiz_userclk_rx_usrclk),
-    .gtwiz_userclk_rx_usrclk2_out (gtwiz_userclk_rx_usrclk2),
-    .gtwiz_userclk_rx_active_out  (gtwiz_userclk_rx_active_out)
-  );
-  // -----------------------------------------------------------------------
+    murosync_gt_userclk_rx #(
+        .P_FREQ_RATIO_SOURCE_TO_USRCLK  (P_RX_FREQ_RATIO_SOURCE_TO_USRCLK),
+        .P_FREQ_RATIO_USRCLK_TO_USRCLK2 (P_RX_FREQ_RATIO_USRCLK_TO_USRCLK2)
+    ) u_userclk_rx (
+        .gtwiz_userclk_rx_srcclk_in   (rxoutclk_int[RX_MASTER_CH]),
+        .gtwiz_userclk_rx_reset_in    (gtwiz_userclk_rx_reset_int),
+        .gtwiz_userclk_rx_usrclk_out  (gtwiz_userclk_rx_usrclk),
+        .gtwiz_userclk_rx_usrclk2_out (gtwiz_userclk_rx_usrclk2),
+        .gtwiz_userclk_rx_active_out  (gtwiz_userclk_rx_active_out)
+    );
 
-  // replicate to all channels
-  wire [NCH-1:0] txusrclk_int  = {NCH{gtwiz_userclk_tx_usrclk}};
-  wire [NCH-1:0] txusrclk2_int = {NCH{gtwiz_userclk_tx_usrclk2}};
+    // Replicate user clocks to all channels
+    wire [NCH-1:0] txusrclk_int  = {NCH{gtwiz_userclk_tx_usrclk}};
+    wire [NCH-1:0] txusrclk2_int = {NCH{gtwiz_userclk_tx_usrclk2}};
+    wire [NCH-1:0] rxusrclk_int  = {NCH{gtwiz_userclk_rx_usrclk}};
+    wire [NCH-1:0] rxusrclk2_int = {NCH{gtwiz_userclk_rx_usrclk2}};
 
-  wire [NCH-1:0] rxusrclk_int  = {NCH{gtwiz_userclk_rx_usrclk}};
-  wire [NCH-1:0] rxusrclk2_int = {NCH{gtwiz_userclk_rx_usrclk2}};
+    // --------------------------------------------------------------------------
+    // GT Wizard ports wrapper (stable interface)
+    // --------------------------------------------------------------------------
+    murosync_gtwizard_ports #(
+        .NCH(NCH)
+    ) u_ports 
+    (
+        .gthrxn_in                          (gthrxn_in),
+        .gthrxp_in                          (gthrxp_in),
+        .gthtxn_out                         (gthtxn_out),
+        .gthtxp_out                         (gthtxp_out),
 
-  // ------------------------------------------------------------
-  // GT core
-  // ------------------------------------------------------------
-  gtwizard_ultrascale_0 u_gt (
-    .gthrxn_in                          (gthrxn_in),
-    .gthrxp_in                          (gthrxp_in),
-    .gthtxn_out                         (gthtxn_out),
-    .gthtxp_out                         (gthtxp_out),
+        .gtwiz_reset_clk_freerun_in         (gtwiz_reset_clk_freerun_in),
+        .gtwiz_reset_all_in                 (gtwiz_reset_all_in),
+        .gtwiz_reset_tx_pll_and_datapath_in (gtwiz_reset_tx_pll_and_datapath_in),
+        .gtwiz_reset_tx_datapath_in         (gtwiz_reset_tx_datapath_in),
+        .gtwiz_reset_rx_pll_and_datapath_in (gtwiz_reset_rx_pll_and_datapath_in),
+        .gtwiz_reset_rx_datapath_in         (gtwiz_reset_rx_datapath_in),
 
-    .gtwiz_userclk_tx_active_in         (gtwiz_userclk_tx_active_out),
-    .gtwiz_userclk_rx_active_in         (gtwiz_userclk_rx_active_out),
+        .gtwiz_userclk_tx_active_in         (gtwiz_userclk_tx_active_out),
+        .gtwiz_userclk_rx_active_in         (gtwiz_userclk_rx_active_out),
 
-    .gtwiz_reset_clk_freerun_in         (gtwiz_reset_clk_freerun_in),
-    .gtwiz_reset_all_in                 (gtwiz_reset_all_in),
-    .gtwiz_reset_tx_pll_and_datapath_in (gtwiz_reset_tx_pll_and_datapath_in),
-    .gtwiz_reset_tx_datapath_in         (gtwiz_reset_tx_datapath_in),
-    .gtwiz_reset_rx_pll_and_datapath_in (gtwiz_reset_rx_pll_and_datapath_in),
-    .gtwiz_reset_rx_datapath_in         (gtwiz_reset_rx_datapath_in),
+        .gtwiz_reset_rx_cdr_stable_out      (gtwiz_reset_rx_cdr_stable_out),
+        .gtwiz_reset_tx_done_out            (gtwiz_reset_tx_done_out),
+        .gtwiz_reset_rx_done_out            (gtwiz_reset_rx_done_out),
 
-    .gtwiz_reset_rx_cdr_stable_out      (gtwiz_reset_rx_cdr_stable_out),
-    .gtwiz_reset_tx_done_out            (gtwiz_reset_tx_done_out),
-    .gtwiz_reset_rx_done_out            (gtwiz_reset_rx_done_out),
+        .gtwiz_userdata_tx_in               (gtwiz_userdata_tx_in),
+        .gtwiz_userdata_rx_out              (gtwiz_userdata_rx_out),
 
-    .gtwiz_userdata_tx_in               (gtwiz_userdata_tx_in),
-    .gtwiz_userdata_rx_out              (gtwiz_userdata_rx_out),
+        .gtrefclk00_in                      (gtrefclk00_in),
+        .qpll0outclk_out                    (qpll0outclk_out),
+        .qpll0outrefclk_out                 (qpll0outrefclk_out),
 
-    .gtrefclk00_in                      (gtrefclk00_in),
-    .qpll0outclk_out                    (qpll0outclk_out),
-    .qpll0outrefclk_out                 (qpll0outrefclk_out),
+        .rx8b10ben_in                       (rx8b10ben_in),
+        .tx8b10ben_in                       (tx8b10ben_in),
 
-    .rx8b10ben_in                       (rx8b10ben_in),
-    .tx8b10ben_in                       (tx8b10ben_in),
+        .txctrl0_in                         (txctrl0_in),
+        .txctrl1_in                         (txctrl1_in),
+        .txctrl2_in                         (txctrl2_in),
 
-    .txctrl0_in                         (txctrl0_in),
-    .txctrl1_in                         (txctrl1_in),
-    .txctrl2_in                         (txctrl2_in),
+        .rxusrclk_in                        (rxusrclk_int),
+        .rxusrclk2_in                       (rxusrclk2_int),
+        .txusrclk_in                        (txusrclk_int),
+        .txusrclk2_in                       (txusrclk2_int),
 
-    .rxusrclk_in                        (rxusrclk_int),
-    .rxusrclk2_in                       (rxusrclk2_int),
-    .txusrclk_in                        (txusrclk_int),
-    .txusrclk2_in                       (txusrclk2_int),
+        .gtpowergood_out                    (gtpowergood_out),
+        .rxcdrlock_out                      (rxcdrlock_out),
+        .rxctrl0_out                        (rxctrl0_out),
+        .rxctrl1_out                        (rxctrl1_out),
+        .rxctrl2_out                        (rxctrl2_out),
+        .rxctrl3_out                        (rxctrl3_out),
 
-    .gtpowergood_out                    (gtpowergood_out),
-    .rxctrl0_out                        (rxctrl0_out),
-    .rxctrl1_out                        (rxctrl1_out),
-    .rxctrl2_out                        (rxctrl2_out),
-    .rxctrl3_out                        (rxctrl3_out),
+        .rxoutclk_out                       (rxoutclk_int),
+        .txoutclk_out                       (txoutclk_int),
 
-    .rxoutclk_out                       (rxoutclk_int),
-    .txoutclk_out                       (txoutclk_int),
+        .rxpmaresetdone_out                 (rxpmaresetdone_out),
+        .txpmaresetdone_out                 (txpmaresetdone_out),
 
-    .rxpmaresetdone_out                 (rxpmaresetdone_out),
-    .txpmaresetdone_out                 (txpmaresetdone_out)
-  );
+        .loopback_in                        (loopback_in),
+
+        .cplllock_out                       (cplllock_out),
+        .qpll0lock_out                      (qpll0lock_out),
+        .qpll1lock_out                      (qpll1lock_out),
+
+        .pll_lock_vec_out                   (pll_lock_out)
+    );
 
 endmodule
+
+`default_nettype wire
