@@ -34,6 +34,11 @@
 `default_nettype none
 
 module murosync_serdes_array #(
+    parameter string MODE = "MASTER", // "MASTER" / "SLAVE"
+
+    parameter bit IS_SLAVE  = (MODE == "SLAVE"),
+    parameter bit IS_MASTER = (MODE == "MASTER"),
+
     parameter integer C_S00_AXI_DATA_WIDTH = 32,
 
     // CTRL, LOOPBACK, STATUS, DBG_LO, DBG_HI, TEST_CONST, TEST_SCRATCH
@@ -48,25 +53,50 @@ module murosync_serdes_array #(
     input  wire mgtrefclk0_x0y1_n,
 
     // Serial data ports for transceiver channel 0..3
-    input  wire ch0_gthrxn_in,
-    input  wire ch0_gthrxp_in,
-    output wire ch0_gthtxn_out,
-    output wire ch0_gthtxp_out,
 
-    input  wire ch1_gthrxn_in,
-    input  wire ch1_gthrxp_in,
-    output wire ch1_gthtxn_out,
-    output wire ch1_gthtxp_out,
+    input  wire muro_gth_slave_rxn_in,
+    input  wire muro_gth_slave_rxp_in,
+    output wire muro_gth_slave_txn_out,
+    output wire muro_gth_slave_txp_out,
 
-    input  wire ch2_gthrxn_in,
-    input  wire ch2_gthrxp_in,
-    output wire ch2_gthtxn_out,
-    output wire ch2_gthtxp_out,
+    input  wire muro_gth_aux_0_rxn_in,
+    input  wire muro_gth_aux_0_rxp_in,
+    output wire muro_gth_aux_0_txn_out,
+    output wire muro_gth_aux_0_txp_out,
 
-    input  wire ch3_gthrxn_in,
-    input  wire ch3_gthrxp_in,
-    output wire ch3_gthtxn_out,
-    output wire ch3_gthtxp_out,
+    input  wire muro_gth_aux_1_rxn_in,
+    input  wire muro_gth_aux_1_rxp_in,
+    output wire muro_gth_aux_1_txn_out,
+    output wire muro_gth_aux_1_txp_out,
+
+    input  wire muro_gth_aux_2_rxn_in,
+    input  wire muro_gth_aux_2_rxp_in,
+    output wire muro_gth_aux_2_txn_out,
+    output wire muro_gth_aux_2_txp_out,
+
+    input  wire muro_gth_master_0_rxn_in,
+    input  wire muro_gth_master_0_rxp_in,
+    output wire muro_gth_master_0_txn_out,
+    output wire muro_gth_master_0_txp_out,
+
+    input  wire muro_gth_master_1_rxn_in,
+    input  wire muro_gth_master_1_rxp_in,
+    output wire muro_gth_master_1_txn_out,
+    output wire muro_gth_master_1_txp_out,
+
+    input  wire muro_gth_master_2_rxn_in,
+    input  wire muro_gth_master_2_rxp_in,
+    output wire muro_gth_master_2_txn_out,
+    output wire muro_gth_master_2_txp_out,
+
+    input  wire muro_gth_master_3_rxn_in,
+    input  wire muro_gth_master_3_rxp_in,
+    output wire muro_gth_master_3_txn_out,
+    output wire muro_gth_master_3_txp_out,
+
+    // RECOVERED CLOCK 
+    output wire        slave_recclk_out,        // recovered clock from SLAVE[0] (RXUSRCLK2)
+    output wire        slave_recclk_alive_out,  // alive latch (NOT lock indicator)
 
     // Free-running clock + global reset
     input  wire hb_gtwiz_reset_clk_freerun_in,
@@ -83,7 +113,7 @@ module murosync_serdes_array #(
     // Debug outputs for ILA
     output wire [63:0] dbg,
     output wire        refclk_out,    // fabric-legal refclk/2 AFTER BUFG_GT
-
+ 
     // ============================================================
     // AXI4-Lite slave interface (INTEGRATED)
     // ============================================================
@@ -111,17 +141,50 @@ module murosync_serdes_array #(
 );
 
     // ============================================================
-    // PER-CHANNEL SIGNAL ASSIGNMENTS
+    // MODE select (compile-time)
+    initial 
+    begin
+        if (!(IS_SLAVE || IS_MASTER)) 
+        begin
+            $fatal(1, "murosync_serdes_array: invalid MODE='%s' (use 'MASTER' or 'SLAVE')", MODE);
+        end
+    end
+  
     // ============================================================
-    wire [3:0] gthrxn_int = {ch3_gthrxn_in, ch2_gthrxn_in, ch1_gthrxn_in, ch0_gthrxn_in};
-    wire [3:0] gthrxp_int = {ch3_gthrxp_in, ch2_gthrxp_in, ch1_gthrxp_in, ch0_gthrxp_in};
+    // RECOVERED CLOCK
+    // ============================================================  
+    wire gtwiz_userclk_rx_recclk_int;
+    wire gtwiz_userclk_rx_recclk_alive_int;
+    
+    assign slave_recclk_out       = IS_SLAVE ? gtwiz_userclk_rx_recclk_int       : 1'b0;
+    assign slave_recclk_alive_out = IS_SLAVE ? gtwiz_userclk_rx_recclk_alive_int : 1'b0;
+    
+    // ============================================================
+    // RX PORTS WITH MUX
+    // ============================================================
+
+    wire [3:0] gthrxn_int_slave = {muro_gth_aux_2_rxn_in,  muro_gth_aux_1_rxn_in,  muro_gth_aux_0_rxn_in,  muro_gth_slave_rxn_in};
+    wire [3:0] gthrxp_int_slave = {muro_gth_aux_2_rxp_in,  muro_gth_aux_1_rxp_in,  muro_gth_aux_0_rxp_in,  muro_gth_slave_rxp_in};
+
+    wire [3:0] gthrxn_int_master = {muro_gth_master_3_rxn_in, muro_gth_master_2_rxn_in, muro_gth_master_1_rxn_in, muro_gth_master_0_rxn_in};
+    wire [3:0] gthrxp_int_master = {muro_gth_master_3_rxp_in, muro_gth_master_2_rxp_in, muro_gth_master_1_rxp_in, muro_gth_master_0_rxp_in};
+
+    wire [3:0] gthrxn_int = IS_SLAVE ? gthrxn_int_slave : gthrxn_int_master;
+    wire [3:0] gthrxp_int = IS_SLAVE ? gthrxp_int_slave : gthrxp_int_master;
+
+    // ============================================================
+    // TX PORTS WITH DEMUX
+    // ============================================================
 
     wire [3:0] gthtxn_int;
     wire [3:0] gthtxp_int;
 
-    assign {ch3_gthtxn_out, ch2_gthtxn_out, ch1_gthtxn_out, ch0_gthtxn_out} = gthtxn_int;
-    assign {ch3_gthtxp_out, ch2_gthtxp_out, ch1_gthtxp_out, ch0_gthtxp_out} = gthtxp_int;
-
+    assign {muro_gth_aux_2_txn_out, muro_gth_aux_1_txn_out, muro_gth_aux_0_txn_out, muro_gth_slave_txn_out} = IS_SLAVE ? gthtxn_int : 4'b0000; 
+    assign {muro_gth_aux_2_txp_out, muro_gth_aux_1_txp_out, muro_gth_aux_0_txp_out, muro_gth_slave_txp_out} = IS_SLAVE ? gthtxp_int : 4'b0000;
+    
+    assign {muro_gth_master_3_txn_out, muro_gth_master_2_txn_out, muro_gth_master_1_txn_out, muro_gth_master_0_txn_out} = IS_MASTER ? gthtxn_int : 4'b0000;
+    assign {muro_gth_master_3_txp_out, muro_gth_master_2_txp_out, muro_gth_master_1_txp_out, muro_gth_master_0_txp_out} = IS_MASTER ? gthtxp_int : 4'b0000;
+    
     // ============================================================
     // BUFFERS
     // ============================================================
@@ -365,7 +428,10 @@ module murosync_serdes_array #(
         .qpll0lock_out (),
         .qpll1lock_out (),
 
-        .pll_lock_out (pll_lock_int)
+        .pll_lock_out (pll_lock_int),
+        
+        .gtwiz_userclk_rx_recclk_out(gtwiz_userclk_rx_recclk_int),
+        .gtwiz_userclk_rx_recclk_active_out(gtwiz_userclk_rx_recclk_alive_int)
     );
 
 endmodule

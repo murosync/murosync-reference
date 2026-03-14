@@ -3,10 +3,7 @@ proc init_gui { IPINST } {
   ipgui::add_param $IPINST -name "Component_Name"
   #Adding Page
   set Page_0 [ipgui::add_page $IPINST -name "Page 0"]
-  ipgui::add_param $IPINST -name "ADDR_WIDTH_NEEDED" -parent ${Page_0}
-  ipgui::add_param $IPINST -name "C_S00_AXI_DATA_WIDTH" -parent ${Page_0}
-  ipgui::add_param $IPINST -name "C_S00_AXI_NUM_REGS" -parent ${Page_0}
-  ipgui::add_param $IPINST -name "OPT_MEM_ADDR_BITS" -parent ${Page_0}
+  ipgui::add_param $IPINST -name "MODE" -parent ${Page_0} -widget comboBox
 
 
 }
@@ -38,6 +35,33 @@ proc validate_PARAM_VALUE.C_S00_AXI_NUM_REGS { PARAM_VALUE.C_S00_AXI_NUM_REGS } 
 	return true
 }
 
+proc update_PARAM_VALUE.IS_MASTER { PARAM_VALUE.IS_MASTER } {
+	# Procedure called to update IS_MASTER when any of the dependent parameters in the arguments change
+}
+
+proc validate_PARAM_VALUE.IS_MASTER { PARAM_VALUE.IS_MASTER } {
+	# Procedure called to validate IS_MASTER
+	return true
+}
+
+proc update_PARAM_VALUE.IS_SLAVE { PARAM_VALUE.IS_SLAVE } {
+	# Procedure called to update IS_SLAVE when any of the dependent parameters in the arguments change
+}
+
+proc validate_PARAM_VALUE.IS_SLAVE { PARAM_VALUE.IS_SLAVE } {
+	# Procedure called to validate IS_SLAVE
+	return true
+}
+
+proc update_PARAM_VALUE.MODE { PARAM_VALUE.MODE } {
+	# Procedure called to update MODE when any of the dependent parameters in the arguments change
+}
+
+proc validate_PARAM_VALUE.MODE { PARAM_VALUE.MODE } {
+	# Procedure called to validate MODE
+	return true
+}
+
 proc update_PARAM_VALUE.OPT_MEM_ADDR_BITS { PARAM_VALUE.OPT_MEM_ADDR_BITS } {
 	# Procedure called to update OPT_MEM_ADDR_BITS when any of the dependent parameters in the arguments change
 }
@@ -47,6 +71,21 @@ proc validate_PARAM_VALUE.OPT_MEM_ADDR_BITS { PARAM_VALUE.OPT_MEM_ADDR_BITS } {
 	return true
 }
 
+
+proc update_MODELPARAM_VALUE.MODE { MODELPARAM_VALUE.MODE PARAM_VALUE.MODE } {
+	# Procedure called to set VHDL generic/Verilog parameter value(s) based on TCL parameter value
+	set_property value [get_property value ${PARAM_VALUE.MODE}] ${MODELPARAM_VALUE.MODE}
+}
+
+proc update_MODELPARAM_VALUE.IS_SLAVE { MODELPARAM_VALUE.IS_SLAVE PARAM_VALUE.IS_SLAVE } {
+	# Procedure called to set VHDL generic/Verilog parameter value(s) based on TCL parameter value
+	set_property value [get_property value ${PARAM_VALUE.IS_SLAVE}] ${MODELPARAM_VALUE.IS_SLAVE}
+}
+
+proc update_MODELPARAM_VALUE.IS_MASTER { MODELPARAM_VALUE.IS_MASTER PARAM_VALUE.IS_MASTER } {
+	# Procedure called to set VHDL generic/Verilog parameter value(s) based on TCL parameter value
+	set_property value [get_property value ${PARAM_VALUE.IS_MASTER}] ${MODELPARAM_VALUE.IS_MASTER}
+}
 
 proc update_MODELPARAM_VALUE.C_S00_AXI_DATA_WIDTH { MODELPARAM_VALUE.C_S00_AXI_DATA_WIDTH PARAM_VALUE.C_S00_AXI_DATA_WIDTH } {
 	# Procedure called to set VHDL generic/Verilog parameter value(s) based on TCL parameter value

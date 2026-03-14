@@ -101,7 +101,11 @@ module murosync_gt_wrapper #(
     output wire           qpll1lock_out,
 
     // Unified lock per-channel (derived)
-    output wire [NCH-1:0] pll_lock_out
+    output wire [NCH-1:0] pll_lock_out,
+    
+    // Recovered clock
+    output wire gtwiz_userclk_rx_recclk_out,
+    output wire gtwiz_userclk_rx_recclk_active_out
 );
 
     // --------------------------------------------------------------------------
@@ -155,6 +159,18 @@ module murosync_gt_wrapper #(
     wire [NCH-1:0] txusrclk2_int = {NCH{gtwiz_userclk_tx_usrclk2}};
     wire [NCH-1:0] rxusrclk_int  = {NCH{gtwiz_userclk_rx_usrclk}};
     wire [NCH-1:0] rxusrclk2_int = {NCH{gtwiz_userclk_rx_usrclk2}};
+    
+    // --------------------------------------------------------------------------
+    // GT outclks (from wizard) used as sources for userclk generation
+    // --------------------------------------------------------------------------
+    // Export recovered RX fabric clock (RXUSRCLK2) from selected master channel.
+    // In SLAVE instantiation, RX_MASTER_CH = 0 corresponds to SLAVE[0] lane (in serdes_array packing).
+    assign gtwiz_userclk_rx_recclk_out = gtwiz_userclk_rx_usrclk2;
+
+    // NOTE: gtwiz_userclk_rx_active_out is an "RXUSRCLK2 domain alive" latch (c lock toggled after reset).
+    // It does NOT guarantee CDR lock / link stability. For "true valid", combine with:
+    //   rxcdrlock_out[RX_MASTER_CH] and gtwiz_reset_rx_cdr_stable_out.
+    assign gtwiz_userclk_rx_recclk_active_out = gtwiz_userclk_rx_active_out;
 
     // --------------------------------------------------------------------------
     // GT Wizard ports wrapper (stable interface)
