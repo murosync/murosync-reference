@@ -839,6 +839,11 @@
         "xci_name": "bd_murosync_poc_murosync_serdes_array_0_1",
         "xci_path": "ip\\bd_murosync_poc_murosync_serdes_array_0_1\\bd_murosync_poc_murosync_serdes_array_0_1.xci",
         "inst_hier_path": "murosync_serdes_array_0",
+        "parameters": {
+          "MODE": {
+            "value": "MASTER"
+          }
+        },
         "interface_ports": {
           "s00_axi": {
             "vlnv": "xilinx.com:interface:aximm_rtl:1.0",
@@ -902,49 +907,49 @@
       "GTH_IN_CH0_RX_N_1": {
         "ports": [
           "GTH_IN_CH0_RX_N",
-          "murosync_serdes_array_0/ch0_gthrxn_in"
+          "murosync_serdes_array_0/muro_gth_master_0_rxn_in"
         ]
       },
       "GTH_IN_CH0_RX_P_1": {
         "ports": [
           "GTH_IN_CH0_RX_P",
-          "murosync_serdes_array_0/ch0_gthrxp_in"
+          "murosync_serdes_array_0/muro_gth_master_0_rxp_in"
         ]
       },
       "GTH_IN_CH1_RX_N_1": {
         "ports": [
           "GTH_IN_CH1_RX_N",
-          "murosync_serdes_array_0/ch1_gthrxn_in"
+          "murosync_serdes_array_0/muro_gth_master_1_rxn_in"
         ]
       },
       "GTH_IN_CH1_RX_P_1": {
         "ports": [
           "GTH_IN_CH1_RX_P",
-          "murosync_serdes_array_0/ch1_gthrxp_in"
+          "murosync_serdes_array_0/muro_gth_master_1_rxp_in"
         ]
       },
       "GTH_IN_CH2_RX_N_1": {
         "ports": [
           "GTH_IN_CH2_RX_N",
-          "murosync_serdes_array_0/ch2_gthrxn_in"
+          "murosync_serdes_array_0/muro_gth_master_2_rxn_in"
         ]
       },
       "GTH_IN_CH2_RX_P_1": {
         "ports": [
           "GTH_IN_CH2_RX_P",
-          "murosync_serdes_array_0/ch2_gthrxp_in"
+          "murosync_serdes_array_0/muro_gth_master_2_rxp_in"
         ]
       },
       "GTH_IN_CH3_RX_N_1": {
         "ports": [
           "GTH_IN_CH3_RX_N",
-          "murosync_serdes_array_0/ch3_gthrxn_in"
+          "murosync_serdes_array_0/muro_gth_master_3_rxn_in"
         ]
       },
       "GTH_IN_CH3_RX_P_1": {
         "ports": [
           "GTH_IN_CH3_RX_P",
-          "murosync_serdes_array_0/ch3_gthrxp_in"
+          "murosync_serdes_array_0/muro_gth_master_3_rxp_in"
         ]
       },
       "GTH_REF_N_1": {
@@ -991,49 +996,49 @@
       },
       "murosync_serdes_array_0_ch0_gthtxn_out": {
         "ports": [
-          "murosync_serdes_array_0/ch0_gthtxn_out",
+          "murosync_serdes_array_0/muro_gth_master_0_txn_out",
           "GTH_OUT_CH0_TX_N"
         ]
       },
       "murosync_serdes_array_0_ch0_gthtxp_out": {
         "ports": [
-          "murosync_serdes_array_0/ch0_gthtxp_out",
+          "murosync_serdes_array_0/muro_gth_master_0_txp_out",
           "GTH_OUT_CH0_TX_P"
         ]
       },
       "murosync_serdes_array_0_ch1_gthtxn_out": {
         "ports": [
-          "murosync_serdes_array_0/ch1_gthtxn_out",
+          "murosync_serdes_array_0/muro_gth_master_1_txn_out",
           "GTH_OUT_CH1_TX_N"
         ]
       },
       "murosync_serdes_array_0_ch1_gthtxp_out": {
         "ports": [
-          "murosync_serdes_array_0/ch1_gthtxp_out",
+          "murosync_serdes_array_0/muro_gth_master_1_txp_out",
           "GTH_OUT_CH1_TX_P"
         ]
       },
       "murosync_serdes_array_0_ch2_gthtxn_out": {
         "ports": [
-          "murosync_serdes_array_0/ch2_gthtxn_out",
+          "murosync_serdes_array_0/muro_gth_master_2_txn_out",
           "GTH_OUT_CH2_TX_N"
         ]
       },
       "murosync_serdes_array_0_ch2_gthtxp_out": {
         "ports": [
-          "murosync_serdes_array_0/ch2_gthtxp_out",
+          "murosync_serdes_array_0/muro_gth_master_2_txp_out",
           "GTH_OUT_CH2_TX_P"
         ]
       },
       "murosync_serdes_array_0_ch3_gthtxn_out": {
         "ports": [
-          "murosync_serdes_array_0/ch3_gthtxn_out",
+          "murosync_serdes_array_0/muro_gth_master_3_txn_out",
           "GTH_OUT_CH3_TX_N"
         ]
       },
       "murosync_serdes_array_0_ch3_gthtxp_out": {
         "ports": [
-          "murosync_serdes_array_0/ch3_gthtxp_out",
+          "murosync_serdes_array_0/muro_gth_master_3_txp_out",
           "GTH_OUT_CH3_TX_P"
         ]
       },
@@ -1057,7 +1062,7 @@
       },
       "murosync_serdes_array_0_refclk_out": {
         "ports": [
-          "murosync_serdes_array_0/refclk_out",
+          "murosync_serdes_array_0/pll_lock_out",
           "ila_0/probe2"
         ]
       },

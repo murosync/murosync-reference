@@ -1,84 +1,84 @@
 {
    "ActiveEmotionalView":"Default View",
-   "Default View_ScaleFactor":"0.79537",
-   "Default View_TopLeft":"-197,1",
+   "Default View_ScaleFactor":"0.35156",
+   "Default View_TopLeft":"-1180,-529",
    "ExpandedHierarchyInLayout":"",
    "commentid":"",
    "guistr":"# # String gsaved with Nlview 7.0r6  2020-01-29 bk=1.5227 VDI=41 GEI=36 GUI=JA:10.0 non-TLS
 #  -string -flagsOSRD
-preplace port uart_rtl_0 -pg 1 -lvl 6 -x 1920 -y 550 -defaultsOSRD
-preplace port diff_clock_rtl_0 -pg 1 -lvl 0 -x 0 -y 400 -defaultsOSRD
+preplace port uart_rtl_0 -pg 1 -lvl 6 -x 1920 -y 830 -defaultsOSRD
+preplace port diff_clock_rtl_0 -pg 1 -lvl 0 -x 0 -y 680 -defaultsOSRD
 preplace port port-id_reset_rtl_0 -pg 1 -lvl 0 -x 0 -y 80 -defaultsOSRD
-preplace port port-id_locked_tst -pg 1 -lvl 6 -x 1920 -y 340 -defaultsOSRD
-preplace port port-id_GTH_REF_P -pg 1 -lvl 0 -x 0 -y 730 -defaultsOSRD
-preplace port port-id_GTH_REF_N -pg 1 -lvl 0 -x 0 -y 750 -defaultsOSRD
-preplace port port-id_GTH_IN_CH0_RX_N -pg 1 -lvl 0 -x 0 -y 770 -defaultsOSRD
-preplace port port-id_GTH_IN_CH0_RX_P -pg 1 -lvl 0 -x 0 -y 790 -defaultsOSRD
-preplace port port-id_GTH_IN_CH1_RX_N -pg 1 -lvl 0 -x 0 -y 810 -defaultsOSRD
-preplace port port-id_GTH_IN_CH1_RX_P -pg 1 -lvl 0 -x 0 -y 830 -defaultsOSRD
-preplace port port-id_GTH_IN_CH2_RX_N -pg 1 -lvl 0 -x 0 -y 850 -defaultsOSRD
-preplace port port-id_GTH_IN_CH2_RX_P -pg 1 -lvl 0 -x 0 -y 870 -defaultsOSRD
-preplace port port-id_GTH_IN_CH3_RX_N -pg 1 -lvl 0 -x 0 -y 890 -defaultsOSRD
-preplace port port-id_GTH_IN_CH3_RX_P -pg 1 -lvl 0 -x 0 -y 910 -defaultsOSRD
-preplace port port-id_GTH_OUT_CH0_TX_N -pg 1 -lvl 6 -x 1920 -y 740 -defaultsOSRD
-preplace port port-id_GTH_OUT_CH0_TX_P -pg 1 -lvl 6 -x 1920 -y 760 -defaultsOSRD
-preplace port port-id_GTH_OUT_CH1_TX_N -pg 1 -lvl 6 -x 1920 -y 780 -defaultsOSRD
-preplace port port-id_GTH_OUT_CH1_TX_P -pg 1 -lvl 6 -x 1920 -y 800 -defaultsOSRD
-preplace port port-id_GTH_OUT_CH2_TX_N -pg 1 -lvl 6 -x 1920 -y 820 -defaultsOSRD
-preplace port port-id_GTH_OUT_CH2_TX_P -pg 1 -lvl 6 -x 1920 -y 840 -defaultsOSRD
-preplace port port-id_GTH_OUT_CH3_TX_N -pg 1 -lvl 6 -x 1920 -y 860 -defaultsOSRD
-preplace port port-id_GTH_OUT_CH3_TX_P -pg 1 -lvl 6 -x 1920 -y 880 -defaultsOSRD
-preplace portBus axi_rst_tst -pg 1 -lvl 6 -x 1920 -y 640 -defaultsOSRD
+preplace port port-id_locked_tst -pg 1 -lvl 6 -x 1920 -y 390 -defaultsOSRD
+preplace port port-id_GTH_REF_P -pg 1 -lvl 0 -x 0 -y 1000 -defaultsOSRD
+preplace port port-id_GTH_REF_N -pg 1 -lvl 0 -x 0 -y 1020 -defaultsOSRD
+preplace port port-id_GTH_IN_CH0_RX_N -pg 1 -lvl 0 -x 0 -y 1040 -defaultsOSRD
+preplace port port-id_GTH_IN_CH0_RX_P -pg 1 -lvl 0 -x 0 -y 1060 -defaultsOSRD
+preplace port port-id_GTH_IN_CH1_RX_N -pg 1 -lvl 0 -x 0 -y 1080 -defaultsOSRD
+preplace port port-id_GTH_IN_CH1_RX_P -pg 1 -lvl 0 -x 0 -y 1100 -defaultsOSRD
+preplace port port-id_GTH_IN_CH2_RX_N -pg 1 -lvl 0 -x 0 -y 1120 -defaultsOSRD
+preplace port port-id_GTH_IN_CH2_RX_P -pg 1 -lvl 0 -x 0 -y 1140 -defaultsOSRD
+preplace port port-id_GTH_IN_CH3_RX_N -pg 1 -lvl 0 -x 0 -y 1160 -defaultsOSRD
+preplace port port-id_GTH_IN_CH3_RX_P -pg 1 -lvl 0 -x 0 -y 1180 -defaultsOSRD
+preplace port port-id_GTH_OUT_CH0_TX_N -pg 1 -lvl 6 -x 1920 -y 1010 -defaultsOSRD
+preplace port port-id_GTH_OUT_CH0_TX_P -pg 1 -lvl 6 -x 1920 -y 1030 -defaultsOSRD
+preplace port port-id_GTH_OUT_CH1_TX_N -pg 1 -lvl 6 -x 1920 -y 1050 -defaultsOSRD
+preplace port port-id_GTH_OUT_CH1_TX_P -pg 1 -lvl 6 -x 1920 -y 1070 -defaultsOSRD
+preplace port port-id_GTH_OUT_CH2_TX_N -pg 1 -lvl 6 -x 1920 -y 1090 -defaultsOSRD
+preplace port port-id_GTH_OUT_CH2_TX_P -pg 1 -lvl 6 -x 1920 -y 1110 -defaultsOSRD
+preplace port port-id_GTH_OUT_CH3_TX_N -pg 1 -lvl 6 -x 1920 -y 1130 -defaultsOSRD
+preplace port port-id_GTH_OUT_CH3_TX_P -pg 1 -lvl 6 -x 1920 -y 1150 -defaultsOSRD
+preplace portBus axi_rst_tst -pg 1 -lvl 6 -x 1920 -y 760 -defaultsOSRD
 preplace inst microblaze_0 -pg 1 -lvl 2 -x 660 -y 290 -defaultsOSRD
-preplace inst axi_uartlite_0 -pg 1 -lvl 4 -x 1460 -y 560 -defaultsOSRD
-preplace inst clk_wiz_0 -pg 1 -lvl 4 -x 1460 -y 410 -defaultsOSRD
+preplace inst axi_uartlite_0 -pg 1 -lvl 4 -x 1470 -y 840 -defaultsOSRD
+preplace inst clk_wiz_0 -pg 1 -lvl 4 -x 1470 -y 690 -defaultsOSRD
 preplace inst microblaze_0_local_memory -pg 1 -lvl 3 -x 1080 -y 300 -defaultsOSRD
 preplace inst mdm_1 -pg 1 -lvl 1 -x 210 -y 290 -defaultsOSRD
 preplace inst rst_clk_wiz_0_100M -pg 1 -lvl 1 -x 210 -y 100 -defaultsOSRD
-preplace inst microblaze_0_axi_periph -pg 1 -lvl 3 -x 1080 -y 550 -defaultsOSRD
-preplace inst ila_0 -pg 1 -lvl 5 -x 1800 -y 980 -defaultsOSRD
-preplace inst xlconstant_0 -pg 1 -lvl 3 -x 1080 -y 970 -defaultsOSRD
-preplace inst murosync_serdes_array_0 -pg 1 -lvl 4 -x 1460 -y 860 -defaultsOSRD
-preplace netloc GTH_IN_CH0_RX_N_1 1 0 4 NJ 770 NJ 770 NJ 770 NJ
-preplace netloc GTH_IN_CH0_RX_P_1 1 0 4 NJ 790 NJ 790 NJ 790 NJ
-preplace netloc GTH_IN_CH1_RX_N_1 1 0 4 NJ 810 NJ 810 NJ 810 NJ
-preplace netloc GTH_IN_CH1_RX_P_1 1 0 4 NJ 830 NJ 830 NJ 830 NJ
-preplace netloc GTH_IN_CH2_RX_N_1 1 0 4 NJ 850 NJ 850 NJ 850 NJ
-preplace netloc GTH_IN_CH2_RX_P_1 1 0 4 NJ 870 NJ 870 NJ 870 NJ
-preplace netloc GTH_IN_CH3_RX_N_1 1 0 4 NJ 890 NJ 890 NJ 890 NJ
-preplace netloc GTH_IN_CH3_RX_P_1 1 0 4 NJ 910 NJ 910 NJ 910 NJ
-preplace netloc GTH_REF_N_1 1 0 4 NJ 750 NJ 750 NJ 750 NJ
-preplace netloc GTH_REF_P_1 1 0 4 NJ 730 NJ 730 NJ 730 NJ
-preplace netloc clk_wiz_0_locked 1 0 6 30 380 NJ 380 NJ 380 1240J 340 1680 340 NJ
-preplace netloc mdm_1_debug_sys_rst 1 0 4 40 360 380 410 NJ 410 1260J
-preplace netloc microblaze_0_Clk 1 0 5 20 370 390 420 920 700 1250 650 1690
-preplace netloc murosync_serdes_array_0_ch0_gthtxn_out 1 4 2 NJ 740 NJ
-preplace netloc murosync_serdes_array_0_ch0_gthtxp_out 1 4 2 NJ 760 NJ
-preplace netloc murosync_serdes_array_0_ch1_gthtxn_out 1 4 2 NJ 780 NJ
-preplace netloc murosync_serdes_array_0_ch1_gthtxp_out 1 4 2 NJ 800 NJ
-preplace netloc murosync_serdes_array_0_ch2_gthtxn_out 1 4 2 NJ 820 NJ
-preplace netloc murosync_serdes_array_0_ch2_gthtxp_out 1 4 2 NJ 840 NJ
-preplace netloc murosync_serdes_array_0_ch3_gthtxn_out 1 4 2 NJ 860 NJ
-preplace netloc murosync_serdes_array_0_ch3_gthtxp_out 1 4 2 NJ 880 NJ
-preplace netloc murosync_serdes_array_0_dbg 1 4 1 1660 960n
-preplace netloc murosync_serdes_array_0_link_down_latched_out 1 4 1 1670 920n
-preplace netloc murosync_serdes_array_0_link_status_out 1 4 1 1680 900n
-preplace netloc murosync_serdes_array_0_refclk_out 1 4 1 1650 980n
+preplace inst microblaze_0_axi_periph -pg 1 -lvl 3 -x 1080 -y 540 -defaultsOSRD
+preplace inst ila_0 -pg 1 -lvl 5 -x 1810 -y 1250 -defaultsOSRD
+preplace inst xlconstant_0 -pg 1 -lvl 3 -x 1080 -y 1280 -defaultsOSRD
+preplace inst murosync_serdes_array_0 -pg 1 -lvl 4 -x 1470 -y 1130 -defaultsOSRD
+preplace netloc GTH_IN_CH0_RX_N_1 1 0 4 NJ 1040 NJ 1040 NJ 1040 NJ
+preplace netloc GTH_IN_CH0_RX_P_1 1 0 4 NJ 1060 NJ 1060 NJ 1060 NJ
+preplace netloc GTH_IN_CH1_RX_N_1 1 0 4 NJ 1080 NJ 1080 NJ 1080 NJ
+preplace netloc GTH_IN_CH1_RX_P_1 1 0 4 NJ 1100 NJ 1100 NJ 1100 NJ
+preplace netloc GTH_IN_CH2_RX_N_1 1 0 4 NJ 1120 NJ 1120 NJ 1120 NJ
+preplace netloc GTH_IN_CH2_RX_P_1 1 0 4 NJ 1140 NJ 1140 NJ 1140 NJ
+preplace netloc GTH_IN_CH3_RX_N_1 1 0 4 NJ 1160 NJ 1160 NJ 1160 NJ
+preplace netloc GTH_IN_CH3_RX_P_1 1 0 4 NJ 1180 NJ 1180 NJ 1180 NJ
+preplace netloc GTH_REF_N_1 1 0 4 NJ 1020 NJ 1020 NJ 1020 NJ
+preplace netloc GTH_REF_P_1 1 0 4 NJ 1000 NJ 1000 NJ 1000 NJ
+preplace netloc clk_wiz_0_locked 1 0 6 40 210 390J 390 NJ 390 NJ 390 1710 390 NJ
+preplace netloc mdm_1_debug_sys_rst 1 0 4 20 220 380 400 NJ 400 1260J
+preplace netloc microblaze_0_Clk 1 0 5 30 200 420 380 920 1190 1260 920 1720
+preplace netloc murosync_serdes_array_0_ch0_gthtxn_out 1 4 2 NJ 1010 NJ
+preplace netloc murosync_serdes_array_0_ch0_gthtxp_out 1 4 2 NJ 1030 NJ
+preplace netloc murosync_serdes_array_0_ch1_gthtxn_out 1 4 2 NJ 1050 NJ
+preplace netloc murosync_serdes_array_0_ch1_gthtxp_out 1 4 2 NJ 1070 NJ
+preplace netloc murosync_serdes_array_0_ch2_gthtxn_out 1 4 2 NJ 1090 NJ
+preplace netloc murosync_serdes_array_0_ch2_gthtxp_out 1 4 2 NJ 1110 NJ
+preplace netloc murosync_serdes_array_0_ch3_gthtxn_out 1 4 2 NJ 1130 NJ
+preplace netloc murosync_serdes_array_0_ch3_gthtxp_out 1 4 2 NJ 1150 NJ
+preplace netloc murosync_serdes_array_0_dbg 1 4 1 1680 1230n
+preplace netloc murosync_serdes_array_0_link_down_latched_out 1 4 1 1700 1190n
+preplace netloc murosync_serdes_array_0_link_status_out 1 4 1 1710 1170n
+preplace netloc murosync_serdes_array_0_refclk_out 1 4 1 1690 1210n
 preplace netloc reset_rtl_0_1 1 0 1 NJ 80
 preplace netloc rst_clk_wiz_0_100M_bus_struct_reset 1 1 2 NJ 80 930
-preplace netloc rst_clk_wiz_0_100M_mb_reset 1 1 3 400 390 NJ 390 1240J
-preplace netloc rst_clk_wiz_0_100M_peripheral_aresetn 1 1 5 N 140 910 690 1260 640 NJ 640 NJ
-preplace netloc xlconstant_0_dout 1 3 1 NJ 970
-preplace netloc axi_uartlite_0_UART 1 4 2 NJ 550 NJ
-preplace netloc diff_clock_rtl_0_1 1 0 4 NJ 400 NJ 400 NJ 400 NJ
-preplace netloc microblaze_0_M_AXI_DP 1 2 1 900 310n
-preplace netloc microblaze_0_axi_periph_M00_AXI 1 3 1 N 540
-preplace netloc microblaze_0_axi_periph_M01_AXI 1 3 1 1230 560n
+preplace netloc rst_clk_wiz_0_100M_mb_reset 1 1 3 410 1220 NJ 1220 NJ
+preplace netloc rst_clk_wiz_0_100M_peripheral_aresetn 1 1 5 400 410 900 1340 1240 760 NJ 760 NJ
+preplace netloc xlconstant_0_dout 1 3 1 1230J 1240n
+preplace netloc axi_uartlite_0_UART 1 4 2 NJ 830 NJ
+preplace netloc diff_clock_rtl_0_1 1 0 4 NJ 680 NJ 680 NJ 680 NJ
+preplace netloc microblaze_0_M_AXI_DP 1 2 1 910 310n
+preplace netloc microblaze_0_axi_periph_M00_AXI 1 3 1 1250 530n
+preplace netloc microblaze_0_axi_periph_M01_AXI 1 3 1 1230 550n
 preplace netloc microblaze_0_debug 1 1 1 N 280
 preplace netloc microblaze_0_dlmb_1 1 2 1 N 270
 preplace netloc microblaze_0_ilmb_1 1 2 1 N 290
-levelinfo -pg 1 0 210 660 1080 1460 1800 1920
-pagesize -pg 1 -db -bbox -sgen -190 0 2120 1080
+levelinfo -pg 1 0 210 660 1080 1470 1810 1920
+pagesize -pg 1 -db -bbox -sgen -190 0 2120 1350
 "
 }
 {

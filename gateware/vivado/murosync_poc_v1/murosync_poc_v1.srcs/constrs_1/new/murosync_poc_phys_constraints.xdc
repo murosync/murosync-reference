@@ -71,6 +71,14 @@ set_property PACKAGE_PIN A13     [get_ports uart_tx]
 set_property IOSTANDARD LVCMOS33 [get_ports uart_tx]
 
 # GTH pins
+
+set_property LOC GTHE4_COMMON_X0Y1 [get_cells -hier *GTHE4_COMMON_PRIM_INST]
+
+set_property LOC GTHE4_CHANNEL_X0Y4 [get_cells -hier *gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST]
+set_property LOC GTHE4_CHANNEL_X0Y5 [get_cells -hier *gen_gthe4_channel_inst[1].GTHE4_CHANNEL_PRIM_INST]
+set_property LOC GTHE4_CHANNEL_X0Y6 [get_cells -hier *gen_gthe4_channel_inst[2].GTHE4_CHANNEL_PRIM_INST]
+set_property LOC GTHE4_CHANNEL_X0Y7 [get_cells -hier *gen_gthe4_channel_inst[3].GTHE4_CHANNEL_PRIM_INST]
+
 set_property PACKAGE_PIN Y2  [get_ports sfp0_rx_p]
 set_property PACKAGE_PIN Y1  [get_ports sfp0_rx_n]
 set_property PACKAGE_PIN AA5 [get_ports sfp0_tx_p]

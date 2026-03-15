@@ -58,40 +58,40 @@
 `timescale 1ns / 1ps
 
 module murosync_poc_top(
-    input  wire        sys_clk_p,
-    input  wire        sys_clk_n,
-    input  wire        rst_n,
-    output reg  [1:0]  led,
+                                  input  wire        sys_clk_p,
+                                  input  wire        sys_clk_n,
+                                  input  wire        rst_n,
+                                  output reg  [1:0]  led,
 
-    input  wire        gth_ref_p,
-    input  wire        gth_ref_n,
+    (* IO_BUFFER_TYPE = "NONE" *) input  wire gth_ref_p,
+    (* IO_BUFFER_TYPE = "NONE" *) input  wire gth_ref_n,
 
-    input  wire        sfp0_rx_p,
-    input  wire        sfp0_rx_n,
+    (* IO_BUFFER_TYPE = "NONE" *) input  wire sfp0_rx_p,
+    (* IO_BUFFER_TYPE = "NONE" *) input  wire sfp0_rx_n,
 
-    input  wire        sfp1_rx_p,
-    input  wire        sfp1_rx_n,
+    (* IO_BUFFER_TYPE = "NONE" *) input  wire sfp1_rx_p,
+    (* IO_BUFFER_TYPE = "NONE" *) input  wire sfp1_rx_n,
 
-    input  wire        sfp2_rx_p,
-    input  wire        sfp2_rx_n,
+    (* IO_BUFFER_TYPE = "NONE" *) input  wire sfp2_rx_p,
+    (* IO_BUFFER_TYPE = "NONE" *) input  wire sfp2_rx_n,
 
-    input  wire        sfp3_rx_p,
-    input  wire        sfp3_rx_n,
+    (* IO_BUFFER_TYPE = "NONE" *) input  wire sfp3_rx_p,
+    (* IO_BUFFER_TYPE = "NONE" *) input  wire sfp3_rx_n,
 
-    output wire        sfp0_tx_p,
-    output wire        sfp0_tx_n,
+    (* IO_BUFFER_TYPE = "NONE" *) output wire sfp0_tx_p,
+    (* IO_BUFFER_TYPE = "NONE" *) output wire sfp0_tx_n,
 
-    output wire        sfp1_tx_p,
-    output wire        sfp1_tx_n,
+    (* IO_BUFFER_TYPE = "NONE" *) output wire sfp1_tx_p,
+    (* IO_BUFFER_TYPE = "NONE" *) output wire sfp1_tx_n,
 
-    output wire        sfp2_tx_p,
-    output wire        sfp2_tx_n,
+    (* IO_BUFFER_TYPE = "NONE" *) output wire sfp2_tx_p,
+    (* IO_BUFFER_TYPE = "NONE" *) output wire sfp2_tx_n,
 
-    output wire        sfp3_tx_p,
-    output wire        sfp3_tx_n,
+    (* IO_BUFFER_TYPE = "NONE" *) output wire sfp3_tx_p,
+    (* IO_BUFFER_TYPE = "NONE" *) output wire sfp3_tx_n,
     
-    output wire        uart_tx,
-    input  wire        uart_rx
+                                  output wire uart_tx,
+                                  input  wire uart_rx
 );
 
     wire axi_rst_tst;
