@@ -74,6 +74,7 @@ int main(void)
     for (;;)
     {
         xil_printf("[MUROSYNC] alive #%u\r\n", alive_cnt++);
+        murosync_serdes_link_task();
         usleep(1000000);
     }
 

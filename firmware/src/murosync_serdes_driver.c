@@ -275,15 +275,10 @@ int murosync_serdes_bring_up(unsigned char loopback, int timeout_usec)
  
     xil_printf("\r\nAXI MUROSYNC SERDES BTING-UP\r\n");
 
-    if (murosync_serdes_selftest_const() != XST_SUCCESS) // AXI RD test
-        return XST_FAILURE;
-
-    if (murosync_serdes_selftest_scratch() != XST_SUCCESS) // AXI WR/RD test
-        return XST_FAILURE;
-
-    if (murosync_serdes_reset_sequence() != XST_SUCCESS)
-        return XST_FAILURE;
-
+    if (murosync_serdes_selftest_const()   != XST_SUCCESS) return XST_FAILURE; // AXI RD test
+    if (murosync_serdes_selftest_scratch() != XST_SUCCESS) return XST_FAILURE; // AXI WR/RD test
+    if (murosync_serdes_reset_sequence()   != XST_SUCCESS) return XST_FAILURE;
+        
     xil_printf("\tMUROSYNC SERDES | Set loopback = %d\r\n", loopback);
     if (murosync_serdes_set_loopback(loopback) != XST_SUCCESS) {
         xil_printf("\t\tERROR: set loopback failed\r\n");
@@ -303,11 +298,84 @@ int murosync_serdes_bring_up(unsigned char loopback, int timeout_usec)
         return XST_FAILURE;
     }
 
+    xil_printf("\tMUROSYNC SERDES | Link is up, clear sticky latch again...\r\n");
+    if (murosync_serdes_pulse_link_latch_reset() != XST_SUCCESS)
+    {
+        xil_printf("\t\tERROR: LINK_LATCH_RESET pulse failed\r\n");
+        return XST_FAILURE;
+    }
+
+    usleep(1000); // 1 ms guard time
+
     (void)murosync_serdes_get_status(&reg);
     xil_printf("\tMUROSYNC SERDES | LINK UP! STATUS=0x%08X\r\n", reg);
 
     murosync_serdes_print_status();
     murosync_serdes_print_dbg();
+    
     return XST_SUCCESS;
+}
+/************************************************************************/
+
+/******************************* TASK ***********************************/
+int murosync_serdes_link_monitor(void)
+{
+    static int last_link = -1;
+
+    int link = murosync_serdes_is_link_up();
+
+    if (link == XST_FAILURE)
+        return MUROSYNC_SERDES_EVENT_NONE;
+
+    if (link != last_link)
+    {
+        last_link = link;
+
+        if (link == MUROSYNC_GT_LINK_UP) return MUROSYNC_SERDES_EVENT_LINK_UP;
+        else                             return MUROSYNC_SERDES_EVENT_LINK_DOWN;
+    }
+
+    return MUROSYNC_SERDES_EVENT_NONE;
+}
+
+void murosync_serdes_link_task(void)
+{
+    switch (murosync_serdes_link_monitor())
+    {
+        case MUROSYNC_SERDES_EVENT_LINK_UP:
+        {
+            xil_printf("[MUROSYNC] SERDES LINK UP\r\n");
+            break;
+        }
+
+        case MUROSYNC_SERDES_EVENT_LINK_DOWN:
+        {
+            xil_printf("[MUROSYNC] SERDES LINK DOWN\r\n");
+            murosync_serdes_print_status();
+            murosync_serdes_print_dbg();
+            /*
+                LINK_DOWN
+                    ↓
+                stop timing distribution
+                   ↓
+                recover link
+                   ↓
+                re-lock phase
+
+                if (murosync_serdes_bring_up(0, 5000000) == XST_SUCCESS) 
+                {
+                    xil_printf("[MUROSYNC] SERDES LINK RECOVERED\r\n");
+                }
+                else
+                {
+                    xil_printf("[MUROSYNC][ERROR] SERDES RECOVERY FAILED\r\n");
+                }
+            */
+            break;
+        }
+
+        default:
+            break;
+    }
 }
 /************************************************************************/

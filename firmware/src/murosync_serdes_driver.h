@@ -53,6 +53,11 @@
 #define MUROSYNC_GT_LINK_UP                  (2)
 #define MUROSYNC_GT_LINK_DOWN                (3)
 
+/* SERDES link monitor events */
+#define MUROSYNC_SERDES_EVENT_NONE        0
+#define MUROSYNC_SERDES_EVENT_LINK_UP     1
+#define MUROSYNC_SERDES_EVENT_LINK_DOWN   2
+
 typedef enum {
     MUROSYNC_SERDES_LOOPBACK_NONE  = 0x0,
     MUROSYNC_SERDES_LOOPBACK_NEAR  = 0x1,
@@ -92,6 +97,11 @@ int  murosync_serdes_selftest_scratch(void);
 
 /*************************** BTRING-UP **********************************/
 int murosync_serdes_bring_up(unsigned char loopback, int timeout_usec);
+/************************************************************************/
+
+/******************************* TASK ***********************************/
+int murosync_serdes_link_monitor(void);
+void murosync_serdes_link_task(void);
 /************************************************************************/
 
 #endif /* MUROSYNC_SERDES_ARRAY_DRIVER_H_ */
