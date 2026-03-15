@@ -8,51 +8,6 @@ proc init_gui { IPINST } {
 
 }
 
-proc update_PARAM_VALUE.ADDR_WIDTH_NEEDED { PARAM_VALUE.ADDR_WIDTH_NEEDED } {
-	# Procedure called to update ADDR_WIDTH_NEEDED when any of the dependent parameters in the arguments change
-}
-
-proc validate_PARAM_VALUE.ADDR_WIDTH_NEEDED { PARAM_VALUE.ADDR_WIDTH_NEEDED } {
-	# Procedure called to validate ADDR_WIDTH_NEEDED
-	return true
-}
-
-proc update_PARAM_VALUE.C_S00_AXI_DATA_WIDTH { PARAM_VALUE.C_S00_AXI_DATA_WIDTH } {
-	# Procedure called to update C_S00_AXI_DATA_WIDTH when any of the dependent parameters in the arguments change
-}
-
-proc validate_PARAM_VALUE.C_S00_AXI_DATA_WIDTH { PARAM_VALUE.C_S00_AXI_DATA_WIDTH } {
-	# Procedure called to validate C_S00_AXI_DATA_WIDTH
-	return true
-}
-
-proc update_PARAM_VALUE.C_S00_AXI_NUM_REGS { PARAM_VALUE.C_S00_AXI_NUM_REGS } {
-	# Procedure called to update C_S00_AXI_NUM_REGS when any of the dependent parameters in the arguments change
-}
-
-proc validate_PARAM_VALUE.C_S00_AXI_NUM_REGS { PARAM_VALUE.C_S00_AXI_NUM_REGS } {
-	# Procedure called to validate C_S00_AXI_NUM_REGS
-	return true
-}
-
-proc update_PARAM_VALUE.IS_MASTER { PARAM_VALUE.IS_MASTER } {
-	# Procedure called to update IS_MASTER when any of the dependent parameters in the arguments change
-}
-
-proc validate_PARAM_VALUE.IS_MASTER { PARAM_VALUE.IS_MASTER } {
-	# Procedure called to validate IS_MASTER
-	return true
-}
-
-proc update_PARAM_VALUE.IS_SLAVE { PARAM_VALUE.IS_SLAVE } {
-	# Procedure called to update IS_SLAVE when any of the dependent parameters in the arguments change
-}
-
-proc validate_PARAM_VALUE.IS_SLAVE { PARAM_VALUE.IS_SLAVE } {
-	# Procedure called to validate IS_SLAVE
-	return true
-}
-
 proc update_PARAM_VALUE.MODE { PARAM_VALUE.MODE } {
 	# Procedure called to update MODE when any of the dependent parameters in the arguments change
 }
@@ -62,48 +17,45 @@ proc validate_PARAM_VALUE.MODE { PARAM_VALUE.MODE } {
 	return true
 }
 
-proc update_PARAM_VALUE.OPT_MEM_ADDR_BITS { PARAM_VALUE.OPT_MEM_ADDR_BITS } {
-	# Procedure called to update OPT_MEM_ADDR_BITS when any of the dependent parameters in the arguments change
-}
-
-proc validate_PARAM_VALUE.OPT_MEM_ADDR_BITS { PARAM_VALUE.OPT_MEM_ADDR_BITS } {
-	# Procedure called to validate OPT_MEM_ADDR_BITS
-	return true
-}
-
 
 proc update_MODELPARAM_VALUE.MODE { MODELPARAM_VALUE.MODE PARAM_VALUE.MODE } {
 	# Procedure called to set VHDL generic/Verilog parameter value(s) based on TCL parameter value
 	set_property value [get_property value ${PARAM_VALUE.MODE}] ${MODELPARAM_VALUE.MODE}
 }
 
-proc update_MODELPARAM_VALUE.IS_SLAVE { MODELPARAM_VALUE.IS_SLAVE PARAM_VALUE.IS_SLAVE } {
+proc update_MODELPARAM_VALUE.IS_SLAVE { MODELPARAM_VALUE.IS_SLAVE } {
 	# Procedure called to set VHDL generic/Verilog parameter value(s) based on TCL parameter value
-	set_property value [get_property value ${PARAM_VALUE.IS_SLAVE}] ${MODELPARAM_VALUE.IS_SLAVE}
+	# WARNING: There is no corresponding user parameter named "IS_SLAVE". Setting updated value from the model parameter.
+set_property value false ${MODELPARAM_VALUE.IS_SLAVE}
 }
 
-proc update_MODELPARAM_VALUE.IS_MASTER { MODELPARAM_VALUE.IS_MASTER PARAM_VALUE.IS_MASTER } {
+proc update_MODELPARAM_VALUE.IS_MASTER { MODELPARAM_VALUE.IS_MASTER } {
 	# Procedure called to set VHDL generic/Verilog parameter value(s) based on TCL parameter value
-	set_property value [get_property value ${PARAM_VALUE.IS_MASTER}] ${MODELPARAM_VALUE.IS_MASTER}
+	# WARNING: There is no corresponding user parameter named "IS_MASTER". Setting updated value from the model parameter.
+set_property value true ${MODELPARAM_VALUE.IS_MASTER}
 }
 
-proc update_MODELPARAM_VALUE.C_S00_AXI_DATA_WIDTH { MODELPARAM_VALUE.C_S00_AXI_DATA_WIDTH PARAM_VALUE.C_S00_AXI_DATA_WIDTH } {
+proc update_MODELPARAM_VALUE.C_S00_AXI_DATA_WIDTH { MODELPARAM_VALUE.C_S00_AXI_DATA_WIDTH } {
 	# Procedure called to set VHDL generic/Verilog parameter value(s) based on TCL parameter value
-	set_property value [get_property value ${PARAM_VALUE.C_S00_AXI_DATA_WIDTH}] ${MODELPARAM_VALUE.C_S00_AXI_DATA_WIDTH}
+	# WARNING: There is no corresponding user parameter named "C_S00_AXI_DATA_WIDTH". Setting updated value from the model parameter.
+set_property value 32 ${MODELPARAM_VALUE.C_S00_AXI_DATA_WIDTH}
 }
 
-proc update_MODELPARAM_VALUE.C_S00_AXI_NUM_REGS { MODELPARAM_VALUE.C_S00_AXI_NUM_REGS PARAM_VALUE.C_S00_AXI_NUM_REGS } {
+proc update_MODELPARAM_VALUE.C_S00_AXI_NUM_REGS { MODELPARAM_VALUE.C_S00_AXI_NUM_REGS } {
 	# Procedure called to set VHDL generic/Verilog parameter value(s) based on TCL parameter value
-	set_property value [get_property value ${PARAM_VALUE.C_S00_AXI_NUM_REGS}] ${MODELPARAM_VALUE.C_S00_AXI_NUM_REGS}
+	# WARNING: There is no corresponding user parameter named "C_S00_AXI_NUM_REGS". Setting updated value from the model parameter.
+set_property value 7 ${MODELPARAM_VALUE.C_S00_AXI_NUM_REGS}
 }
 
-proc update_MODELPARAM_VALUE.OPT_MEM_ADDR_BITS { MODELPARAM_VALUE.OPT_MEM_ADDR_BITS PARAM_VALUE.OPT_MEM_ADDR_BITS } {
+proc update_MODELPARAM_VALUE.OPT_MEM_ADDR_BITS { MODELPARAM_VALUE.OPT_MEM_ADDR_BITS } {
 	# Procedure called to set VHDL generic/Verilog parameter value(s) based on TCL parameter value
-	set_property value [get_property value ${PARAM_VALUE.OPT_MEM_ADDR_BITS}] ${MODELPARAM_VALUE.OPT_MEM_ADDR_BITS}
+	# WARNING: There is no corresponding user parameter named "OPT_MEM_ADDR_BITS". Setting updated value from the model parameter.
+set_property value 3 ${MODELPARAM_VALUE.OPT_MEM_ADDR_BITS}
 }
 
-proc update_MODELPARAM_VALUE.ADDR_WIDTH_NEEDED { MODELPARAM_VALUE.ADDR_WIDTH_NEEDED PARAM_VALUE.ADDR_WIDTH_NEEDED } {
+proc update_MODELPARAM_VALUE.ADDR_WIDTH_NEEDED { MODELPARAM_VALUE.ADDR_WIDTH_NEEDED } {
 	# Procedure called to set VHDL generic/Verilog parameter value(s) based on TCL parameter value
-	set_property value [get_property value ${PARAM_VALUE.ADDR_WIDTH_NEEDED}] ${MODELPARAM_VALUE.ADDR_WIDTH_NEEDED}
+	# WARNING: There is no corresponding user parameter named "ADDR_WIDTH_NEEDED". Setting updated value from the model parameter.
+set_property value 6 ${MODELPARAM_VALUE.ADDR_WIDTH_NEEDED}
 }
 

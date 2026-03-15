@@ -378,8 +378,8 @@ module murosync_serdes_array #(
         .gtwiz_reset_clk_freerun_in (hb_gtwiz_reset_clk_freerun_buf_int),
 
         // rollback-safe: keep ONLY external reset applied to GT
-        .gtwiz_reset_all_in (hb_gtwiz_reset_all_int),
-        //.gtwiz_reset_all_in (hb_gtwiz_reset_all_int | gt_reset_all_pulse_axi),
+        //.gtwiz_reset_all_in (hb_gtwiz_reset_all_int),
+        .gtwiz_reset_all_in (hb_gtwiz_reset_all_int | gt_reset_all_pulse_axi),
 
         // Tie off extra reset controls (unused in this top-level right now)
         .gtwiz_reset_tx_pll_and_datapath_in (1'b0),
@@ -420,8 +420,8 @@ module murosync_serdes_array #(
         .gtwiz_userclk_rx_active_out   (gtwiz_userclk_rx_active_int),
 
         // rollback-safe: force normal mode while debugging (3 bits per channel)
-        .loopback_in ({4{3'b000}}),
-        //.loopback_in ({4{loopback_ctrl}})
+        //.loopback_in ({4{3'b000}}),
+        .loopback_in ({4{loopback_ctrl}}),
 
         // raw lock outs (optional, reserved for future debug)
         .cplllock_out  (),
