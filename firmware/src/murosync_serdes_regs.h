@@ -34,6 +34,17 @@
  *
  *    0x014  MUROSYNC_SERDES_TEST_CONST    (RO)  Constant magic ("MURO" = 0x4D55524F)
  *    0x018  MUROSYNC_SERDES_TEST_SCRATCH  (RW)  Scratch register (R/W)
+ * 
+ *    0x01C  MUROSYNC_LNK_TEST_CTRL        (RW / W1P)
+ *           [0]      ENABLE               Enable Link Test Engine (RW)
+ *           [1]      RESET                Reset Test Counters (W1P)
+ *
+ *    0x020  MUROSYNC_LNK_TEST_CNFG        (RW)
+ *           [1:0]    MODE_SEL             Test Mode: 0=Fixed, 1=Counter, 2=PRBS
+ *
+ *    0x024  MUROSYNC_LNK_TEST_PATT        (RW)  Fixed Test Pattern [31:0]
+ *    0x028  MUROSYNC_LNK_RX_ERR_CNT       (RO)  RX Error Counter [31:0]
+ *    0x02C  MUROSYNC_LNK_RX_WRD_CNT       (RO)  RX Word Counter [31:0]
  *
  *  Intended usage:
  *    - Firmware drivers (MicroBlaze / bare-metal) for bring-up and diagnostics
@@ -220,5 +231,76 @@
 #define MUROSYNC_SERDES_TEST_SCRATCH                (0x018)  // RW scratch register
 
 	#define MUROSYNC_SERDES_TEST_SCRATCH_MSK            (0xFFFFFFFFu)
+
+////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////  LNK_TEST_CTRL  ///////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////
+
+#define MUROSYNC_LNK_TEST_CTRL                      (0x01C)  // Link Test Control
+
+	/*
+	Type        :   R/W (bit 0), WO/W1P (bit 1)
+	Description :   [0] ENABLE: 1 = Enable Link Test Engine
+	                [1] RESET:  1 = Pulse to reset counters (W1P)
+	*/
+
+	#define MUROSYNC_LNK_TEST_CTRL_EN_OFS                 0
+	#define MUROSYNC_LNK_TEST_CTRL_EN_MSK                 (0x1u << MUROSYNC_LNK_TEST_CTRL_EN_OFS)
+
+	#define MUROSYNC_LNK_TEST_CTRL_RST_OFS                1
+	#define MUROSYNC_LNK_TEST_CTRL_RST_MSK                (0x1u << MUROSYNC_LNK_TEST_CTRL_RST_OFS)
+
+////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////  LNK_TEST_CNFG  ///////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////
+
+#define MUROSYNC_LNK_TEST_CNFG                      (0x020)  // Test Configuration
+
+	/*
+	Type        :   R/W[cite: 4]
+	Description :   [1:0] MODE_SEL: 0=Fixed, 1=Counter, 2=PRBS
+	*/
+
+	#define MUROSYNC_LNK_TEST_CNFG_MODE_OFS               0
+	#define MUROSYNC_LNK_TEST_CNFG_MODE_MSK               (0x3u << MUROSYNC_LNK_TEST_CNFG_MODE_OFS)
+
+////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////  LNK_TEST_PATT  ///////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////
+
+#define MUROSYNC_LNK_TEST_PATT                      (0x024)  // Fixed Test Pattern
+
+	/*
+	Type        :   R/W
+	Description :   32-bit fixed pattern used in MODE 0.
+	*/
+
+	#define MUROSYNC_LNK_TEST_PATT_MSK                    (0xFFFFFFFFu)
+
+////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////  LNK_RX_ERR_CNT  ///////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////
+
+#define MUROSYNC_LNK_RX_ERR_CNT                     (0x028)  // RX Error Counter
+
+	/*
+	Type        :   R
+	Description :   Total detected errors (CDC-synchronized).
+	*/
+
+	#define MUROSYNC_LNK_RX_ERR_CNT_MSK                   (0xFFFFFFFFu)
+
+////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////  LNK_RX_WRD_CNT  ///////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////
+
+#define MUROSYNC_LNK_RX_WRD_CNT                     (0x02C)  // RX Word Counter
+
+	/*
+	Type        :   R
+	Description :   Total words received during test (CDC-synchronized).
+	*/
+
+	#define MUROSYNC_LNK_RX_WRD_CNT_MSK                   (0xFFFFFFFFu)
 
 #endif // MUROSYNC_SERDES_ARRAY_REGS_H
