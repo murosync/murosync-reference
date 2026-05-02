@@ -42,7 +42,7 @@ module murosync_serdes_array #(
     parameter integer C_S00_AXI_DATA_WIDTH = 32,
 
     // CTRL, LOOPBACK, STATUS, DBG_LO, DBG_HI, TEST_CONST, TEST_SCRATCH
-    parameter integer C_S00_AXI_NUM_REGS   = 7,
+    parameter integer C_S00_AXI_NUM_REGS   = 12,
 
     // Pattern copied from axis_wavecap_streamer.sv
     parameter integer OPT_MEM_ADDR_BITS    = $clog2(C_S00_AXI_NUM_REGS),

@@ -247,7 +247,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>c8949f79</spirit:value>
+            <spirit:value>40c9a3ea</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -266,7 +266,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>f6e52b20</spirit:value>
+            <spirit:value>52014c5e</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -295,7 +295,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>87c57416</spirit:value>
+            <spirit:value>f4292f4f</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -345,7 +345,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_slave_rxn_in" xilinx:dependency="spirit:decode(id(&apos;PARAM_VALUE.MODE&apos;)) = &quot;SLAVE&quot;">true</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_slave_rxn_in" xilinx:dependency="$MODE = &quot;SLAVE&quot;">false</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -368,7 +368,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_slave_rxp_in" xilinx:dependency="spirit:decode(id(&apos;PARAM_VALUE.MODE&apos;)) = &quot;SLAVE&quot;">true</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_slave_rxp_in" xilinx:dependency="$MODE = &quot;SLAVE&quot;">false</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -388,7 +388,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_slave_txn_out" xilinx:dependency="PARAM_VALUE.MODE == &quot;SLAVE&quot;">true</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_slave_txn_out" xilinx:dependency="$MODE == &quot;SLAVE&quot;">false</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -408,7 +408,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_slave_txp_out" xilinx:dependency="PARAM_VALUE.MODE == &quot;SLAVE&quot;">true</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_slave_txp_out" xilinx:dependency="$MODE == &quot;SLAVE&quot;">false</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -431,7 +431,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_aux_0_rxn_in" xilinx:dependency="spirit:decode(id(&apos;PARAM_VALUE.MODE&apos;)) = &quot;SLAVE&quot;">true</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_aux_0_rxn_in" xilinx:dependency="$MODE = &quot;SLAVE&quot;">false</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -454,7 +454,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_aux_0_rxp_in" xilinx:dependency="spirit:decode(id(&apos;PARAM_VALUE.MODE&apos;)) = &quot;SLAVE&quot;">true</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_aux_0_rxp_in" xilinx:dependency="$MODE = &quot;SLAVE&quot;">false</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -474,7 +474,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_aux_0_txn_out" xilinx:dependency="PARAM_VALUE.MODE == &quot;SLAVE&quot;">true</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_aux_0_txn_out" xilinx:dependency="$MODE == &quot;SLAVE&quot;">false</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -494,7 +494,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_aux_0_txp_out" xilinx:dependency="PARAM_VALUE.MODE == &quot;SLAVE&quot;">true</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_aux_0_txp_out" xilinx:dependency="$MODE == &quot;SLAVE&quot;">false</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -517,7 +517,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_aux_1_rxn_in" xilinx:dependency="spirit:decode(id(&apos;PARAM_VALUE.MODE&apos;)) = &quot;SLAVE&quot;">true</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_aux_1_rxn_in" xilinx:dependency="$MODE = &quot;SLAVE&quot;">false</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -540,7 +540,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_aux_1_rxp_in" xilinx:dependency="spirit:decode(id(&apos;PARAM_VALUE.MODE&apos;)) = &quot;SLAVE&quot;">true</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_aux_1_rxp_in" xilinx:dependency="$MODE = &quot;SLAVE&quot;">false</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -560,7 +560,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_aux_1_txn_out" xilinx:dependency="PARAM_VALUE.MODE == &quot;SLAVE&quot;">true</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_aux_1_txn_out" xilinx:dependency="$MODE == &quot;SLAVE&quot;">false</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -580,7 +580,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_aux_1_txp_out" xilinx:dependency="PARAM_VALUE.MODE == &quot;SLAVE&quot;">true</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_aux_1_txp_out" xilinx:dependency="$MODE == &quot;SLAVE&quot;">false</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -603,7 +603,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_aux_2_rxn_in" xilinx:dependency="spirit:decode(id(&apos;PARAM_VALUE.MODE&apos;)) = &quot;SLAVE&quot;">true</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_aux_2_rxn_in" xilinx:dependency="$MODE = &quot;SLAVE&quot;">false</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -626,7 +626,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_aux_2_rxp_in" xilinx:dependency="spirit:decode(id(&apos;PARAM_VALUE.MODE&apos;)) = &quot;SLAVE&quot;">true</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_aux_2_rxp_in" xilinx:dependency="$MODE = &quot;SLAVE&quot;">false</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -646,7 +646,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_aux_2_txn_out" xilinx:dependency="PARAM_VALUE.MODE == &quot;SLAVE&quot;">true</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_aux_2_txn_out" xilinx:dependency="$MODE == &quot;SLAVE&quot;">false</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -666,7 +666,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_aux_2_txp_out" xilinx:dependency="PARAM_VALUE.MODE == &quot;SLAVE&quot;">true</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_aux_2_txp_out" xilinx:dependency="$MODE == &quot;SLAVE&quot;">false</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -689,7 +689,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_master_0_rxn_in" xilinx:dependency="spirit:decode(id(&apos;PARAM_VALUE.MODE&apos;)) = &quot;MASTER&quot;">false</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_master_0_rxn_in" xilinx:dependency="$MODE = &quot;MASTER&quot;">true</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -712,7 +712,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_master_0_rxp_in" xilinx:dependency="spirit:decode(id(&apos;PARAM_VALUE.MODE&apos;)) = &quot;MASTER&quot;">false</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_master_0_rxp_in" xilinx:dependency="$MODE = &quot;MASTER&quot;">true</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -732,7 +732,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_master_0_txn_out" xilinx:dependency="PARAM_VALUE.MODE == &quot;MASTER&quot;">false</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_master_0_txn_out" xilinx:dependency="$MODE == &quot;MASTER&quot;">true</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -752,7 +752,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_master_0_txp_out" xilinx:dependency="PARAM_VALUE.MODE == &quot;MASTER&quot;">false</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_master_0_txp_out" xilinx:dependency="$MODE == &quot;MASTER&quot;">true</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -775,7 +775,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_master_1_rxn_in" xilinx:dependency="spirit:decode(id(&apos;PARAM_VALUE.MODE&apos;)) = &quot;MASTER&quot;">false</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_master_1_rxn_in" xilinx:dependency="$MODE = &quot;MASTER&quot;">true</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -798,7 +798,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_master_1_rxp_in" xilinx:dependency="spirit:decode(id(&apos;PARAM_VALUE.MODE&apos;)) = &quot;MASTER&quot;">false</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_master_1_rxp_in" xilinx:dependency="$MODE = &quot;MASTER&quot;">true</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -818,7 +818,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_master_1_txn_out" xilinx:dependency="PARAM_VALUE.MODE == &quot;MASTER&quot;">false</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_master_1_txn_out" xilinx:dependency="$MODE == &quot;MASTER&quot;">true</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -838,7 +838,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_master_1_txp_out" xilinx:dependency="PARAM_VALUE.MODE == &quot;MASTER&quot;">false</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_master_1_txp_out" xilinx:dependency="$MODE == &quot;MASTER&quot;">true</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -861,7 +861,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_master_2_rxn_in" xilinx:dependency="spirit:decode(id(&apos;PARAM_VALUE.MODE&apos;)) = &quot;MASTER&quot;">false</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_master_2_rxn_in" xilinx:dependency="$MODE = &quot;MASTER&quot;">true</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -884,7 +884,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_master_2_rxp_in" xilinx:dependency="spirit:decode(id(&apos;PARAM_VALUE.MODE&apos;)) = &quot;MASTER&quot;">false</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_master_2_rxp_in" xilinx:dependency="$MODE = &quot;MASTER&quot;">true</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -904,7 +904,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_master_2_txn_out" xilinx:dependency="PARAM_VALUE.MODE == &quot;MASTER&quot;">false</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_master_2_txn_out" xilinx:dependency="$MODE == &quot;MASTER&quot;">true</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -924,7 +924,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_master_2_txp_out" xilinx:dependency="PARAM_VALUE.MODE == &quot;MASTER&quot;">false</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_master_2_txp_out" xilinx:dependency="$MODE == &quot;MASTER&quot;">true</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -947,7 +947,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_master_3_rxn_in" xilinx:dependency="spirit:decode(id(&apos;PARAM_VALUE.MODE&apos;)) = &quot;MASTER&quot;">false</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_master_3_rxn_in" xilinx:dependency="$MODE = &quot;MASTER&quot;">true</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -970,7 +970,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_master_3_rxp_in" xilinx:dependency="spirit:decode(id(&apos;PARAM_VALUE.MODE&apos;)) = &quot;MASTER&quot;">false</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_master_3_rxp_in" xilinx:dependency="$MODE = &quot;MASTER&quot;">true</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -990,7 +990,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_master_3_txn_out" xilinx:dependency="PARAM_VALUE.MODE == &quot;MASTER&quot;">false</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_master_3_txn_out" xilinx:dependency="$MODE == &quot;MASTER&quot;">true</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -1010,7 +1010,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_master_3_txp_out" xilinx:dependency="PARAM_VALUE.MODE == &quot;MASTER&quot;">false</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.muro_gth_master_3_txp_out" xilinx:dependency="$MODE == &quot;MASTER&quot;">true</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -1030,7 +1030,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.slave_recclk_out" xilinx:dependency="PARAM_VALUE.MODE == &quot;SLAVE&quot;">true</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.slave_recclk_out" xilinx:dependency="$MODE == &quot;SLAVE&quot;">false</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -1050,7 +1050,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.slave_recclk_alive_out" xilinx:dependency="PARAM_VALUE.MODE == &quot;SLAVE&quot;">true</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.slave_recclk_alive_out" xilinx:dependency="$MODE == &quot;SLAVE&quot;">false</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -1201,7 +1201,7 @@
         <spirit:wire>
           <spirit:direction>in</spirit:direction>
           <spirit:vector>
-            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.ADDR_WIDTH_NEEDED&apos;)) - 1)">5</spirit:left>
+            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.ADDR_WIDTH_NEEDED&apos;)) - 1)">6</spirit:left>
             <spirit:right spirit:format="long">0</spirit:right>
           </spirit:vector>
           <spirit:wireTypeDefs>
@@ -1385,7 +1385,7 @@
         <spirit:wire>
           <spirit:direction>in</spirit:direction>
           <spirit:vector>
-            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.ADDR_WIDTH_NEEDED&apos;)) - 1)">5</spirit:left>
+            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.ADDR_WIDTH_NEEDED&apos;)) - 1)">6</spirit:left>
             <spirit:right spirit:format="long">0</spirit:right>
           </spirit:vector>
           <spirit:wireTypeDefs>
@@ -1517,17 +1517,17 @@
       <spirit:modelParameter xsi:type="spirit:nameValueTypeType" spirit:dataType="string">
         <spirit:name>MODE</spirit:name>
         <spirit:displayName>Mode</spirit:displayName>
-        <spirit:value spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.MODE">SLAVE</spirit:value>
+        <spirit:value spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.MODE">MASTER</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="bit">
         <spirit:name>IS_SLAVE</spirit:name>
         <spirit:displayName>Is Slave</spirit:displayName>
-        <spirit:value spirit:format="bool" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.IS_SLAVE" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.MODE&apos;)) = &quot;SLAVE&quot;)">true</spirit:value>
+        <spirit:value spirit:format="bool" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.IS_SLAVE" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.MODE&apos;)) = &quot;SLAVE&quot;)">false</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="bit">
         <spirit:name>IS_MASTER</spirit:name>
         <spirit:displayName>Is Master</spirit:displayName>
-        <spirit:value spirit:format="bool" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.IS_MASTER" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.MODE&apos;)) = &quot;MASTER&quot;)">false</spirit:value>
+        <spirit:value spirit:format="bool" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.IS_MASTER" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.MODE&apos;)) = &quot;MASTER&quot;)">true</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_S00_AXI_DATA_WIDTH</spirit:name>
@@ -1537,17 +1537,17 @@
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_S00_AXI_NUM_REGS</spirit:name>
         <spirit:displayName>C S00 Axi Num Regs</spirit:displayName>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_S00_AXI_NUM_REGS">7</spirit:value>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_S00_AXI_NUM_REGS">12</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>OPT_MEM_ADDR_BITS</spirit:name>
         <spirit:displayName>Opt Mem Addr Bits</spirit:displayName>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.OPT_MEM_ADDR_BITS" spirit:dependency="spirit:ceil(spirit:log(2,spirit:decode(id(&apos;MODELPARAM_VALUE.C_S00_AXI_NUM_REGS&apos;))))">3</spirit:value>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.OPT_MEM_ADDR_BITS" spirit:dependency="spirit:ceil(spirit:log(2,spirit:decode(id(&apos;MODELPARAM_VALUE.C_S00_AXI_NUM_REGS&apos;))))">4</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>ADDR_WIDTH_NEEDED</spirit:name>
         <spirit:displayName>Addr Width Needed</spirit:displayName>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.ADDR_WIDTH_NEEDED" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.OPT_MEM_ADDR_BITS&apos;)) + 3)">6</spirit:value>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.ADDR_WIDTH_NEEDED" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.OPT_MEM_ADDR_BITS&apos;)) + 3)">7</spirit:value>
       </spirit:modelParameter>
     </spirit:modelParameters>
   </spirit:model>
@@ -1558,9 +1558,9 @@
       <spirit:enumeration>ACTIVE_LOW</spirit:enumeration>
     </spirit:choice>
     <spirit:choice>
-      <spirit:name>choice_list_d04378b8</spirit:name>
-      <spirit:enumeration>SLAVE</spirit:enumeration>
+      <spirit:name>choice_list_b31a4fc1</spirit:name>
       <spirit:enumeration>MASTER</spirit:enumeration>
+      <spirit:enumeration>SLAVE</spirit:enumeration>
     </spirit:choice>
   </spirit:choices>
   <spirit:fileSets>
@@ -1605,7 +1605,7 @@
       <spirit:file>
         <spirit:name>src/murosync_serdes_array.sv</spirit:name>
         <spirit:fileType>systemVerilogSource</spirit:fileType>
-        <spirit:userFileType>CHECKSUM_c131576d</spirit:userFileType>
+        <spirit:userFileType>CHECKSUM_16b8ce23</spirit:userFileType>
       </spirit:file>
     </spirit:fileSet>
     <spirit:fileSet>
@@ -1681,7 +1681,7 @@
       <spirit:file>
         <spirit:name>xgui/murosync_serdes_array_v1_0.tcl</spirit:name>
         <spirit:fileType>tclSource</spirit:fileType>
-        <spirit:userFileType>CHECKSUM_87c57416</spirit:userFileType>
+        <spirit:userFileType>CHECKSUM_f4292f4f</spirit:userFileType>
         <spirit:userFileType>XGUI_VERSION_2</spirit:userFileType>
       </spirit:file>
     </spirit:fileSet>
@@ -1691,7 +1691,7 @@
     <spirit:parameter>
       <spirit:name>MODE</spirit:name>
       <spirit:displayName>Mode</spirit:displayName>
-      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.MODE" spirit:choiceRef="choice_list_d04378b8">SLAVE</spirit:value>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.MODE" spirit:choiceRef="choice_list_b31a4fc1">MASTER</spirit:value>
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>Component_Name</spirit:name>
@@ -1733,16 +1733,16 @@
       <xilinx:displayName>murosync_serdes_array_v1_0</xilinx:displayName>
       <xilinx:definitionSource>package_project</xilinx:definitionSource>
       <xilinx:coreRevision>2</xilinx:coreRevision>
-      <xilinx:coreCreationDateTime>2026-03-15T14:25:42Z</xilinx:coreCreationDateTime>
+      <xilinx:coreCreationDateTime>2026-05-02T16:48:43Z</xilinx:coreCreationDateTime>
     </xilinx:coreExtensions>
     <xilinx:packagingInfo>
       <xilinx:xilinxVersion>2022.2</xilinx:xilinxVersion>
       <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="6f0949ea"/>
       <xilinx:checksum xilinx:scope="memoryMaps" xilinx:value="4f19a26b"/>
-      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="ca058008"/>
-      <xilinx:checksum xilinx:scope="ports" xilinx:value="011af6ac"/>
-      <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="51d6c764"/>
-      <xilinx:checksum xilinx:scope="parameters" xilinx:value="9949af4e"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="8130a5f9"/>
+      <xilinx:checksum xilinx:scope="ports" xilinx:value="240391bc"/>
+      <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="f821977e"/>
+      <xilinx:checksum xilinx:scope="parameters" xilinx:value="eb85d922"/>
     </xilinx:packagingInfo>
   </spirit:vendorExtensions>
 </spirit:component>

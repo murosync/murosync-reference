@@ -34,7 +34,7 @@
 
 module murosync_serdes_array_axi_ctrl #(
     parameter integer C_S00_AXI_DATA_WIDTH = 32,
-    parameter integer C_S00_AXI_NUM_REGS   = 7,
+    parameter integer C_S00_AXI_NUM_REGS   = 12,
 
     // Keep same address-width convention as top:
     parameter integer OPT_MEM_ADDR_BITS_P  = $clog2(C_S00_AXI_NUM_REGS),
@@ -83,7 +83,15 @@ module murosync_serdes_array_axi_ctrl #(
     input  wire [3:0]                          rxpmaresetdone_in,
 
     // Debug-only bus (core_clk domain)
-    input  wire [63:0]                         dbg_in
+    input  wire [63:0]                         dbg_in,
+
+    //Link Integrity / Physical Loopback Testing
+    output wire                                link_test_ctrl_rst_axi_pulse,
+    output wire                                link_test_ctrl_en_core,
+    output wire [1:0]                          link_test_cnfg,
+    output wire [31:0]                         link_test_patt,
+    input  wire [31:0]                         link_test_err_cnt,
+    input  wire [31:0]                         link_test_wrd_cnt
 );
 
     wire axi_clk   = s00_axi_aclk;
@@ -97,13 +105,19 @@ module murosync_serdes_array_axi_ctrl #(
     // ------------------------------------------------------------
     // REG MAP (word offsets)
     // ------------------------------------------------------------
-    localparam int SERDES_CTRL         = 'h0;  // W1P
-    localparam int SERDES_LOOPBACK     = 'h1;  // RW
-    localparam int SERDES_STATUS       = 'h2;  // RO
-    localparam int SERDES_DBG_LO       = 'h3;  // RO
-    localparam int SERDES_DBG_HI       = 'h4;  // RO
-    localparam int SERDES_TEST_CONST   = 'h5;  // RO
-    localparam int SERDES_TEST_SCRATCH = 'h6;  // RW
+    localparam int SERDES_CTRL           = 'h0;  // W1P
+    localparam int SERDES_LOOPBACK       = 'h1;  // RW
+    localparam int SERDES_STATUS         = 'h2;  // RO
+    localparam int SERDES_DBG_LO         = 'h3;  // RO
+    localparam int SERDES_DBG_HI         = 'h4;  // RO
+    localparam int SERDES_TEST_CONST     = 'h5;  // RO
+    localparam int SERDES_TEST_SCRATCH   = 'h6;  // RW
+
+    localparam int SERDES_LNK_TEST_CTRL  = 'h7;  // RW Offset 0x1C: [0]-Enable, [1]-Reset (W1P)
+    localparam int SERDES_LNK_TEST_CNFG  = 'h8;  // RW Offset 0x20: [1:0]-Test Mode select
+    localparam int SERDES_LNK_TEST_PATT  = 'h9;  // RW Offset 0x24: Fixed Test Pattern
+    localparam int SERDES_LNK_RX_ERR_CNT = 'hA;  // RO Offset 0x28: RX Error Counter
+    localparam int SERDES_LNK_RX_WRD_CNT = 'hB;  // RO Offset 0x2C: RX Word Counter (Received)
 
     // SERDES_CTRL bits (W1P)
     localparam int SERDES_CTRL_LINK_DOWN_LATCHED_RESET = 0;
@@ -117,6 +131,10 @@ module murosync_serdes_array_axi_ctrl #(
     localparam int SERDES_STATUS_GTPWRGOOD_CH0      = 20;  // [23:20]
     localparam int SERDES_STATUS_TXPMARESETDONE_CH0 = 24;  // [27:24]
     localparam int SERDES_STATUS_RXPMARESETDONE_CH0 = 28;  // [31:28]
+
+    // SERDES_LNK_TEST_CTRL bit fields
+    localparam int LNK_TEST_CTRL_EN      = 0; // Bit [0]: 1 = Enable Link Test Mode
+    localparam int LNK_TEST_CTRL_RST     = 1; // Bit [1]: 1 = Pulse to reset counters (W1P)
 
     // ------------------------------------------------------------
     // AXI slave (register file)  <-- 1:1 with wavecap pattern
@@ -305,11 +323,82 @@ module murosync_serdes_array_axi_ctrl #(
     assign axi_reg_rd[SERDES_DBG_HI] = dbg_axi_r[63:32];
 
     // ------------------------------------------------------------
-    // TEST REGISTERS
+    // AXI Infrastructure Verification REGISTERS
     // ------------------------------------------------------------
     localparam logic [31:0] MUROSYNC_TEST_MAGIC = 32'h4D55_524F; // "MURO"
     assign axi_reg_rd[SERDES_TEST_CONST]   = MUROSYNC_TEST_MAGIC;
     assign axi_reg_rd[SERDES_TEST_SCRATCH] = slv_reg[SERDES_TEST_SCRATCH];
+
+    // ------------------------------------------------------------
+    // Link Integrity / Physical Loopback Testing REGISTERS
+    // ------------------------------------------------------------
+    wire       link_test_ctrl_en_axi  = slv_reg[SERDES_LNK_TEST_CTRL][LNK_TEST_CTRL_EN];
+    wire       link_test_ctrl_rst_axi = slv_reg[SERDES_LNK_TEST_CTRL][LNK_TEST_CTRL_RST];
+    wire [1:0] link_test_cnfg_axi     = slv_reg[SERDES_LNK_TEST_CNFG];
+    assign     link_test_patt         = slv_reg[SERDES_LNK_TEST_PATT];
+
+    murosync_cdc_slow_to_fast #(.SYNC_STAGES(3)) u_cdc_link_test_ctrl_rst
+    (
+        .clk   (core_clk),
+        .rst_n (core_rst_n),
+
+        .in    (link_test_ctrl_rst_axi),
+        .out   (link_test_ctrl_rst_axi_pulse)
+    );
+
+    (* ASYNC_REG="TRUE" *) logic [1:0] link_test_en_sync;
+    always @(posedge core_clk or negedge core_rst_n) 
+    begin
+        if (!core_rst_n) link_test_en_sync <= 2'b0;
+        else             link_test_en_sync <= {link_test_en_sync[0], link_test_ctrl_en_axi};
+    end
+    assign link_test_ctrl_en_core = link_test_en_sync[1];
+
+    (* ASYNC_REG="TRUE" *) logic [1:0] lb0_link_test_cnfg_sync, lb1_link_test_cnfg_sync;
+    always @(posedge core_clk or negedge core_rst_n) 
+    begin
+        if (!core_rst_n) 
+        begin
+            lb0_link_test_cnfg_sync <= 2'b00;
+            lb1_link_test_cnfg_sync <= 2'b00;
+
+        end 
+        else 
+        begin
+            lb0_link_test_cnfg_sync <= {lb0_link_test_cnfg_sync[0], link_test_cnfg_axi[0]};
+            lb1_link_test_cnfg_sync <= {lb1_link_test_cnfg_sync[0], link_test_cnfg_axi[1]};
+        end
+    end
+    assign link_test_cnfg = {lb1_link_test_cnfg_sync[1], lb0_link_test_cnfg_sync[1]};
+
+
+    (* ASYNC_REG="TRUE" *) reg [31:0] link_test_err_cnt_s0, link_test_err_cnt_axi;
+    (* ASYNC_REG="TRUE" *) reg [31:0] link_test_wrd_cnt_s0, link_test_wrd_cnt_axi;
+
+    always @(posedge axi_clk or negedge axi_rst_n)
+    begin
+        if (!axi_rst_n) 
+        begin
+            link_test_err_cnt_s0  <= 32'b0;
+            link_test_err_cnt_axi <= 32'b0;
+            link_test_wrd_cnt_s0  <= 32'b0;
+            link_test_wrd_cnt_axi <= 32'b0;
+        end else 
+        begin
+            link_test_err_cnt_s0  <= link_test_err_cnt;
+            link_test_err_cnt_axi <= link_test_err_cnt_s0;
+            link_test_wrd_cnt_s0  <= link_test_wrd_cnt;
+            link_test_wrd_cnt_axi <= link_test_wrd_cnt_s0;
+        end
+    end
+    assign axi_reg_rd[SERDES_LNK_RX_ERR_CNT] = link_test_err_cnt_axi;
+    assign axi_reg_rd[SERDES_LNK_RX_WRD_CNT] = link_test_wrd_cnt_axi;
+
+    // Link Test Control and Configuration (Full RW support)
+    assign axi_reg_rd[SERDES_LNK_TEST_CTRL] = slv_reg[SERDES_LNK_TEST_CTRL];
+    assign axi_reg_rd[SERDES_LNK_TEST_CNFG] = slv_reg[SERDES_LNK_TEST_CNFG];
+    assign axi_reg_rd[SERDES_LNK_TEST_PATT] = slv_reg[SERDES_LNK_TEST_PATT];
+
 
 endmodule
 `default_nettype wire
