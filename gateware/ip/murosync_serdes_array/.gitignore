@@ -13,6 +13,7 @@
 
 # keep IP packager essentials
 !component.xml
+!update_ip_ports.tcl
 !src/
 !src/**
 !xgui/
