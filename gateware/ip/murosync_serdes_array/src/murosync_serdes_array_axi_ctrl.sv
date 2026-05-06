@@ -88,7 +88,7 @@ module murosync_serdes_array_axi_ctrl #(
     //Link Integrity / Physical Loopback Testing
     output wire                                link_test_ctrl_rst_axi_pulse,
     output wire                                link_test_ctrl_en_core,
-    output wire [1:0]                          link_test_cnfg,
+    output wire [7:0]                          link_test_cnfg,
     output wire [31:0]                         link_test_patt,
     input  wire [31:0]                         link_test_err_cnt,
     input  wire [31:0]                         link_test_wrd_cnt
@@ -114,7 +114,7 @@ module murosync_serdes_array_axi_ctrl #(
     localparam int SERDES_TEST_SCRATCH   = 'h6;  // RW
 
     localparam int SERDES_LNK_TEST_CTRL  = 'h7;  // RW Offset 0x1C: [0]-Enable, [1]-Reset (W1P)
-    localparam int SERDES_LNK_TEST_CNFG  = 'h8;  // RW Offset 0x20: [1:0]-Test Mode select
+    localparam int SERDES_LNK_TEST_CNFG  = 'h8;  // RW Offset 0x20: [1:0] Test Mode, [7:4] Channel Mask
     localparam int SERDES_LNK_TEST_PATT  = 'h9;  // RW Offset 0x24: Fixed Test Pattern
     localparam int SERDES_LNK_RX_ERR_CNT = 'hA;  // RO Offset 0x28: RX Error Counter
     localparam int SERDES_LNK_RX_WRD_CNT = 'hB;  // RO Offset 0x2C: RX Word Counter (Received)
@@ -334,7 +334,7 @@ module murosync_serdes_array_axi_ctrl #(
     // ------------------------------------------------------------
     wire       link_test_ctrl_en_axi  = slv_reg[SERDES_LNK_TEST_CTRL][LNK_TEST_CTRL_EN];
     wire       link_test_ctrl_rst_axi = slv_reg[SERDES_LNK_TEST_CTRL][LNK_TEST_CTRL_RST];
-    wire [1:0] link_test_cnfg_axi     = slv_reg[SERDES_LNK_TEST_CNFG];
+    wire [7:0] link_test_cnfg_axi     = slv_reg[SERDES_LNK_TEST_CNFG][7:0];
     assign     link_test_patt         = slv_reg[SERDES_LNK_TEST_PATT];
 
     murosync_cdc_slow_to_fast #(.SYNC_STAGES(3)) u_cdc_link_test_ctrl_rst
@@ -354,22 +354,21 @@ module murosync_serdes_array_axi_ctrl #(
     end
     assign link_test_ctrl_en_core = link_test_en_sync[1];
 
-    (* ASYNC_REG="TRUE" *) logic [1:0] lb0_link_test_cnfg_sync, lb1_link_test_cnfg_sync;
+    (* ASYNC_REG="TRUE" *) logic [7:0] link_test_cnfg_sync_0, link_test_cnfg_sync_1;
     always @(posedge core_clk or negedge core_rst_n) 
     begin
         if (!core_rst_n) 
         begin
-            lb0_link_test_cnfg_sync <= 2'b00;
-            lb1_link_test_cnfg_sync <= 2'b00;
-
+            link_test_cnfg_sync_0 <= 8'h00;
+            link_test_cnfg_sync_1 <= 8'h00;
         end 
         else 
         begin
-            lb0_link_test_cnfg_sync <= {lb0_link_test_cnfg_sync[0], link_test_cnfg_axi[0]};
-            lb1_link_test_cnfg_sync <= {lb1_link_test_cnfg_sync[0], link_test_cnfg_axi[1]};
+            link_test_cnfg_sync_0 <= link_test_cnfg_axi;
+            link_test_cnfg_sync_1 <= link_test_cnfg_sync_0;
         end
     end
-    assign link_test_cnfg = {lb1_link_test_cnfg_sync[1], lb0_link_test_cnfg_sync[1]};
+    assign link_test_cnfg = link_test_cnfg_sync_1;
 
 
     (* ASYNC_REG="TRUE" *) reg [31:0] link_test_err_cnt_s0, link_test_err_cnt_axi;

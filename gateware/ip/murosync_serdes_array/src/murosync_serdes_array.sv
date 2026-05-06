@@ -254,6 +254,14 @@ module murosync_serdes_array #(
     wire       link_latch_reset_axi;
     wire       gt_reset_all_pulse_axi;
 
+    // AXI Link Test controls
+    wire        link_test_ctrl_rst_axi_pulse;
+    wire        link_test_ctrl_en_core;
+    wire [7:0]  link_test_cnfg;
+    wire [31:0] link_test_patt;
+    wire [31:0] link_test_err_cnt;
+    wire [31:0] link_test_wrd_cnt;
+
     // ============================================================
     // LINK STATUS (bring-up definition: "GT is alive")
     // ============================================================
@@ -358,7 +366,15 @@ module murosync_serdes_array #(
         .rxpmaresetdone_in (rxpmaresetdone_int),
 
         // Debug-only bus
-        .dbg_in            (dbg)
+        .dbg_in            (dbg),
+
+        // Link Integrity Testing
+        .link_test_ctrl_rst_axi_pulse (link_test_ctrl_rst_axi_pulse),
+        .link_test_ctrl_en_core       (link_test_ctrl_en_core),
+        .link_test_cnfg               (link_test_cnfg),
+        .link_test_patt               (link_test_patt),
+        .link_test_err_cnt            (link_test_err_cnt),
+        .link_test_wrd_cnt            (link_test_wrd_cnt)
     );
 
     // ============================================================
@@ -387,9 +403,8 @@ module murosync_serdes_array #(
         .gtwiz_reset_rx_pll_and_datapath_in (1'b0),
         .gtwiz_reset_rx_datapath_in         (1'b0),
 
-        // Tie off datapath/userdata (not used for bring-up)
-        .gtwiz_userdata_tx_in (64'h0),
-        .gtwiz_userdata_rx_out(),
+        .gtwiz_userdata_tx_in (link_test_ctrl_en_core ? link_test_tx_data : 64'h0),
+        .gtwiz_userdata_rx_out(gtwiz_userdata_rx_int),
 
         // Feed the GT reference clock (raw from IBUFDS_GTE4)
         .gtrefclk00_in      (mgtrefclk0_x0y1_int),
@@ -432,6 +447,28 @@ module murosync_serdes_array #(
         
         .gtwiz_userclk_rx_recclk_out(gtwiz_userclk_rx_recclk_int),
         .gtwiz_userclk_rx_recclk_active_out(gtwiz_userclk_rx_recclk_alive_int)
+    );
+
+    wire [63:0] link_test_tx_data;
+    wire [63:0] gtwiz_userdata_rx_int;
+
+    // ============================================================
+    // Link Test Engine
+    // ============================================================
+    murosync_serdes_link_test #(
+        .IS_SLAVE (IS_SLAVE)
+    ) u_link_test (
+        .tx_clk         (gtwiz_userclk_rx_recclk_int), // Reused rx_recclk for TX in bring-up
+        .rx_clk         (gtwiz_userclk_rx_recclk_int),
+        .core_rst_n     (~hb_gtwiz_reset_all_int),
+        .enable         (link_test_ctrl_en_core),
+        .reset_counters (link_test_ctrl_rst_axi_pulse),
+        .cnfg           (link_test_cnfg),
+        .fixed_patt     (link_test_patt),
+        .tx_data        (link_test_tx_data),
+        .rx_data        (gtwiz_userdata_rx_int),
+        .err_cnt        (link_test_err_cnt),
+        .wrd_cnt        (link_test_wrd_cnt)
     );
 
 endmodule
