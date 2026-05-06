@@ -65,13 +65,13 @@
     <Option Name="WTVcsLaunchSim" Val="0"/>
     <Option Name="WTRivieraLaunchSim" Val="0"/>
     <Option Name="WTActivehdlLaunchSim" Val="0"/>
-    <Option Name="WTXSimExportSim" Val="40"/>
-    <Option Name="WTModelSimExportSim" Val="40"/>
-    <Option Name="WTQuestaExportSim" Val="40"/>
+    <Option Name="WTXSimExportSim" Val="42"/>
+    <Option Name="WTModelSimExportSim" Val="42"/>
+    <Option Name="WTQuestaExportSim" Val="42"/>
     <Option Name="WTIesExportSim" Val="0"/>
-    <Option Name="WTVcsExportSim" Val="40"/>
-    <Option Name="WTRivieraExportSim" Val="40"/>
-    <Option Name="WTActivehdlExportSim" Val="40"/>
+    <Option Name="WTVcsExportSim" Val="42"/>
+    <Option Name="WTRivieraExportSim" Val="42"/>
+    <Option Name="WTActivehdlExportSim" Val="42"/>
     <Option Name="GenerateIPUpgradeLog" Val="TRUE"/>
     <Option Name="XSimRadix" Val="hex"/>
     <Option Name="XSimTimeUnit" Val="ns"/>
@@ -95,14 +95,29 @@
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
-        <CompFileExtendedInfo CompFileName="bd_murosync_poc.bd" FileRelPathName="ip/bd_murosync_poc_murosync_serdes_array_0_1/bd_murosync_poc_murosync_serdes_array_0_1.xci">
-          <Proxy FileSetName="bd_murosync_poc_murosync_serdes_array_0_1"/>
+        <CompFileExtendedInfo CompFileName="bd_murosync_poc.bd" FileRelPathName="ip/bd_murosync_poc_lmb_bram_0/bd_murosync_poc_lmb_bram_0.xci">
+          <Proxy FileSetName="bd_murosync_poc_lmb_bram_0"/>
+        </CompFileExtendedInfo>
+        <CompFileExtendedInfo CompFileName="bd_murosync_poc.bd" FileRelPathName="ip/bd_murosync_poc_mdm_1_0/bd_murosync_poc_mdm_1_0.xci">
+          <Proxy FileSetName="bd_murosync_poc_mdm_1_0"/>
+        </CompFileExtendedInfo>
+        <CompFileExtendedInfo CompFileName="bd_murosync_poc.bd" FileRelPathName="ip/bd_murosync_poc_ilmb_bram_if_cntlr_0/bd_murosync_poc_ilmb_bram_if_cntlr_0.xci">
+          <Proxy FileSetName="bd_murosync_poc_ilmb_bram_if_cntlr_0"/>
+        </CompFileExtendedInfo>
+        <CompFileExtendedInfo CompFileName="bd_murosync_poc.bd" FileRelPathName="ip/bd_murosync_poc_dlmb_bram_if_cntlr_0/bd_murosync_poc_dlmb_bram_if_cntlr_0.xci">
+          <Proxy FileSetName="bd_murosync_poc_dlmb_bram_if_cntlr_0"/>
         </CompFileExtendedInfo>
         <CompFileExtendedInfo CompFileName="bd_murosync_poc.bd" FileRelPathName="ip/bd_murosync_poc_rst_clk_wiz_0_100M_0/bd_murosync_poc_rst_clk_wiz_0_100M_0.xci">
           <Proxy FileSetName="bd_murosync_poc_rst_clk_wiz_0_100M_0"/>
         </CompFileExtendedInfo>
-        <CompFileExtendedInfo CompFileName="bd_murosync_poc.bd" FileRelPathName="ip/bd_murosync_poc_lmb_bram_0/bd_murosync_poc_lmb_bram_0.xci">
-          <Proxy FileSetName="bd_murosync_poc_lmb_bram_0"/>
+        <CompFileExtendedInfo CompFileName="bd_murosync_poc.bd" FileRelPathName="ip/bd_murosync_poc_xbar_0/bd_murosync_poc_xbar_0.xci">
+          <Proxy FileSetName="bd_murosync_poc_xbar_0"/>
+        </CompFileExtendedInfo>
+        <CompFileExtendedInfo CompFileName="bd_murosync_poc.bd" FileRelPathName="ip/bd_murosync_poc_murosync_serdes_array_0_1/bd_murosync_poc_murosync_serdes_array_0_1.xci">
+          <Proxy FileSetName="bd_murosync_poc_murosync_serdes_array_0_1"/>
+        </CompFileExtendedInfo>
+        <CompFileExtendedInfo CompFileName="bd_murosync_poc.bd" FileRelPathName="ip/bd_murosync_poc_ila_0_0/bd_murosync_poc_ila_0_0.xci">
+          <Proxy FileSetName="bd_murosync_poc_ila_0_0"/>
         </CompFileExtendedInfo>
         <CompFileExtendedInfo CompFileName="bd_murosync_poc.bd" FileRelPathName="ip/bd_murosync_poc_microblaze_0_0/bd_murosync_poc_microblaze_0_0.xci">
           <Proxy FileSetName="bd_murosync_poc_microblaze_0_0"/>
@@ -110,29 +125,14 @@
         <CompFileExtendedInfo CompFileName="bd_murosync_poc.bd" FileRelPathName="ip/bd_murosync_poc_axi_uartlite_0_0/bd_murosync_poc_axi_uartlite_0_0.xci">
           <Proxy FileSetName="bd_murosync_poc_axi_uartlite_0_0"/>
         </CompFileExtendedInfo>
-        <CompFileExtendedInfo CompFileName="bd_murosync_poc.bd" FileRelPathName="ip/bd_murosync_poc_ilmb_v10_0/bd_murosync_poc_ilmb_v10_0.xci">
-          <Proxy FileSetName="bd_murosync_poc_ilmb_v10_0"/>
-        </CompFileExtendedInfo>
-        <CompFileExtendedInfo CompFileName="bd_murosync_poc.bd" FileRelPathName="ip/bd_murosync_poc_dlmb_bram_if_cntlr_0/bd_murosync_poc_dlmb_bram_if_cntlr_0.xci">
-          <Proxy FileSetName="bd_murosync_poc_dlmb_bram_if_cntlr_0"/>
-        </CompFileExtendedInfo>
-        <CompFileExtendedInfo CompFileName="bd_murosync_poc.bd" FileRelPathName="ip/bd_murosync_poc_ilmb_bram_if_cntlr_0/bd_murosync_poc_ilmb_bram_if_cntlr_0.xci">
-          <Proxy FileSetName="bd_murosync_poc_ilmb_bram_if_cntlr_0"/>
-        </CompFileExtendedInfo>
-        <CompFileExtendedInfo CompFileName="bd_murosync_poc.bd" FileRelPathName="ip/bd_murosync_poc_ila_0_0/bd_murosync_poc_ila_0_0.xci">
-          <Proxy FileSetName="bd_murosync_poc_ila_0_0"/>
-        </CompFileExtendedInfo>
         <CompFileExtendedInfo CompFileName="bd_murosync_poc.bd" FileRelPathName="ip/bd_murosync_poc_clk_wiz_0_0/bd_murosync_poc_clk_wiz_0_0.xci">
           <Proxy FileSetName="bd_murosync_poc_clk_wiz_0_0"/>
         </CompFileExtendedInfo>
         <CompFileExtendedInfo CompFileName="bd_murosync_poc.bd" FileRelPathName="ip/bd_murosync_poc_dlmb_v10_0/bd_murosync_poc_dlmb_v10_0.xci">
           <Proxy FileSetName="bd_murosync_poc_dlmb_v10_0"/>
         </CompFileExtendedInfo>
-        <CompFileExtendedInfo CompFileName="bd_murosync_poc.bd" FileRelPathName="ip/bd_murosync_poc_mdm_1_0/bd_murosync_poc_mdm_1_0.xci">
-          <Proxy FileSetName="bd_murosync_poc_mdm_1_0"/>
-        </CompFileExtendedInfo>
-        <CompFileExtendedInfo CompFileName="bd_murosync_poc.bd" FileRelPathName="ip/bd_murosync_poc_xbar_0/bd_murosync_poc_xbar_0.xci">
-          <Proxy FileSetName="bd_murosync_poc_xbar_0"/>
+        <CompFileExtendedInfo CompFileName="bd_murosync_poc.bd" FileRelPathName="ip/bd_murosync_poc_ilmb_v10_0/bd_murosync_poc_ilmb_v10_0.xci">
+          <Proxy FileSetName="bd_murosync_poc_ilmb_v10_0"/>
         </CompFileExtendedInfo>
       </File>
       <File Path="$PSRCDIR/sources_1/new/murosync_poc_top.sv">
