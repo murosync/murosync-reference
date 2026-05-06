@@ -317,6 +317,141 @@ int murosync_serdes_bring_up(unsigned char loopback, int timeout_usec)
 }
 /************************************************************************/
 
+/************************* LINK TEST ************************************/
+
+int murosync_serdes_link_test_set_mode(unsigned char mode)
+{
+    unsigned int val = ((unsigned int)mode << MUROSYNC_LNK_TEST_CNFG_MODE_OFS) & MUROSYNC_LNK_TEST_CNFG_MODE_MSK;
+    return murosync_serdes_reg_modify(MUROSYNC_LNK_TEST_CNFG, val, MUROSYNC_LNK_TEST_CNFG_MODE_MSK);
+}
+
+int murosync_serdes_link_test_set_ch_mask(unsigned char ch_mask)
+{
+    unsigned int val = ((unsigned int)ch_mask << MUROSYNC_LNK_TEST_CNFG_CH_MASK_OFS) & MUROSYNC_LNK_TEST_CNFG_CH_MASK_MSK;
+    return murosync_serdes_reg_modify(MUROSYNC_LNK_TEST_CNFG, val, MUROSYNC_LNK_TEST_CNFG_CH_MASK_MSK);
+}
+
+int murosync_serdes_link_test_start(void)
+{
+    return murosync_serdes_reg_modify(MUROSYNC_LNK_TEST_CTRL, MUROSYNC_LNK_TEST_CTRL_EN_MSK, MUROSYNC_LNK_TEST_CTRL_EN_MSK);
+}
+
+int murosync_serdes_link_test_stop(void)
+{
+    return murosync_serdes_reg_modify(MUROSYNC_LNK_TEST_CTRL, 0x0, MUROSYNC_LNK_TEST_CTRL_EN_MSK);
+}
+
+int murosync_serdes_link_test_reset_cnt(void)
+{
+    int rc;
+    
+    // Set RST bit
+    rc = murosync_serdes_reg_modify(MUROSYNC_LNK_TEST_CTRL, MUROSYNC_LNK_TEST_CTRL_RST_MSK, MUROSYNC_LNK_TEST_CTRL_RST_MSK);
+    if (rc != XST_SUCCESS) return rc;
+    
+    // Clear RST bit
+    return murosync_serdes_reg_modify(MUROSYNC_LNK_TEST_CTRL, 0x0, MUROSYNC_LNK_TEST_CTRL_RST_MSK);
+}
+
+int murosync_serdes_link_test_set_patt(unsigned int pattern)
+{
+    return murosync_serdes_reg_wr(MUROSYNC_LNK_TEST_PATT, pattern);
+}
+
+int murosync_serdes_link_test_get_err_cnt(unsigned int *err_cnt)
+{
+    return murosync_serdes_reg_rd(MUROSYNC_LNK_RX_ERR_CNT, err_cnt);
+}
+
+int murosync_serdes_link_test_get_wrd_cnt(unsigned int *wrd_cnt)
+{
+    return murosync_serdes_reg_rd(MUROSYNC_LNK_RX_WRD_CNT, wrd_cnt);
+}
+
+int murosync_serdes_run_link_test(unsigned char mode, unsigned char ch_mask, unsigned int pattern, unsigned int test_time_ms)
+{
+    unsigned int err_cnt = 0;
+    unsigned int wrd_cnt = 0;
+
+    xil_printf("\r\n\tMUROSYNC SERDES | --- LINK TEST START ---\r\n");
+    xil_printf("\t\tMode        : %u\r\n", mode);
+    xil_printf("\t\tCh Mask     : 0x%X\r\n", ch_mask);
+    xil_printf("\t\tPattern     : 0x%08X\r\n", pattern);
+    xil_printf("\t\tDuration    : %u ms\r\n", test_time_ms);
+
+    // 1. Reset counters
+    if (murosync_serdes_link_test_reset_cnt() != XST_SUCCESS) {
+        xil_printf("\t\tERROR: Failed to reset counters\r\n");
+        return XST_FAILURE;
+    }
+    
+    usleep(1000); // 1 ms delay
+
+    // 2. Set channel mask
+    if (murosync_serdes_link_test_set_ch_mask(ch_mask) != XST_SUCCESS) {
+        xil_printf("\t\tERROR: Failed to set channel mask\r\n");
+        return XST_FAILURE;
+    }
+
+    // 3. Set mode
+    if (murosync_serdes_link_test_set_mode(mode) != XST_SUCCESS) {
+        xil_printf("\t\tERROR: Failed to set mode\r\n");
+        return XST_FAILURE;
+    }
+
+    // 4. If mode requires test pattern, set it
+    if (mode == MUROSYNC_LNK_TEST_MODE_FIXED || mode == MUROSYNC_LNK_TEST_MODE_TOGGLE) {
+        if (murosync_serdes_link_test_set_patt(pattern) != XST_SUCCESS) {
+            xil_printf("\t\tERROR: Failed to set pattern\r\n");
+            return XST_FAILURE;
+        }
+    }
+
+    // 5. Start test
+    xil_printf("\t\tTest Running...\r\n");
+    if (murosync_serdes_link_test_start() != XST_SUCCESS) {
+        xil_printf("\t\tERROR: Failed to start test\r\n");
+        return XST_FAILURE;
+    }
+
+    // 6. Delay (adequate test time)
+    usleep(test_time_ms * 1000);
+
+    // 7. Stop test
+    if (murosync_serdes_link_test_stop() != XST_SUCCESS) {
+        xil_printf("\t\tERROR: Failed to stop test\r\n");
+        return XST_FAILURE;
+    }
+
+    // 8. Read statuses
+    if (murosync_serdes_link_test_get_err_cnt(&err_cnt) != XST_SUCCESS) {
+        xil_printf("\t\tERROR: Failed to read error count\r\n");
+        return XST_FAILURE;
+    }
+    
+    if (murosync_serdes_link_test_get_wrd_cnt(&wrd_cnt) != XST_SUCCESS) {
+        xil_printf("\t\tERROR: Failed to read word count\r\n");
+        return XST_FAILURE;
+    }
+
+    // 9. Make conclusions
+    xil_printf("\tMUROSYNC SERDES | --- LINK TEST RESULTS ---\r\n");
+    xil_printf("\t\tWords Rx    : %u\r\n", wrd_cnt);
+    xil_printf("\t\tErrors      : %u\r\n", err_cnt);
+
+    if (wrd_cnt == 0) {
+        xil_printf("\t\tRESULT      : FAIL (No data received)\r\n");
+        return XST_FAILURE;
+    } else if (err_cnt > 0) {
+        xil_printf("\t\tRESULT      : FAIL (Errors detected)\r\n");
+        return XST_FAILURE;
+    } else {
+        xil_printf("\t\tRESULT      : PASS\r\n");
+        return XST_SUCCESS;
+    }
+}
+/************************************************************************/
+
 /******************************* TASK ***********************************/
 int murosync_serdes_link_monitor(void)
 {

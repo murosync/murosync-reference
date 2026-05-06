@@ -99,6 +99,18 @@ int  murosync_serdes_selftest_scratch(void);
 int murosync_serdes_bring_up(unsigned char loopback, int timeout_usec);
 /************************************************************************/
 
+/************************* LINK TEST ************************************/
+int murosync_serdes_link_test_set_mode(unsigned char mode);
+int murosync_serdes_link_test_set_ch_mask(unsigned char ch_mask);
+int murosync_serdes_link_test_start(void);
+int murosync_serdes_link_test_stop(void);
+int murosync_serdes_link_test_reset_cnt(void);
+int murosync_serdes_link_test_set_patt(unsigned int pattern);
+int murosync_serdes_link_test_get_err_cnt(unsigned int *err_cnt);
+int murosync_serdes_link_test_get_wrd_cnt(unsigned int *wrd_cnt);
+int murosync_serdes_run_link_test(unsigned char mode, unsigned char ch_mask, unsigned int pattern, unsigned int test_time_ms);
+/************************************************************************/
+
 /******************************* TASK ***********************************/
 int murosync_serdes_link_monitor(void);
 void murosync_serdes_link_task(void);

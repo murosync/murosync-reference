@@ -71,6 +71,13 @@ int main(void)
 
     xil_printf("\r\n[MUROSYNC] Bring-up OK\r\n");
 
+    /* Run tests on each channel individually */
+    xil_printf("\r\n--- TESTING INDIVIDUAL CHANNELS ---\r\n");
+    murosync_serdes_run_link_test(MUROSYNC_LNK_TEST_MODE_COUNTER, 0x1, 0x0, 1000); // Ch 0
+    murosync_serdes_run_link_test(MUROSYNC_LNK_TEST_MODE_COUNTER, 0x2, 0x0, 1000); // Ch 1
+    murosync_serdes_run_link_test(MUROSYNC_LNK_TEST_MODE_COUNTER, 0x4, 0x0, 1000); // Ch 2
+    murosync_serdes_run_link_test(MUROSYNC_LNK_TEST_MODE_COUNTER, 0x8, 0x0, 1000); // Ch 3
+
     for (;;)
     {
         xil_printf("[MUROSYNC] alive #%u\r\n", alive_cnt++);

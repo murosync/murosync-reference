@@ -257,12 +257,20 @@
 #define MUROSYNC_LNK_TEST_CNFG                      (0x020)  // Test Configuration
 
 	/*
-	Type        :   R/W[cite: 4]
-	Description :   [1:0] MODE_SEL: 0=Fixed, 1=Counter, 2=PRBS
+	Type        :   R/W
+	Description :   [1:0] MODE_SEL: 0=Fixed, 1=Toggle, 2=Counter
+	                [7:4] CH_MASK:  Channel select mask (1 = Test this channel, 0 = Ignore)
 	*/
 
 	#define MUROSYNC_LNK_TEST_CNFG_MODE_OFS               0
 	#define MUROSYNC_LNK_TEST_CNFG_MODE_MSK               (0x3u << MUROSYNC_LNK_TEST_CNFG_MODE_OFS)
+
+	#define MUROSYNC_LNK_TEST_MODE_FIXED                  0
+	#define MUROSYNC_LNK_TEST_MODE_TOGGLE                 1
+	#define MUROSYNC_LNK_TEST_MODE_COUNTER                2
+
+	#define MUROSYNC_LNK_TEST_CNFG_CH_MASK_OFS            4
+	#define MUROSYNC_LNK_TEST_CNFG_CH_MASK_MSK            (0xFu << MUROSYNC_LNK_TEST_CNFG_CH_MASK_OFS)
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////  LNK_TEST_PATT  ///////////////////////////////////////
