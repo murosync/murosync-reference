@@ -102,13 +102,16 @@ int murosync_serdes_bring_up(unsigned char loopback, int timeout_usec);
 /************************* LINK TEST ************************************/
 int murosync_serdes_link_test_set_mode(unsigned char mode);
 int murosync_serdes_link_test_set_ch_mask(unsigned char ch_mask);
+int murosync_serdes_link_test_set_pol_mask(unsigned char rx_pol_mask, unsigned char tx_pol_mask);
 int murosync_serdes_link_test_start(void);
 int murosync_serdes_link_test_stop(void);
 int murosync_serdes_link_test_reset_cnt(void);
 int murosync_serdes_link_test_set_patt(unsigned int pattern);
 int murosync_serdes_link_test_get_err_cnt(unsigned int *err_cnt);
 int murosync_serdes_link_test_get_wrd_cnt(unsigned int *wrd_cnt);
-int murosync_serdes_run_link_test(unsigned char mode, unsigned char ch_mask, unsigned int pattern, unsigned int test_time_ms);
+int murosync_serdes_run_link_test(unsigned char mode, unsigned char ch_mask, unsigned char rx_pol_mask, unsigned char tx_pol_mask, unsigned int pattern, unsigned int test_time_ms);
+void murosync_serdes_link_test_print_diag(void);
+void murosync_serdes_link_test_run_diagnostics(void);
 /************************************************************************/
 
 /******************************* TASK ***********************************/
@@ -117,3 +120,4 @@ void murosync_serdes_link_task(void);
 /************************************************************************/
 
 #endif /* MUROSYNC_SERDES_ARRAY_DRIVER_H_ */
+

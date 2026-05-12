@@ -105,7 +105,11 @@ module murosync_gt_wrapper #(
     
     // Recovered clock
     output wire gtwiz_userclk_rx_recclk_out,
-    output wire gtwiz_userclk_rx_recclk_active_out
+    output wire gtwiz_userclk_rx_recclk_active_out,
+
+    // 312.5 MHz GT datapath clocks (for clocking logic in RXUSRCLK2/TXUSRCLK2 domain)
+    output wire gtwiz_userclk_rx_usrclk2_out,
+    output wire gtwiz_userclk_tx_usrclk2_out
 );
 
     // --------------------------------------------------------------------------
@@ -167,10 +171,14 @@ module murosync_gt_wrapper #(
     // In SLAVE instantiation, RX_MASTER_CH = 0 corresponds to SLAVE[0] lane (in serdes_array packing).
     assign gtwiz_userclk_rx_recclk_out = gtwiz_userclk_rx_usrclk2;
 
-    // NOTE: gtwiz_userclk_rx_active_out is an "RXUSRCLK2 domain alive" latch (c lock toggled after reset).
+    // NOTE: gtwiz_userclk_rx_active_out is an "RXUSRCLK2 domain alive" latch (clock toggled after reset).
     // It does NOT guarantee CDR lock / link stability. For "true valid", combine with:
     //   rxcdrlock_out[RX_MASTER_CH] and gtwiz_reset_rx_cdr_stable_out.
     assign gtwiz_userclk_rx_recclk_active_out = gtwiz_userclk_rx_active_out;
+
+    // Export 312.5 MHz datapath clocks for external logic clocked in the GT user domain
+    assign gtwiz_userclk_rx_usrclk2_out = gtwiz_userclk_rx_usrclk2;
+    assign gtwiz_userclk_tx_usrclk2_out = gtwiz_userclk_tx_usrclk2;
 
     // --------------------------------------------------------------------------
     // GT Wizard ports wrapper (stable interface)

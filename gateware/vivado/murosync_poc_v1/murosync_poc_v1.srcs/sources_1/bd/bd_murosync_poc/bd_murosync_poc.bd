@@ -840,8 +840,17 @@
         "xci_path": "ip\\bd_murosync_poc_murosync_serdes_array_0_1\\bd_murosync_poc_murosync_serdes_array_0_1.xci",
         "inst_hier_path": "murosync_serdes_array_0",
         "parameters": {
+          "ADDR_WIDTH_NEEDED": {
+            "value": "8"
+          },
+          "C_S00_AXI_NUM_REGS": {
+            "value": "17"
+          },
           "MODE": {
             "value": "MASTER"
+          },
+          "OPT_MEM_ADDR_BITS": {
+            "value": "5"
           }
         },
         "interface_ports": {

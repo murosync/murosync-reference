@@ -34,7 +34,7 @@ module murosync_serdes_array_S00_AXI #(
 
     parameter integer C_S_AXI_DATA_WIDTH = 32,
     parameter integer C_S_AXI_ADDR_WIDTH = 6,
-    parameter integer C_S_AXI_NUM_REGS   = 12,
+    parameter integer C_S_AXI_NUM_REGS   = 17,
 
     /*localparam*/ integer ADDR_LSB          = (C_S_AXI_DATA_WIDTH/32) + 1,
     /*localparam*/ integer OPT_MEM_ADDR_BITS = $clog2(C_S_AXI_NUM_REGS) - 1

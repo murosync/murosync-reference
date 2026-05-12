@@ -290,8 +290,9 @@ module murosync_serdes_array_mode #(
         .qpll0outclk_out    (),
         .qpll0outrefclk_out (),
 
-        .rx8b10ben_in ({4{1'b0}}),
-        .tx8b10ben_in ({4{1'b0}}),
+        // 8B10B enabled — enables encoder/decoder on all 4 channels
+        .rx8b10ben_in ({4{1'b1}}),
+        .tx8b10ben_in ({4{1'b1}}),
         .txctrl0_in   (64'h0),
         .txctrl1_in   (64'h0),
         .txctrl2_in   (32'h0),
@@ -320,7 +321,13 @@ module murosync_serdes_array_mode #(
         .qpll0lock_out (),
         .qpll1lock_out (),
 
-        .pll_lock_out (pll_lock_int)
+        .pll_lock_out (pll_lock_int),
+
+        // Recovered / datapath clocks — not used in this mode wrapper
+        .gtwiz_userclk_rx_recclk_out        (),
+        .gtwiz_userclk_rx_recclk_active_out (),
+        .gtwiz_userclk_rx_usrclk2_out       (),
+        .gtwiz_userclk_tx_usrclk2_out       ()
     );
 
 endmodule

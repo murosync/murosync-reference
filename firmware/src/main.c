@@ -61,22 +61,40 @@ int main(void)
 
     murosync_print_banner();
 
-    /* SERDES bring-up: loopback=0 (normal), timeout=5 s */
+    /* ----------------------------------------------------------------
+     * Phase 1: Internal loopback (Near-End PCS, loopback=1)
+     * TX loops back to RX inside GT — FMC card not involved.
+     * PASS → RTL is correct, problem is in FMC/physical layer
+     * FAIL → Problem is in RTL (alignment or checker logic)
+     * ---------------------------------------------------------------- */
+    xil_printf("\r\n[MUROSYNC] === PHASE 1: INTERNAL LOOPBACK ===\r\n");
+    stat = murosync_serdes_bring_up(1, 5000000);
+    if (stat != XST_SUCCESS)
+    {
+        xil_printf("[MUROSYNC][ERROR] Internal loopback bring-up FAILED\r\n");
+    }
+    else
+    {
+        xil_printf("[MUROSYNC] Internal loopback active\r\n");
+        murosync_serdes_run_link_test(MUROSYNC_LNK_TEST_MODE_COUNTER, 0x1, 0x0, 0x0, 0x0, 2000);
+        murosync_serdes_run_link_test(MUROSYNC_LNK_TEST_MODE_COUNTER, 0x2, 0x0, 0x0, 0x0, 2000);
+        murosync_serdes_run_link_test(MUROSYNC_LNK_TEST_MODE_COUNTER, 0x4, 0x0, 0x0, 0x0, 2000);
+        murosync_serdes_run_link_test(MUROSYNC_LNK_TEST_MODE_COUNTER, 0x8, 0x0, 0x0, 0x0, 2000);
+    }
+
+    /* ----------------------------------------------------------------
+     * Phase 2: Normal mode — external FMC loopback
+     * ---------------------------------------------------------------- */
+    xil_printf("\r\n[MUROSYNC] === PHASE 2: EXTERNAL FMC LOOPBACK ===\r\n");
     stat = murosync_serdes_bring_up(0, 5000000);
     if (stat != XST_SUCCESS)
     {
-        xil_printf("\r\n[MUROSYNC][ERROR] Bring-up FAILED\r\n");
+        xil_printf("[MUROSYNC][ERROR] Bring-up FAILED\r\n");
         return XST_FAILURE;
     }
 
-    xil_printf("\r\n[MUROSYNC] Bring-up OK\r\n");
-
-    /* Run tests on each channel individually */
-    xil_printf("\r\n--- TESTING INDIVIDUAL CHANNELS ---\r\n");
-    murosync_serdes_run_link_test(MUROSYNC_LNK_TEST_MODE_COUNTER, 0x1, 0x0, 1000); // Ch 0
-    murosync_serdes_run_link_test(MUROSYNC_LNK_TEST_MODE_COUNTER, 0x2, 0x0, 1000); // Ch 1
-    murosync_serdes_run_link_test(MUROSYNC_LNK_TEST_MODE_COUNTER, 0x4, 0x0, 1000); // Ch 2
-    murosync_serdes_run_link_test(MUROSYNC_LNK_TEST_MODE_COUNTER, 0x8, 0x0, 1000); // Ch 3
+    xil_printf("[MUROSYNC] Bring-up OK\r\n");
+    murosync_serdes_link_test_run_diagnostics();
 
     for (;;)
     {
@@ -89,3 +107,5 @@ int main(void)
     cleanup_platform();
     return 0;
 }
+
+

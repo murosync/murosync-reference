@@ -34,7 +34,7 @@
 
 module murosync_serdes_array_axi_ctrl #(
     parameter integer C_S00_AXI_DATA_WIDTH = 32,
-    parameter integer C_S00_AXI_NUM_REGS   = 12,
+    parameter integer C_S00_AXI_NUM_REGS   = 17,  // +5 diagnostic registers (0x030..0x040)
 
     // Keep same address-width convention as top:
     parameter integer OPT_MEM_ADDR_BITS_P  = $clog2(C_S00_AXI_NUM_REGS),
@@ -88,10 +88,19 @@ module murosync_serdes_array_axi_ctrl #(
     //Link Integrity / Physical Loopback Testing
     output wire                                link_test_ctrl_rst_axi_pulse,
     output wire                                link_test_ctrl_en_core,
-    output wire [7:0]                          link_test_cnfg,
+    output wire [15:0]                         link_test_cnfg,
     output wire [31:0]                         link_test_patt,
     input  wire [31:0]                         link_test_err_cnt,
-    input  wire [31:0]                         link_test_wrd_cnt
+    input  wire [31:0]                         link_test_wrd_cnt,
+
+    // Diagnostic inputs from link test engine (rx_clk domain — 2FF sync below)
+    input  wire [3:0]                          link_test_fsm_state,
+    input  wire [3:0]                          link_test_rx_aligned,
+    input  wire [3:0]                          link_test_rx_comma_seen,
+    input  wire [3:0]                          link_test_rx_charisk,
+    input  wire                                link_test_checker_locked,
+    input  wire [63:0]                         link_test_rx_data,
+    input  wire [63:0]                         link_test_exp_data
 );
 
     wire axi_clk   = s00_axi_aclk;
@@ -117,7 +126,14 @@ module murosync_serdes_array_axi_ctrl #(
     localparam int SERDES_LNK_TEST_CNFG  = 'h8;  // RW Offset 0x20: [1:0] Test Mode, [7:4] Channel Mask
     localparam int SERDES_LNK_TEST_PATT  = 'h9;  // RW Offset 0x24: Fixed Test Pattern
     localparam int SERDES_LNK_RX_ERR_CNT = 'hA;  // RO Offset 0x28: RX Error Counter
-    localparam int SERDES_LNK_RX_WRD_CNT = 'hB;  // RO Offset 0x2C: RX Word Counter (Received)
+    localparam int SERDES_LNK_RX_WRD_CNT  = 'hB;  // RO Offset 0x2C: RX Word Counter
+
+    // Diagnostic registers (RO) — link test FSM internal state
+    localparam int SERDES_LNK_DIAG_STATUS  = 'hC;  // RO Offset 0x30
+    localparam int SERDES_LNK_DIAG_RX_LO   = 'hD;  // RO Offset 0x34
+    localparam int SERDES_LNK_DIAG_RX_HI   = 'hE;  // RO Offset 0x38
+    localparam int SERDES_LNK_DIAG_EXP_LO  = 'hF;  // RO Offset 0x3C
+    localparam int SERDES_LNK_DIAG_EXP_HI  = 'h10; // RO Offset 0x40
 
     // SERDES_CTRL bits (W1P)
     localparam int SERDES_CTRL_LINK_DOWN_LATCHED_RESET = 0;
@@ -334,7 +350,7 @@ module murosync_serdes_array_axi_ctrl #(
     // ------------------------------------------------------------
     wire       link_test_ctrl_en_axi  = slv_reg[SERDES_LNK_TEST_CTRL][LNK_TEST_CTRL_EN];
     wire       link_test_ctrl_rst_axi = slv_reg[SERDES_LNK_TEST_CTRL][LNK_TEST_CTRL_RST];
-    wire [7:0] link_test_cnfg_axi     = slv_reg[SERDES_LNK_TEST_CNFG][7:0];
+    wire [15:0] link_test_cnfg_axi    = slv_reg[SERDES_LNK_TEST_CNFG][15:0];
     assign     link_test_patt         = slv_reg[SERDES_LNK_TEST_PATT];
 
     murosync_cdc_slow_to_fast #(.SYNC_STAGES(3)) u_cdc_link_test_ctrl_rst
@@ -354,13 +370,13 @@ module murosync_serdes_array_axi_ctrl #(
     end
     assign link_test_ctrl_en_core = link_test_en_sync[1];
 
-    (* ASYNC_REG="TRUE" *) logic [7:0] link_test_cnfg_sync_0, link_test_cnfg_sync_1;
+    (* ASYNC_REG="TRUE" *) logic [15:0] link_test_cnfg_sync_0, link_test_cnfg_sync_1;
     always @(posedge core_clk or negedge core_rst_n) 
     begin
         if (!core_rst_n) 
         begin
-            link_test_cnfg_sync_0 <= 8'h00;
-            link_test_cnfg_sync_1 <= 8'h00;
+            link_test_cnfg_sync_0 <= 16'h0000;
+            link_test_cnfg_sync_1 <= 16'h0000;
         end 
         else 
         begin
@@ -398,6 +414,80 @@ module murosync_serdes_array_axi_ctrl #(
     assign axi_reg_rd[SERDES_LNK_TEST_CNFG] = slv_reg[SERDES_LNK_TEST_CNFG];
     assign axi_reg_rd[SERDES_LNK_TEST_PATT] = slv_reg[SERDES_LNK_TEST_PATT];
 
+    // ------------------------------------------------------------
+    // Diagnostic CDC: rx_clk domain → axi_clk
+    // Uses murosync_cdc_level_sync module instances (pureCOLD pattern).
+    // Vivado never optimizes away module instances.
+    // Debug-only: bits not coherent with each other, safe for monitoring.
+    // ------------------------------------------------------------
+
+    wire [3:0] diag_fsm_axi;
+    wire [3:0] diag_aligned_axi;
+    wire [3:0] diag_comma_axi;
+    wire [3:0] diag_charisk_axi;
+    wire       diag_locked_axi;
+
+    murosync_cdc_level_sync #(.WIDTH(4), .SYNC_STAGES(2)) u_cdc_diag_fsm (
+        .clk  (axi_clk),
+        .rst_n(axi_rst_n),
+        .in   (link_test_fsm_state),
+        .out  (diag_fsm_axi)
+    );
+
+    murosync_cdc_level_sync #(.WIDTH(4), .SYNC_STAGES(2)) u_cdc_diag_aligned (
+        .clk  (axi_clk),
+        .rst_n(axi_rst_n),
+        .in   (link_test_rx_aligned),
+        .out  (diag_aligned_axi)
+    );
+
+    murosync_cdc_level_sync #(.WIDTH(4), .SYNC_STAGES(2)) u_cdc_diag_comma (
+        .clk  (axi_clk),
+        .rst_n(axi_rst_n),
+        .in   (link_test_rx_comma_seen),
+        .out  (diag_comma_axi)
+    );
+
+    murosync_cdc_level_sync #(.WIDTH(4), .SYNC_STAGES(2)) u_cdc_diag_charisk (
+        .clk  (axi_clk),
+        .rst_n(axi_rst_n),
+        .in   (link_test_rx_charisk),
+        .out  (diag_charisk_axi)
+    );
+
+    murosync_cdc_level_sync #(.WIDTH(1), .SYNC_STAGES(2)) u_cdc_diag_locked (
+        .clk  (axi_clk),
+        .rst_n(axi_rst_n),
+        .in   (link_test_checker_locked),
+        .out  (diag_locked_axi)
+    );
+
+    // 64-bit buses: single-register sample (debug-only, no coherence guarantee)
+    (* keep = "true" *) logic [63:0] diag_rx_data_axi;
+    (* keep = "true" *) logic [63:0] diag_exp_data_axi;
+    always @(posedge axi_clk or negedge axi_rst_n) begin
+        if (!axi_rst_n) begin
+            diag_rx_data_axi  <= 64'h0;
+            diag_exp_data_axi <= 64'h0;
+        end else begin
+            diag_rx_data_axi  <= link_test_rx_data;
+            diag_exp_data_axi <= link_test_exp_data;
+        end
+    end
+
+    // LNK_DIAG_STATUS: [3:0] fsm | [7:4] aligned | [11:8] comma | [15:12] charisk | [16] locked
+    assign axi_reg_rd[SERDES_LNK_DIAG_STATUS] = {
+        15'h0,
+        diag_locked_axi,
+        diag_charisk_axi,
+        diag_comma_axi,
+        diag_aligned_axi,
+        diag_fsm_axi
+    };
+    assign axi_reg_rd[SERDES_LNK_DIAG_RX_LO]  = diag_rx_data_axi[31:0];
+    assign axi_reg_rd[SERDES_LNK_DIAG_RX_HI]  = diag_rx_data_axi[63:32];
+    assign axi_reg_rd[SERDES_LNK_DIAG_EXP_LO] = diag_exp_data_axi[31:0];
+    assign axi_reg_rd[SERDES_LNK_DIAG_EXP_HI] = diag_exp_data_axi[63:32];
 
 endmodule
 `default_nettype wire

@@ -260,6 +260,8 @@
 	Type        :   R/W
 	Description :   [1:0] MODE_SEL: 0=Fixed, 1=Toggle, 2=Counter
 	                [7:4] CH_MASK:  Channel select mask (1 = Test this channel, 0 = Ignore)
+	                [11:8] RX_POL_MASK: RX Logic Polarity Inversion Mask
+	                [15:12] TX_POL_MASK: TX Logic Polarity Inversion Mask
 	*/
 
 	#define MUROSYNC_LNK_TEST_CNFG_MODE_OFS               0
@@ -271,6 +273,12 @@
 
 	#define MUROSYNC_LNK_TEST_CNFG_CH_MASK_OFS            4
 	#define MUROSYNC_LNK_TEST_CNFG_CH_MASK_MSK            (0xFu << MUROSYNC_LNK_TEST_CNFG_CH_MASK_OFS)
+
+	#define MUROSYNC_LNK_TEST_CNFG_RX_POL_MASK_OFS        8
+	#define MUROSYNC_LNK_TEST_CNFG_RX_POL_MASK_MSK        (0xFu << MUROSYNC_LNK_TEST_CNFG_RX_POL_MASK_OFS)
+
+	#define MUROSYNC_LNK_TEST_CNFG_TX_POL_MASK_OFS        12
+	#define MUROSYNC_LNK_TEST_CNFG_TX_POL_MASK_MSK        (0xFu << MUROSYNC_LNK_TEST_CNFG_TX_POL_MASK_OFS)
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////  LNK_TEST_PATT  ///////////////////////////////////////
@@ -310,5 +318,44 @@
 	*/
 
 	#define MUROSYNC_LNK_RX_WRD_CNT_MSK                   (0xFFFFFFFFu)
+
+////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////  LINK TEST DIAGNOSTIC REGISTERS  //////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////
+
+#define MUROSYNC_LNK_DIAG_STATUS                (0x030)  // RO: FSM state + alignment
+
+	// [3:0]   FSM_STATE: 0=IDLE 1=CAPTURE_CFG 2=WAIT_ALIGN 3=SEARCH 4=LOCKED
+	// [7:4]   RX_ALIGNED:    rxbyteisaligned per channel [CH3..CH0]
+	// [11:8]  RX_COMMA_SEEN: sticky comma received per channel
+	// [15:12] RX_CHARISK:    current cycle K-symbol per channel
+	// [16]    CHECKER_LOCKED: 1 = FSM in ST_LOCKED
+
+	#define MUROSYNC_LNK_DIAG_FSM_STATE_OFS       0
+	#define MUROSYNC_LNK_DIAG_FSM_STATE_MSK       (0xFu << MUROSYNC_LNK_DIAG_FSM_STATE_OFS)
+
+	#define MUROSYNC_LNK_DIAG_RX_ALIGNED_OFS      4
+	#define MUROSYNC_LNK_DIAG_RX_ALIGNED_MSK      (0xFu << MUROSYNC_LNK_DIAG_RX_ALIGNED_OFS)
+
+	#define MUROSYNC_LNK_DIAG_RX_COMMA_OFS        8
+	#define MUROSYNC_LNK_DIAG_RX_COMMA_MSK        (0xFu << MUROSYNC_LNK_DIAG_RX_COMMA_OFS)
+
+	#define MUROSYNC_LNK_DIAG_RX_CHARISK_OFS      12
+	#define MUROSYNC_LNK_DIAG_RX_CHARISK_MSK      (0xFu << MUROSYNC_LNK_DIAG_RX_CHARISK_OFS)
+
+	#define MUROSYNC_LNK_DIAG_LOCKED_OFS          16
+	#define MUROSYNC_LNK_DIAG_LOCKED_MSK          (0x1u << MUROSYNC_LNK_DIAG_LOCKED_OFS)
+
+	// FSM state values — must match RTL localparam in murosync_serdes_link_test.sv
+	#define MUROSYNC_LNK_FSM_IDLE                 0u
+	#define MUROSYNC_LNK_FSM_CAPTURE_CFG          1u
+	#define MUROSYNC_LNK_FSM_WAIT_ALIGN           2u
+	#define MUROSYNC_LNK_FSM_SEARCH               3u
+	#define MUROSYNC_LNK_FSM_LOCKED               4u
+
+#define MUROSYNC_LNK_DIAG_RX_LO                 (0x034)  // RO: last received word [31:0]
+#define MUROSYNC_LNK_DIAG_RX_HI                 (0x038)  // RO: last received word [63:32]
+#define MUROSYNC_LNK_DIAG_EXP_LO                (0x03C)  // RO: current expected word [31:0]
+#define MUROSYNC_LNK_DIAG_EXP_HI                (0x040)  // RO: current expected word [63:32]
 
 #endif // MUROSYNC_SERDES_ARRAY_REGS_H

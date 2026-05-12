@@ -42,7 +42,7 @@ module murosync_serdes_array #(
     parameter integer C_S00_AXI_DATA_WIDTH = 32,
 
     // CTRL, LOOPBACK, STATUS, DBG_LO, DBG_HI, TEST_CONST, TEST_SCRATCH
-    parameter integer C_S00_AXI_NUM_REGS   = 12,
+    parameter integer C_S00_AXI_NUM_REGS   = 17,
 
     // Pattern copied from axis_wavecap_streamer.sv
     parameter integer OPT_MEM_ADDR_BITS    = $clog2(C_S00_AXI_NUM_REGS),
@@ -257,10 +257,19 @@ module murosync_serdes_array #(
     // AXI Link Test controls
     wire        link_test_ctrl_rst_axi_pulse;
     wire        link_test_ctrl_en_core;
-    wire [7:0]  link_test_cnfg;
+    wire [15:0] link_test_cnfg;
     wire [31:0] link_test_patt;
     wire [31:0] link_test_err_cnt;
     wire [31:0] link_test_wrd_cnt;
+
+    // Diagnostic wires: link test engine → axi_ctrl (rx_clk domain, synced in axi_ctrl)
+    wire [3:0]  link_test_diag_fsm_state;
+    wire [3:0]  link_test_diag_rx_aligned;
+    wire [3:0]  link_test_diag_rx_comma_seen;
+    wire [3:0]  link_test_diag_rx_charisk;
+    wire        link_test_diag_checker_locked;
+    wire [63:0] link_test_diag_rx_data;
+    wire [63:0] link_test_diag_exp_data;
 
     // ============================================================
     // LINK STATUS (bring-up definition: "GT is alive")
@@ -374,8 +383,41 @@ module murosync_serdes_array #(
         .link_test_cnfg               (link_test_cnfg),
         .link_test_patt               (link_test_patt),
         .link_test_err_cnt            (link_test_err_cnt),
-        .link_test_wrd_cnt            (link_test_wrd_cnt)
+        .link_test_wrd_cnt            (link_test_wrd_cnt),
+
+        // Diagnostic inputs from link test engine
+        .link_test_fsm_state          (link_test_diag_fsm_state),
+        .link_test_rx_aligned         (link_test_diag_rx_aligned),
+        .link_test_rx_comma_seen      (link_test_diag_rx_comma_seen),
+        .link_test_rx_charisk         (link_test_diag_rx_charisk),
+        .link_test_checker_locked     (link_test_diag_checker_locked),
+        .link_test_rx_data            (link_test_diag_rx_data),
+        .link_test_exp_data           (link_test_diag_exp_data)
     );
+
+    // Wire declarations - must come BEFORE GT wrapper instantiation to avoid implicit 1-bit nets
+    wire [63:0] link_test_tx_data;
+    wire [63:0] gtwiz_userdata_rx_int;
+    wire        gt_userclk_rx_usrclk2_int;
+    wire        gt_userclk_tx_usrclk2_int;
+    wire [7:0]  link_test_txctrl2;  // TXCHARISK: K28.5 comma control from link test
+    wire [31:0] rxctrl2_int;         // RXBYTEISALIGNED + RXBYTEISCOMMA from GT
+    wire [31:0] rxctrl3_int;         // RXCHARISK from GT — K-symbol indicator, 2 bits per channel
+    // rxbyteisaligned: per UG576, rxctrl2[2N+1]=rxbyteisaligned (level), rxctrl2[2N]=rxbyteiscomma (pulse)
+    wire [3:0]  rxbyteisaligned_int = {
+        rxctrl2_int[7],   // CH3: rxbyteisaligned
+        rxctrl2_int[5],   // CH2: rxbyteisaligned
+        rxctrl2_int[3],   // CH1: rxbyteisaligned
+        rxctrl2_int[1]    // CH0: rxbyteisaligned
+    };
+    // rxcharisk: rxctrl3[2N+1]=RXCHARISK byte1, rxctrl3[2N]=RXCHARISK byte0
+    // If either byte of a channel is K-symbol, the whole 16-bit word is K
+    wire [3:0]  rxcharisk_int = {
+        rxctrl3_int[7] | rxctrl3_int[6],  // CH3
+        rxctrl3_int[5] | rxctrl3_int[4],  // CH2
+        rxctrl3_int[3] | rxctrl3_int[2],  // CH1
+        rxctrl3_int[1] | rxctrl3_int[0]   // CH0
+    };
 
     // ============================================================
     // GT wrapper (simplified wrapper internally uses murosync_gtwizard_ports)
@@ -411,18 +453,18 @@ module murosync_serdes_array #(
         .qpll0outclk_out    (),
         .qpll0outrefclk_out (),
 
-        // 8b10b and TXCTRL defaults (safe)
-        .rx8b10ben_in ({4{1'b0}}),
-        .tx8b10ben_in ({4{1'b0}}),
+        // 8B10B encoder/decoder enabled — required for K28.5 comma detection
+        .rx8b10ben_in ({4{1'b1}}),
+        .tx8b10ben_in ({4{1'b1}}),
         .txctrl0_in   (64'h0),
         .txctrl1_in   (64'h0),
-        .txctrl2_in   (32'h0),
+        .txctrl2_in ({24'h0, link_test_txctrl2}), // TXCHARISK from link test
 
         .gtpowergood_out            (gtpowergood_int),
         .rxctrl0_out                (),
         .rxctrl1_out                (),
-        .rxctrl2_out                (),
-        .rxctrl3_out                (),
+        .rxctrl2_out                (rxctrl2_int),  // rxbyteisaligned + rxbyteiscomma
+        .rxctrl3_out                (rxctrl3_int),  // rxcharisk — K-symbol indicator
 
         .rxpmaresetdone_out         (rxpmaresetdone_int),
         .txpmaresetdone_out         (txpmaresetdone_int),
@@ -446,11 +488,11 @@ module murosync_serdes_array #(
         .pll_lock_out (pll_lock_int),
         
         .gtwiz_userclk_rx_recclk_out(gtwiz_userclk_rx_recclk_int),
-        .gtwiz_userclk_rx_recclk_active_out(gtwiz_userclk_rx_recclk_alive_int)
-    );
+        .gtwiz_userclk_rx_recclk_active_out(gtwiz_userclk_rx_recclk_alive_int),
 
-    wire [63:0] link_test_tx_data;
-    wire [63:0] gtwiz_userdata_rx_int;
+        .gtwiz_userclk_rx_usrclk2_out (gt_userclk_rx_usrclk2_int),
+        .gtwiz_userclk_tx_usrclk2_out (gt_userclk_tx_usrclk2_int)
+    );
 
     // ============================================================
     // Link Test Engine
@@ -458,17 +500,29 @@ module murosync_serdes_array #(
     murosync_serdes_link_test #(
         .IS_SLAVE (IS_SLAVE)
     ) u_link_test (
-        .tx_clk         (gtwiz_userclk_rx_recclk_int), // Reused rx_recclk for TX in bring-up
-        .rx_clk         (gtwiz_userclk_rx_recclk_int),
-        .core_rst_n     (~hb_gtwiz_reset_all_int),
-        .enable         (link_test_ctrl_en_core),
-        .reset_counters (link_test_ctrl_rst_axi_pulse),
-        .cnfg           (link_test_cnfg),
-        .fixed_patt     (link_test_patt),
-        .tx_data        (link_test_tx_data),
-        .rx_data        (gtwiz_userdata_rx_int),
-        .err_cnt        (link_test_err_cnt),
-        .wrd_cnt        (link_test_wrd_cnt)
+        .tx_clk          (gt_userclk_tx_usrclk2_int),
+        .rx_clk          (gt_userclk_rx_usrclk2_int),
+        .core_rst_n      (gtwiz_userclk_rx_active_int),
+        .enable          (link_test_ctrl_en_core),
+        .reset_counters  (link_test_ctrl_rst_axi_pulse),
+        .cnfg            (link_test_cnfg),
+        .fixed_patt      (link_test_patt),
+        .rxbyteisaligned (rxbyteisaligned_int),   // 8B10B byte alignment status
+        .rxcharisk       (rxcharisk_int),           // K-symbol indicator — skip in checker
+        .tx_data         (link_test_tx_data),
+        .rx_data         (gtwiz_userdata_rx_int),
+        .txctrl2_out     (link_test_txctrl2),      // 8B10B K-symbol control
+        .err_cnt         (link_test_err_cnt),
+        .wrd_cnt         (link_test_wrd_cnt),
+
+        // Diagnostic outputs → axi_ctrl → AXI registers → firmware
+        .diag_fsm_state      (link_test_diag_fsm_state),
+        .diag_rx_aligned     (link_test_diag_rx_aligned),
+        .diag_rx_comma_seen  (link_test_diag_rx_comma_seen),
+        .diag_rx_charisk     (link_test_diag_rx_charisk),
+        .diag_checker_locked (link_test_diag_checker_locked),
+        .diag_rx_data        (link_test_diag_rx_data),
+        .diag_exp_data       (link_test_diag_exp_data)
     );
 
 endmodule
