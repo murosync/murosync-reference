@@ -111,7 +111,33 @@ int murosync_serdes_link_test_get_err_cnt(unsigned int *err_cnt);
 int murosync_serdes_link_test_get_wrd_cnt(unsigned int *wrd_cnt);
 int murosync_serdes_run_link_test(unsigned char mode, unsigned char ch_mask, unsigned char rx_pol_mask, unsigned char tx_pol_mask, unsigned int pattern, unsigned int test_time_ms);
 void murosync_serdes_link_test_print_diag(void);
+void murosync_serdes_link_test_print_full_diag(void);
 void murosync_serdes_link_test_run_diagnostics(void);
+int murosync_serdes_connectivity_test(void);
+/************************************************************************/
+
+/************************* GT DEBUG *************************************/
+typedef struct {
+    uint8_t rxcommadet[4];
+    uint8_t rxbyteisaligned[4];
+    uint8_t rxbyterealign[4];
+    uint8_t rxbuf_status[4];
+    uint8_t txbuf_status[4];
+    uint8_t rxsyncdone[4];
+    uint8_t rxphaligndone[4];
+    uint8_t rxcdrlock[4];
+    uint8_t eyescandataerror[4];
+    uint8_t rxresetdone[4];
+    uint8_t txresetdone[4];
+    uint8_t rxpmaresetdone[4];
+    uint8_t txpmaresetdone[4];
+} murosync_gt_debug_status_t;
+
+int murosync_gt_debug_read_status(murosync_gt_debug_status_t *status);
+void murosync_gt_debug_print_status(murosync_gt_debug_status_t *status);
+int murosync_gt_debug_check_comma_detection(void);
+void murosync_gt_debug_monitor_comma_detection(int duration_seconds);
+void murosync_serdes_test_comma_detection(void);
 /************************************************************************/
 
 /******************************* TASK ***********************************/

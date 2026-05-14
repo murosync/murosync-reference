@@ -42,7 +42,7 @@ module murosync_serdes_array #(
     parameter integer C_S00_AXI_DATA_WIDTH = 32,
 
     // CTRL, LOOPBACK, STATUS, DBG_LO, DBG_HI, TEST_CONST, TEST_SCRATCH
-    parameter integer C_S00_AXI_NUM_REGS   = 17,
+    parameter integer C_S00_AXI_NUM_REGS   = 28,
 
     // Pattern copied from axis_wavecap_streamer.sv
     parameter integer OPT_MEM_ADDR_BITS    = $clog2(C_S00_AXI_NUM_REGS),
@@ -271,6 +271,15 @@ module murosync_serdes_array #(
     wire [63:0] link_test_diag_rx_data;
     wire [63:0] link_test_diag_exp_data;
 
+    // Diagnostic wires: link test engine → axi_ctrl (tx_clk domain, synced in axi_ctrl)
+    wire [63:0] link_test_diag_tx_data;
+    wire [15:0] link_test_diag_tx_counter_ch0;
+    wire [15:0] link_test_diag_tx_counter_ch1;
+    wire [15:0] link_test_diag_tx_counter_ch2;
+    wire [15:0] link_test_diag_tx_counter_ch3;
+    wire        link_test_diag_tx_comma_active;
+    wire [11:0] link_test_diag_tx_comma_count;
+
     // ============================================================
     // LINK STATUS (bring-up definition: "GT is alive")
     // ============================================================
@@ -392,7 +401,28 @@ module murosync_serdes_array #(
         .link_test_rx_charisk         (link_test_diag_rx_charisk),
         .link_test_checker_locked     (link_test_diag_checker_locked),
         .link_test_rx_data            (link_test_diag_rx_data),
-        .link_test_exp_data           (link_test_diag_exp_data)
+        .link_test_exp_data           (link_test_diag_exp_data),
+
+        // Diagnostic inputs from link test engine (TX)
+        .link_test_tx_data            (link_test_diag_tx_data),
+        .link_test_tx_counter_ch0     (link_test_diag_tx_counter_ch0),
+        .link_test_tx_counter_ch1     (link_test_diag_tx_counter_ch1),
+        .link_test_tx_counter_ch2     (link_test_diag_tx_counter_ch2),
+        .link_test_tx_counter_ch3     (link_test_diag_tx_counter_ch3),
+        .link_test_tx_comma_active    (link_test_diag_tx_comma_active),
+        .link_test_tx_comma_count     (link_test_diag_tx_comma_count),
+
+        // GT debug signals from wrapper
+        .gt_debug_rxcommadet_out      (gt_debug_rxcommadet_int),
+        .gt_debug_rxbyteisaligned_out (gt_debug_rxbyteisaligned_int),
+        .gt_debug_rxbyterealign_out   (gt_debug_rxbyterealign_int),
+        .gt_debug_rxbufstatus_out     (gt_debug_rxbufstatus_int),
+        .gt_debug_txbufstatus_out     (gt_debug_txbufstatus_int),
+        .gt_debug_rxsyncdone_out      (gt_debug_rxsyncdone_int),
+        .gt_debug_rxphaligndone_out   (gt_debug_rxphaligndone_int),
+        .gt_debug_eyescandataerror_out(gt_debug_eyescandataerror_int),
+        .gt_debug_rxresetdone_out     (gt_debug_rxresetdone_int),
+        .gt_debug_txresetdone_out     (gt_debug_txresetdone_int)
     );
 
     // Wire declarations - must come BEFORE GT wrapper instantiation to avoid implicit 1-bit nets
@@ -402,7 +432,18 @@ module murosync_serdes_array #(
     wire        gt_userclk_tx_usrclk2_int;
     wire [7:0]  link_test_txctrl2;  // TXCHARISK: K28.5 comma control from link test
     wire [31:0] rxctrl2_int;         // RXBYTEISALIGNED + RXBYTEISCOMMA from GT
-    wire [31:0] rxctrl3_int;         // RXCHARISK from GT — K-symbol indicator, 2 bits per channel
+    wire [63:0] rxctrl0_int;         // RXCHARISK from GT — K-symbol indicator
+
+    wire [3:0]  gt_debug_rxcommadet_int;
+    wire [3:0]  gt_debug_rxbyteisaligned_int;
+    wire [3:0]  gt_debug_rxbyterealign_int;
+    wire [11:0] gt_debug_rxbufstatus_int;
+    wire [7:0]  gt_debug_txbufstatus_int;
+    wire [3:0]  gt_debug_rxsyncdone_int;
+    wire [3:0]  gt_debug_rxphaligndone_int;
+    wire [3:0]  gt_debug_eyescandataerror_int;
+    wire [3:0]  gt_debug_rxresetdone_int;
+    wire [3:0]  gt_debug_txresetdone_int;
     // rxbyteisaligned: per UG576, rxctrl2[2N+1]=rxbyteisaligned (level), rxctrl2[2N]=rxbyteiscomma (pulse)
     wire [3:0]  rxbyteisaligned_int = {
         rxctrl2_int[7],   // CH3: rxbyteisaligned
@@ -410,13 +451,36 @@ module murosync_serdes_array #(
         rxctrl2_int[3],   // CH1: rxbyteisaligned
         rxctrl2_int[1]    // CH0: rxbyteisaligned
     };
-    // rxcharisk: rxctrl3[2N+1]=RXCHARISK byte1, rxctrl3[2N]=RXCHARISK byte0
-    // If either byte of a channel is K-symbol, the whole 16-bit word is K
+
+    // RXCHARISK Signal Extraction from RXCTRL0
+    // 
+    // GT Wizard packs RXCHARISK signals into RXCTRL0[7:0] with 2 bits per channel:
+    // - RXCTRL0[2N+1] = RXCHARISK for byte 1 (upper byte) of channel N
+    // - RXCTRL0[2N]   = RXCHARISK for byte 0 (lower byte) of channel N
+    //
+    // For 8B10B encoding with 16-bit user data width:
+    // - Each channel receives 2 bytes per clock cycle 
+    // - Each byte can independently contain a K-symbol (special control character)
+    // - We OR both bytes together because if EITHER byte contains a K-symbol,
+    //   the entire 16-bit word should be flagged as containing K-symbols
+    //
+    // RXCTRL0 bit mapping for 4 channels:
+    // [7] = CH3 byte1,  [6] = CH3 byte0
+    // [5] = CH2 byte1,  [4] = CH2 byte0  
+    // [3] = CH1 byte1,  [2] = CH1 byte0
+    // [1] = CH0 byte1,  [0] = CH0 byte0
+    //
+    // K-symbols (like comma characters 0xBC, 0x3C) are critical for:
+    // - Word alignment (finding byte boundaries in the serial stream)
+    // - Frame synchronization 
+    // - Protocol control signaling
+    //
+    // Reference: ADI util_adxcvr_xch.v line 3471: .RXCTRL0({rx_charisk_open_s, rx_charisk})
     wire [3:0]  rxcharisk_int = {
-        rxctrl3_int[7] | rxctrl3_int[6],  // CH3
-        rxctrl3_int[5] | rxctrl3_int[4],  // CH2
-        rxctrl3_int[3] | rxctrl3_int[2],  // CH1
-        rxctrl3_int[1] | rxctrl3_int[0]   // CH0
+        rxctrl0_int[7] | rxctrl0_int[6],  // CH3: K-symbol detected in either byte
+        rxctrl0_int[5] | rxctrl0_int[4],  // CH2: K-symbol detected in either byte
+        rxctrl0_int[3] | rxctrl0_int[2],  // CH1: K-symbol detected in either byte
+        rxctrl0_int[1] | rxctrl0_int[0]   // CH0: K-symbol detected in either byte
     };
 
     // ============================================================
@@ -461,10 +525,10 @@ module murosync_serdes_array #(
         .txctrl2_in ({24'h0, link_test_txctrl2}), // TXCHARISK from link test
 
         .gtpowergood_out            (gtpowergood_int),
-        .rxctrl0_out                (),
+        .rxctrl0_out                (rxctrl0_int),
         .rxctrl1_out                (),
         .rxctrl2_out                (rxctrl2_int),  // rxbyteisaligned + rxbyteiscomma
-        .rxctrl3_out                (rxctrl3_int),  // rxcharisk — K-symbol indicator
+        .rxctrl3_out                (),             // rxcharisk was moved to rxctrl0
 
         .rxpmaresetdone_out         (rxpmaresetdone_int),
         .txpmaresetdone_out         (txpmaresetdone_int),
@@ -475,6 +539,18 @@ module murosync_serdes_array #(
 
         .gtwiz_userclk_tx_active_out   (gtwiz_userclk_tx_active_int),
         .gtwiz_userclk_rx_active_out   (gtwiz_userclk_rx_active_int),
+
+        // GT debug signals
+        .gt_debug_rxcommadet_out      (gt_debug_rxcommadet_int),
+        .gt_debug_rxbyteisaligned_out (gt_debug_rxbyteisaligned_int),
+        .gt_debug_rxbyterealign_out   (gt_debug_rxbyterealign_int),
+        .gt_debug_rxbufstatus_out     (gt_debug_rxbufstatus_int),
+        .gt_debug_txbufstatus_out     (gt_debug_txbufstatus_int),
+        .gt_debug_rxsyncdone_out      (gt_debug_rxsyncdone_int),
+        .gt_debug_rxphaligndone_out   (gt_debug_rxphaligndone_int),
+        .gt_debug_eyescandataerror_out(gt_debug_eyescandataerror_int),
+        .gt_debug_rxresetdone_out     (gt_debug_rxresetdone_int),
+        .gt_debug_txresetdone_out     (gt_debug_txresetdone_int),
 
         // rollback-safe: force normal mode while debugging (3 bits per channel)
         //.loopback_in ({4{3'b000}}),
@@ -495,16 +571,55 @@ module murosync_serdes_array #(
     );
 
     // ============================================================
-    // Link Test Engine
+    // Link Test Engine — CDC into GT clock domains
     // ============================================================
+
+    // enable: freerun domain (link_test_ctrl_en_core) → rx_clk domain
+    wire link_test_enable_rx;
+    murosync_cdc_level_sync #(.WIDTH(1), .SYNC_STAGES(2)) u_cdc_lte_en_rx (
+        .clk   (gt_userclk_rx_usrclk2_int),
+        .rst_n (gtwiz_userclk_rx_active_int),
+        .in    (link_test_ctrl_en_core),
+        .out   (link_test_enable_rx)
+    );
+
+    // enable: freerun domain → tx_clk domain
+    wire link_test_enable_tx;
+    murosync_cdc_level_sync #(.WIDTH(1), .SYNC_STAGES(2)) u_cdc_lte_en_tx (
+        .clk   (gt_userclk_tx_usrclk2_int),
+        .rst_n (gtwiz_userclk_tx_active_int),
+        .in    (link_test_ctrl_en_core),
+        .out   (link_test_enable_tx)
+    );
+
+    // reset_counters: freerun domain → rx_clk domain
+    wire link_test_rst_cnt_rx;
+    murosync_cdc_level_sync #(.WIDTH(1), .SYNC_STAGES(2)) u_cdc_lte_rst_rx (
+        .clk   (gt_userclk_rx_usrclk2_int),
+        .rst_n (gtwiz_userclk_rx_active_int),
+        .in    (link_test_ctrl_rst_axi_pulse),
+        .out   (link_test_rst_cnt_rx)
+    );
+
+    // reset_counters: freerun domain → tx_clk domain
+    wire link_test_rst_cnt_tx;
+    murosync_cdc_level_sync #(.WIDTH(1), .SYNC_STAGES(2)) u_cdc_lte_rst_tx (
+        .clk   (gt_userclk_tx_usrclk2_int),
+        .rst_n (gtwiz_userclk_tx_active_int),
+        .in    (link_test_ctrl_rst_axi_pulse),
+        .out   (link_test_rst_cnt_tx)
+    );
+
     murosync_serdes_link_test #(
         .IS_SLAVE (IS_SLAVE)
     ) u_link_test (
-        .tx_clk          (gt_userclk_tx_usrclk2_int),
-        .rx_clk          (gt_userclk_rx_usrclk2_int),
-        .core_rst_n      (gtwiz_userclk_rx_active_int),
-        .enable          (link_test_ctrl_en_core),
-        .reset_counters  (link_test_ctrl_rst_axi_pulse),
+        .tx_clk            (gt_userclk_tx_usrclk2_int),
+        .rx_clk            (gt_userclk_rx_usrclk2_int),
+        .core_rst_n        (gtwiz_userclk_rx_active_int),
+        .tx_enable_in      (link_test_enable_tx),
+        .rx_enable_in      (link_test_enable_rx),
+        .tx_reset_counters (link_test_rst_cnt_tx),
+        .rx_reset_counters (link_test_rst_cnt_rx),
         .cnfg            (link_test_cnfg),
         .fixed_patt      (link_test_patt),
         .rxbyteisaligned (rxbyteisaligned_int),   // 8B10B byte alignment status
@@ -522,7 +637,16 @@ module murosync_serdes_array #(
         .diag_rx_charisk     (link_test_diag_rx_charisk),
         .diag_checker_locked (link_test_diag_checker_locked),
         .diag_rx_data        (link_test_diag_rx_data),
-        .diag_exp_data       (link_test_diag_exp_data)
+        .diag_exp_data       (link_test_diag_exp_data),
+
+        // Diagnostic outputs (TX)
+        .diag_tx_data           (link_test_diag_tx_data),
+        .diag_tx_counter_ch0    (link_test_diag_tx_counter_ch0),
+        .diag_tx_counter_ch1    (link_test_diag_tx_counter_ch1),
+        .diag_tx_counter_ch2    (link_test_diag_tx_counter_ch2),
+        .diag_tx_counter_ch3    (link_test_diag_tx_counter_ch3),
+        .diag_tx_comma_active   (link_test_diag_tx_comma_active),
+        .diag_tx_comma_count    (link_test_diag_tx_comma_count)
     );
 
 endmodule

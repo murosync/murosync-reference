@@ -94,6 +94,14 @@ int main(void)
     }
 
     xil_printf("[MUROSYNC] Bring-up OK\r\n");
+    
+    // Test physical FMC connectivity on all channels
+    murosync_serdes_connectivity_test();
+    
+    // Test GT comma detection
+    murosync_serdes_test_comma_detection();
+    
+    // Run full diagnostic suite
     murosync_serdes_link_test_run_diagnostics();
 
     for (;;)

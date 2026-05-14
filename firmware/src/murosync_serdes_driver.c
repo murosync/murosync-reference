@@ -317,6 +317,148 @@ int murosync_serdes_bring_up(unsigned char loopback, int timeout_usec)
 }
 /************************************************************************/
 
+/************************* GT DEBUG *************************************/
+/************************* GT DEBUG FUNCTIONS ****************************/
+ 
+int murosync_gt_debug_read_status(murosync_gt_debug_status_t *status) {
+    if (!status) return XST_FAILURE;
+    
+    uint32_t comma_reg, rxbuf_reg, txbuf_reg, sync_reg, signal_reg, reset_reg;
+    
+    // Read all GT debug registers
+    if (murosync_serdes_reg_rd(MUROSYNC_GT_DEBUG_COMMA_ALIGN_REG, &comma_reg) != XST_SUCCESS) return XST_FAILURE;
+    if (murosync_serdes_reg_rd(MUROSYNC_GT_DEBUG_RXBUF_STATUS_REG, &rxbuf_reg) != XST_SUCCESS) return XST_FAILURE;
+    if (murosync_serdes_reg_rd(MUROSYNC_GT_DEBUG_TXBUF_STATUS_REG, &txbuf_reg) != XST_SUCCESS) return XST_FAILURE;
+    if (murosync_serdes_reg_rd(MUROSYNC_GT_DEBUG_SYNC_STATUS_REG, &sync_reg) != XST_SUCCESS) return XST_FAILURE;
+    if (murosync_serdes_reg_rd(MUROSYNC_GT_DEBUG_SIGNAL_QUAL_REG, &signal_reg) != XST_SUCCESS) return XST_FAILURE;
+    if (murosync_serdes_reg_rd(MUROSYNC_GT_DEBUG_RESET_STATUS_REG, &reset_reg) != XST_SUCCESS) return XST_FAILURE;
+    
+    // Extract per-channel data
+    for (int ch = 0; ch < 4; ch++) {
+        // Comma detection and alignment (from COMMA_ALIGN register)
+        status->rxcommadet[ch] = (comma_reg >> (MUROSYNC_GT_DEBUG_RXCOMMADET_OFS + ch)) & 0x1;
+        status->rxbyteisaligned[ch] = (comma_reg >> (MUROSYNC_GT_DEBUG_RXBYTEISALIGNED_OFS + ch)) & 0x1;
+        status->rxbyterealign[ch] = (comma_reg >> (MUROSYNC_GT_DEBUG_RXBYTEREALIGN_OFS + ch)) & 0x1;
+        
+        // Buffer status (3 bits for RX, 2 bits for TX per channel)
+        status->rxbuf_status[ch] = (rxbuf_reg >> (ch * 3)) & 0x7;
+        status->txbuf_status[ch] = (txbuf_reg >> (ch * 2)) & 0x3;
+        
+        // Sync status
+        status->rxsyncdone[ch] = (sync_reg >> (MUROSYNC_GT_DEBUG_RXSYNCDONE_OFS + ch)) & 0x1;
+        status->rxphaligndone[ch] = (sync_reg >> (MUROSYNC_GT_DEBUG_RXPHALIGNDONE_OFS + ch)) & 0x1;
+        status->rxcdrlock[ch] = 0; // Not available in current GT config
+        
+        // Signal quality
+        status->eyescandataerror[ch] = (signal_reg >> ch) & 0x1;
+        
+        // Reset status
+        status->rxresetdone[ch] = (reset_reg >> ch) & 0x1;
+        status->txresetdone[ch] = (reset_reg >> (ch + 4)) & 0x1;
+        status->rxpmaresetdone[ch] = (reset_reg >> (ch + 8)) & 0x1;
+        status->txpmaresetdone[ch] = (reset_reg >> (ch + 12)) & 0x1;
+    }
+    
+    return XST_SUCCESS;
+}
+ 
+void murosync_gt_debug_print_status(murosync_gt_debug_status_t *status) {
+    xil_printf("\r\n=== GT Debug Status Report ===\r\n");
+    
+    xil_printf("COMMA DETECTION:\r\n");
+    for (int ch = 0; ch < 4; ch++) {
+        xil_printf("  CH%d: comma_det=%d byte_aligned=%d realign_events=%d\r\n",
+                   ch, status->rxcommadet[ch], status->rxbyteisaligned[ch], status->rxbyterealign[ch]);
+    }
+    
+    xil_printf("BUFFER STATUS:\r\n");
+    for (int ch = 0; ch < 4; ch++) {
+        xil_printf("  CH%d: rxbuf=0x%x txbuf=0x%x\r\n", 
+                   ch, status->rxbuf_status[ch], status->txbuf_status[ch]);
+    }
+    
+    xil_printf("SYNC STATUS:\r\n");
+    for (int ch = 0; ch < 4; ch++) {
+        xil_printf("  CH%d: sync_done=%d phase_align=%d\r\n",
+                   ch, status->rxsyncdone[ch], status->rxphaligndone[ch]);
+    }
+    
+    xil_printf("SIGNAL QUALITY:\r\n");
+    for (int ch = 0; ch < 4; ch++) {
+        xil_printf("  CH%d: eyescan_error=%d\r\n", ch, status->eyescandataerror[ch]);
+    }
+    
+    xil_printf("RESET STATUS:\r\n");
+    for (int ch = 0; ch < 4; ch++) {
+        xil_printf("  CH%d: rx_reset=%d tx_reset=%d rx_pma=%d tx_pma=%d\r\n",
+                   ch, status->rxresetdone[ch], status->txresetdone[ch], 
+                   status->rxpmaresetdone[ch], status->txpmaresetdone[ch]);
+    }
+}
+ 
+int murosync_gt_debug_check_comma_detection(void) {
+    uint32_t comma_reg;
+    if (murosync_serdes_reg_rd(MUROSYNC_GT_DEBUG_COMMA_ALIGN_REG, &comma_reg) != XST_SUCCESS) {
+        xil_printf("[GT_DEBUG][ERROR] Failed to read comma detection register\r\n");
+        return 0;
+    }
+    
+    uint8_t comma_det = (comma_reg & MUROSYNC_GT_DEBUG_RXCOMMADET_MSK) >> MUROSYNC_GT_DEBUG_RXCOMMADET_OFS;
+    uint8_t byte_aligned = (comma_reg & MUROSYNC_GT_DEBUG_RXBYTEISALIGNED_MSK) >> MUROSYNC_GT_DEBUG_RXBYTEISALIGNED_OFS;
+    
+    xil_printf("[GT_DEBUG] Comma check: comma_det=0x%x byte_aligned=0x%x\r\n", comma_det, byte_aligned);
+    
+    return (comma_det != 0) && (byte_aligned != 0);
+}
+ 
+void murosync_gt_debug_monitor_comma_detection(int duration_seconds) {
+    xil_printf("=== Monitoring GT Comma Detection for %d seconds ===\r\n", duration_seconds);
+    
+    for (int i = 0; i < duration_seconds; i++) {
+        uint32_t comma_reg;
+        if (murosync_serdes_reg_rd(MUROSYNC_GT_DEBUG_COMMA_ALIGN_REG, &comma_reg) == XST_SUCCESS) {
+            uint8_t comma_det = (comma_reg & MUROSYNC_GT_DEBUG_RXCOMMADET_MSK) >> MUROSYNC_GT_DEBUG_RXCOMMADET_OFS;
+            uint8_t byte_aligned = (comma_reg & MUROSYNC_GT_DEBUG_RXBYTEISALIGNED_MSK) >> MUROSYNC_GT_DEBUG_RXBYTEISALIGNED_OFS;
+            uint8_t realign_events = (comma_reg & MUROSYNC_GT_DEBUG_RXBYTEREALIGN_MSK) >> MUROSYNC_GT_DEBUG_RXBYTEREALIGN_OFS;
+            
+            xil_printf("T+%02d: comma=0x%x aligned=0x%x realign=0x%x\r\n", 
+                       i, comma_det, byte_aligned, realign_events);
+        } else {
+            xil_printf("T+%02d: [ERROR] Register read failed\r\n", i);
+        }
+        
+        usleep(1000000); // 1 second delay
+    }
+}
+ 
+void murosync_serdes_test_comma_detection(void) {
+    xil_printf("\r\n[MUROSYNC] === GT COMMA DETECTION TEST ===\r\n");
+    
+    // Quick check first
+    int comma_ok = murosync_gt_debug_check_comma_detection();
+    
+    if (comma_ok) {
+        xil_printf("[MUROSYNC] SUCCESS: GT comma detection working!\r\n");
+    } else {
+        xil_printf("[MUROSYNC] PROBLEM: No comma detection - analyzing...\r\n");
+        
+        // Read full GT debug status
+        murosync_gt_debug_status_t status;
+        if (murosync_gt_debug_read_status(&status) == XST_SUCCESS) {
+            murosync_gt_debug_print_status(&status);
+        } else {
+            xil_printf("[MUROSYNC][ERROR] Failed to read GT debug status\r\n");
+        }
+    }
+    
+    // Monitor for 5 seconds to see dynamic behavior
+    xil_printf("\r\n[MUROSYNC] Monitoring comma detection...\r\n");
+    murosync_gt_debug_monitor_comma_detection(5);
+    
+    xil_printf("[MUROSYNC] === GT COMMA DETECTION TEST COMPLETE ===\r\n\r\n");
+}
+/************************************************************************/
+
 /************************* LINK TEST ************************************/
 
 int murosync_serdes_link_test_set_mode(unsigned char mode)
@@ -388,14 +530,22 @@ int murosync_serdes_run_link_test(unsigned char mode, unsigned char ch_mask, uns
     xil_printf("\t\tPattern     : 0x%08X\r\n", pattern);
     xil_printf("\t\tDuration    : %u ms\r\n", test_time_ms);
 
-    // 1. Reset counters
+    // 1. Reset counters & Extended reset sequence for clean state
     if (murosync_serdes_link_test_reset_cnt() != XST_SUCCESS)
     {
         xil_printf("\t\tERROR: Failed to reset counters\r\n");
         return XST_FAILURE;
     }
 
-    usleep(1000); // 1 ms delay
+    usleep(10000); // 10ms delay for reset propagation
+
+    // Disable test engine 
+    if (murosync_serdes_link_test_stop() != XST_SUCCESS) {
+        xil_printf("\t\tERROR: Failed to stop test\r\n");
+        return XST_FAILURE;
+    }
+
+    usleep(5000); // 5ms delay
 
     // 2. Set channel mask
     if (murosync_serdes_link_test_set_ch_mask(ch_mask) != XST_SUCCESS)
@@ -514,6 +664,52 @@ void murosync_serdes_link_test_print_diag(void)
     xil_printf("\t[DIAG] EXP data    : 0x%08X%08X\r\n", ex_hi, ex_lo);
 }
 
+void murosync_serdes_link_test_print_full_diag(void)
+{
+    unsigned int tx_lo, tx_hi, tx_cnt_lo, tx_cnt_hi, tx_stat;
+    unsigned int diag, rx_lo, rx_hi, exp_lo, exp_hi;
+
+    // Read all diagnostic registers
+    murosync_serdes_reg_rd(MUROSYNC_LNK_DIAG_TX_DATA_LO, &tx_lo);
+    murosync_serdes_reg_rd(MUROSYNC_LNK_DIAG_TX_DATA_HI, &tx_hi);
+    murosync_serdes_reg_rd(MUROSYNC_LNK_DIAG_TX_COUNTERS_LO, &tx_cnt_lo);
+    murosync_serdes_reg_rd(MUROSYNC_LNK_DIAG_TX_COUNTERS_HI, &tx_cnt_hi);
+    murosync_serdes_reg_rd(MUROSYNC_LNK_DIAG_TX_STATUS, &tx_stat);
+    
+    murosync_serdes_reg_rd(MUROSYNC_LNK_DIAG_STATUS, &diag);
+    murosync_serdes_reg_rd(MUROSYNC_LNK_DIAG_RX_LO, &rx_lo);
+    murosync_serdes_reg_rd(MUROSYNC_LNK_DIAG_RX_HI, &rx_hi);
+    murosync_serdes_reg_rd(MUROSYNC_LNK_DIAG_EXP_LO, &exp_lo);
+    murosync_serdes_reg_rd(MUROSYNC_LNK_DIAG_EXP_HI, &exp_hi);
+
+    // Print TX state
+    xil_printf("\t[TX] Data        : 0x%08X%08X\r\n", tx_hi, tx_lo);
+    xil_printf("\t[TX] Counters    : CH3=%u CH2=%u CH1=%u CH0=%u\r\n", 
+               (tx_cnt_hi >> 16) & 0xFFFF, tx_cnt_hi & 0xFFFF, 
+               (tx_cnt_lo >> 16) & 0xFFFF, tx_cnt_lo & 0xFFFF);
+    xil_printf("\t[TX] Comma       : %s (count=%u)\r\n", 
+               (tx_stat & 1) ? "ACTIVE" : "DATA", (tx_stat >> 1) & 0xFFF);
+    
+    // Print RX state
+    unsigned int fsm = (diag & 0xF);
+    xil_printf("\t[RX] FSM         : %u (%s)\r\n", fsm, 
+               (fsm==0)?"IDLE":(fsm==1)?"CAPTURE_CFG":(fsm==2)?"WAIT_ALIGN":
+               (fsm==3)?"SEARCH":(fsm==4)?"LOCKED":"UNKNOWN");
+               
+    unsigned int aligned = (diag >> 4) & 0xF;
+    unsigned int comma   = (diag >> 8) & 0xF;
+    unsigned int charisk = (diag >> 12) & 0xF;
+    unsigned int locked  = (diag >> 16) & 1;
+               
+    xil_printf("\t[RX] aligned     : 0x%X\r\n", aligned);
+    xil_printf("\t[RX] comma_seen  : 0x%X\r\n", comma);
+    xil_printf("\t[RX] charisk     : 0x%X\r\n", charisk);
+    xil_printf("\t[RX] locked      : %u\r\n", locked);
+               
+    xil_printf("\t[RX] Data        : 0x%08X%08X\r\n", rx_hi, rx_lo);
+    xil_printf("\t[RX] Expected    : 0x%08X%08X\r\n", exp_hi, exp_lo);
+}
+
 static void murosync_serdes_link_test_run_one(
     const char   *label,
     unsigned char mode,
@@ -531,7 +727,7 @@ static void murosync_serdes_link_test_run_one(
     // Read diagnostics immediately after stop — FSM will be IDLE but
     // aligned/comma_seen are sticky and reflect what happened during the run
     xil_printf("\t[DIAG after 500ms run]\r\n");
-    murosync_serdes_link_test_print_diag();
+    murosync_serdes_link_test_print_full_diag();
 
     // Phase 2: full duration run to get accurate word/error counts
     murosync_serdes_run_link_test(mode, ch_mask, rx_pol, tx_pol, pattern, duration_ms);
@@ -562,6 +758,18 @@ void murosync_serdes_link_test_run_diagnostics(void)
     murosync_serdes_link_test_run_one(
         "P/N SWAP CHECK CH0 rx_pol=1",
         MUROSYNC_LNK_TEST_MODE_COUNTER, 0x1, 0x1, 0x0, 0x0, 2000);
+}
+
+int murosync_serdes_connectivity_test(void) {
+    xil_printf("\r\n=== RUNNING CONNECTIVITY TEST ===\r\n");
+    for (int ch = 0; ch < 4; ch++) {
+        unsigned char ch_mask = (1 << ch);
+        // Run short FIXED pattern test on single channel
+        int result = murosync_serdes_run_link_test(
+            MUROSYNC_LNK_TEST_MODE_FIXED, ch_mask, 0, 0, 0xAAAAAAAA, 100);
+        xil_printf("CH%d: %s\r\n", ch, (result == XST_SUCCESS) ? "CONNECTED" : "DISCONNECTED");
+    }
+    return XST_SUCCESS;
 }
 
 /************************************************************************/

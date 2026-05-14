@@ -110,6 +110,18 @@ module murosync_gtwizard_ports #(
     // NOTE: your current gtwizard_ultrascale_0 top does NOT have loopback_in port enabled.
     input  wire [3*NCH-1:0] loopback_in,
 
+    // ---------------- GT Debug Ports ----------------
+    output wire [NCH-1:0]   rxcommadet_out,
+    output wire [NCH-1:0]   rxbyteisaligned_out,
+    output wire [NCH-1:0]   rxbyterealign_out,
+    output wire [3*NCH-1:0] rxbufstatus_out,
+    output wire [2*NCH-1:0] txbufstatus_out,
+    output wire [NCH-1:0]   rxsyncdone_out,
+    output wire [NCH-1:0]   rxphaligndone_out,
+    output wire [NCH-1:0]   eyescandataerror_out,
+    output wire [NCH-1:0]   rxresetdone_out,
+    output wire [NCH-1:0]   txresetdone_out,
+
     // ---------------- Superset exports ----------------
     output wire           userclk_tx_active_out,
     output wire           userclk_rx_active_out,
@@ -161,6 +173,12 @@ module murosync_gtwizard_ports #(
         .txctrl1_in                         (txctrl1_in),
         .txctrl2_in                         (txctrl2_in),
 
+        // Comma detection and alignment controls
+        .rxcommadeten_in                    ({NCH{1'b1}}),
+        .rxmcommaalignen_in                 ({NCH{1'b1}}),
+        .rxpcommaalignen_in                 ({NCH{1'b1}}),
+        .rxslide_in                         ({NCH{1'b0}}),
+
         .rxusrclk_in                        (rxusrclk_in),
         .rxusrclk2_in                       (rxusrclk2_in),
         .txusrclk_in                        (txusrclk_in),
@@ -182,6 +200,17 @@ module murosync_gtwizard_ports #(
 
         .rxpmaresetdone_out                 (rxpmaresetdone_out),
         .txpmaresetdone_out                 (txpmaresetdone_out),
+
+        .rxcommadet_out                     (rxcommadet_out),
+        .rxbyteisaligned_out                (rxbyteisaligned_out),
+        .rxbyterealign_out                  (rxbyterealign_out),
+        .rxbufstatus_out                    (rxbufstatus_out),
+        .txbufstatus_out                    (txbufstatus_out),
+        .rxsyncdone_out                     (rxsyncdone_out),
+        .rxphaligndone_out                  (rxphaligndone_out),
+        .eyescandataerror_out               (eyescandataerror_out),
+        .rxresetdone_out                    (rxresetdone_out),
+        .txresetdone_out                    (txresetdone_out),
 
         .loopback_in                        (loopback_in)
     );

@@ -100,7 +100,30 @@ module murosync_serdes_array_axi_ctrl #(
     input  wire [3:0]                          link_test_rx_charisk,
     input  wire                                link_test_checker_locked,
     input  wire [63:0]                         link_test_rx_data,
-    input  wire [63:0]                         link_test_exp_data
+    input  wire [63:0]                         link_test_exp_data,
+
+    // Diagnostic inputs from link test engine (tx_clk domain — 2FF sync below)
+    input  wire [63:0]                         link_test_tx_data,
+    input  wire [15:0]                         link_test_tx_counter_ch0,
+    input  wire [15:0]                         link_test_tx_counter_ch1,
+    input  wire [15:0]                         link_test_tx_counter_ch2,
+    input  wire [15:0]                         link_test_tx_counter_ch3,
+    input  wire                                link_test_tx_comma_active,
+    input  wire [11:0]                         link_test_tx_comma_count,
+
+    //=== GT DEBUG INPUT PORTS ===//
+    input wire [3:0]  gt_debug_rxcommadet_out,
+    input wire [3:0]  gt_debug_rxbyteisaligned_out,
+    input wire [3:0]  gt_debug_rxbyterealign_out,
+    input wire [11:0] gt_debug_rxbufstatus_out, 
+    input wire [7:0]  gt_debug_txbufstatus_out,
+    input wire [3:0]  gt_debug_rxsyncdone_out,
+    input wire [3:0]  gt_debug_rxphaligndone_out,
+    input wire [3:0]  gt_debug_eyescandataerror_out,
+    input wire [3:0]  gt_debug_rxresetdone_out,
+    input wire [3:0]  gt_debug_txresetdone_out,
+    input wire [3:0]  gt_debug_rxpmaresetdone_out,
+    input wire [3:0]  gt_debug_txpmaresetdone_out
 );
 
     wire axi_clk   = s00_axi_aclk;
@@ -134,6 +157,20 @@ module murosync_serdes_array_axi_ctrl #(
     localparam int SERDES_LNK_DIAG_RX_HI   = 'hE;  // RO Offset 0x38
     localparam int SERDES_LNK_DIAG_EXP_LO  = 'hF;  // RO Offset 0x3C
     localparam int SERDES_LNK_DIAG_EXP_HI  = 'h10; // RO Offset 0x40
+
+    localparam int SERDES_LNK_DIAG_TX_DATA_LO     = 'h11; // RO Offset 0x44
+    localparam int SERDES_LNK_DIAG_TX_DATA_HI     = 'h12; // RO Offset 0x48
+    localparam int SERDES_LNK_DIAG_TX_COUNTERS_LO = 'h13; // RO Offset 0x4C (CH1, CH0)
+    localparam int SERDES_LNK_DIAG_TX_COUNTERS_HI = 'h14; // RO Offset 0x50 (CH3, CH2)
+    localparam int SERDES_LNK_DIAG_TX_STATUS      = 'h15; // RO Offset 0x54
+
+    // GT DEBUG REGISTERS
+    localparam int GT_DEBUG_COMMA_ALIGN  = 'h16; // RO Offset 0x58
+    localparam int GT_DEBUG_RXBUF_STATUS = 'h17; // RO Offset 0x5C
+    localparam int GT_DEBUG_TXBUF_STATUS = 'h18; // RO Offset 0x60
+    localparam int GT_DEBUG_SYNC_STATUS  = 'h19; // RO Offset 0x64
+    localparam int GT_DEBUG_SIGNAL_QUAL  = 'h1A; // RO Offset 0x68
+    localparam int GT_DEBUG_RESET_STATUS = 'h1B; // RO Offset 0x6C
 
     // SERDES_CTRL bits (W1P)
     localparam int SERDES_CTRL_LINK_DOWN_LATCHED_RESET = 0;
@@ -475,6 +512,23 @@ module murosync_serdes_array_axi_ctrl #(
         end
     end
 
+    // TX diagnostic registers CDC
+    (* keep = "true" *) logic [63:0] diag_tx_data_axi;
+    (* keep = "true" *) logic [63:0] diag_tx_counters_axi;
+    (* keep = "true" *) logic [31:0] diag_tx_status_axi;
+
+    always @(posedge axi_clk or negedge axi_rst_n) begin
+        if (!axi_rst_n) begin
+            diag_tx_data_axi     <= 64'h0;
+            diag_tx_counters_axi <= 64'h0;
+            diag_tx_status_axi   <= 32'h0;
+        end else begin
+            diag_tx_data_axi     <= link_test_tx_data;
+            diag_tx_counters_axi <= {link_test_tx_counter_ch3, link_test_tx_counter_ch2, link_test_tx_counter_ch1, link_test_tx_counter_ch0};
+            diag_tx_status_axi   <= {19'h0, link_test_tx_comma_count, link_test_tx_comma_active};
+        end
+    end
+
     // LNK_DIAG_STATUS: [3:0] fsm | [7:4] aligned | [11:8] comma | [15:12] charisk | [16] locked
     assign axi_reg_rd[SERDES_LNK_DIAG_STATUS] = {
         15'h0,
@@ -488,6 +542,45 @@ module murosync_serdes_array_axi_ctrl #(
     assign axi_reg_rd[SERDES_LNK_DIAG_RX_HI]  = diag_rx_data_axi[63:32];
     assign axi_reg_rd[SERDES_LNK_DIAG_EXP_LO] = diag_exp_data_axi[31:0];
     assign axi_reg_rd[SERDES_LNK_DIAG_EXP_HI] = diag_exp_data_axi[63:32];
+
+    assign axi_reg_rd[SERDES_LNK_DIAG_TX_DATA_LO]     = diag_tx_data_axi[31:0];
+    assign axi_reg_rd[SERDES_LNK_DIAG_TX_DATA_HI]     = diag_tx_data_axi[63:32];
+    assign axi_reg_rd[SERDES_LNK_DIAG_TX_COUNTERS_LO] = diag_tx_counters_axi[31:0];
+    assign axi_reg_rd[SERDES_LNK_DIAG_TX_COUNTERS_HI] = diag_tx_counters_axi[63:32];
+    assign axi_reg_rd[SERDES_LNK_DIAG_TX_STATUS]      = diag_tx_status_axi;
+
+    // GT DEBUG REGISTERS CDC
+    (* keep = "true" *) logic [31:0] gt_debug_comma_align_axi;
+    (* keep = "true" *) logic [31:0] gt_debug_rxbuf_status_axi;
+    (* keep = "true" *) logic [31:0] gt_debug_txbuf_status_axi;
+    (* keep = "true" *) logic [31:0] gt_debug_sync_status_axi;
+    (* keep = "true" *) logic [31:0] gt_debug_signal_qual_axi;
+    (* keep = "true" *) logic [31:0] gt_debug_reset_status_axi;
+
+    always @(posedge axi_clk or negedge axi_rst_n) begin
+        if (!axi_rst_n) begin
+            gt_debug_comma_align_axi  <= 32'h0;
+            gt_debug_rxbuf_status_axi <= 32'h0;
+            gt_debug_txbuf_status_axi <= 32'h0;
+            gt_debug_sync_status_axi  <= 32'h0;
+            gt_debug_signal_qual_axi  <= 32'h0;
+            gt_debug_reset_status_axi <= 32'h0;
+        end else begin
+            gt_debug_comma_align_axi  <= {16'b0, gt_debug_rxbyterealign_out, gt_debug_rxbyteisaligned_out, gt_debug_rxcommadet_out};
+            gt_debug_rxbuf_status_axi <= {20'b0, gt_debug_rxbufstatus_out};
+            gt_debug_txbuf_status_axi <= {24'b0, gt_debug_txbufstatus_out};
+            gt_debug_sync_status_axi  <= {20'b0, gt_debug_rxphaligndone_out, gt_debug_rxsyncdone_out}; // Note: rxcdrlock_out is not available natively in all configs, using just the others
+            gt_debug_signal_qual_axi  <= {28'b0, gt_debug_eyescandataerror_out};
+            gt_debug_reset_status_axi <= {16'b0, gt_debug_txpmaresetdone_out, gt_debug_rxpmaresetdone_out, gt_debug_txresetdone_out, gt_debug_rxresetdone_out};
+        end
+    end
+
+    assign axi_reg_rd[GT_DEBUG_COMMA_ALIGN]  = gt_debug_comma_align_axi;
+    assign axi_reg_rd[GT_DEBUG_RXBUF_STATUS] = gt_debug_rxbuf_status_axi;
+    assign axi_reg_rd[GT_DEBUG_TXBUF_STATUS] = gt_debug_txbuf_status_axi;
+    assign axi_reg_rd[GT_DEBUG_SYNC_STATUS]  = gt_debug_sync_status_axi;
+    assign axi_reg_rd[GT_DEBUG_SIGNAL_QUAL]  = gt_debug_signal_qual_axi;
+    assign axi_reg_rd[GT_DEBUG_RESET_STATUS] = gt_debug_reset_status_axi;
 
 endmodule
 `default_nettype wire

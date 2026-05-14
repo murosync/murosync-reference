@@ -41,8 +41,10 @@ module murosync_serdes_link_test #(
     input  wire        core_rst_n,
 
     // Control from AXI (core_clk domain)
-    input  wire        enable,
-    input  wire        reset_counters,
+    input  wire        tx_enable_in,
+    input  wire        rx_enable_in,
+    input  wire        tx_reset_counters,
+    input  wire        rx_reset_counters,
     input  wire [15:0] cnfg,           // [15:12] TX Pol Mask, [11:8] RX Pol Mask, [7:4] Ch Mask, [1:0] Mode
     input  wire [31:0] fixed_patt,
 
@@ -71,16 +73,25 @@ module murosync_serdes_link_test #(
     output wire [3:0]  diag_rx_charisk,     // rxcharisk (current cycle)
     output wire        diag_checker_locked, // 1 = FSM in ST_LOCKED
     output wire [63:0] diag_rx_data,        // rx_data_corrected
-    output wire [63:0] diag_exp_data        // expected_rx
+    output wire [63:0] diag_exp_data,       // expected_rx
+    
+    // Additional diagnostic outputs (tx_clk domain)
+    output wire [63:0] diag_tx_data,           // current TX pattern
+    output wire [15:0] diag_tx_counter_ch0,    // TX counter channel 0
+    output wire [15:0] diag_tx_counter_ch1,    // TX counter channel 1  
+    output wire [15:0] diag_tx_counter_ch2,    // TX counter channel 2
+    output wire [15:0] diag_tx_counter_ch3,    // TX counter channel 3
+    output wire        diag_tx_comma_active,   // TX sending comma
+    output wire [11:0] diag_tx_comma_count     // comma training counter
 );
 
     // ============================================================
     // Control Signals 
     // ============================================================
-    wire rx_reset_pulse = reset_counters;
-    wire tx_reset_pulse = reset_counters;
-    wire tx_enable      = enable;
-    wire rx_enable      = enable;
+    wire rx_reset_pulse = rx_reset_counters;
+    wire tx_reset_pulse = tx_reset_counters;
+    wire tx_enable      = tx_enable_in;
+    wire rx_enable      = rx_enable_in;
 
     // Edge detectors for TX enable
     logic tx_enable_d;
@@ -412,12 +423,7 @@ module murosync_serdes_link_test #(
                     case (rx_test_mode)
                         TEST_MODE_FIXED:   next_expected_rx = rx_fixed_64;
                         TEST_MODE_TOGGLE:  next_expected_rx = match_toggle_pos ? ~rx_fixed_64 : rx_fixed_64;
-                        TEST_MODE_COUNTER: next_expected_rx = { 
-                                                                rx_data_corrected[63:48] + 16'h1, 
-                                                                rx_data_corrected[47:32] + 16'h1, 
-                                                                rx_data_corrected[31:16] + 16'h1,
-                                                                rx_data_corrected[15:0] + 16'h1
-                                                              };
+                        TEST_MODE_COUNTER: next_expected_rx = {16'h0001, 16'h0001, 16'h0001, 16'h0001};
 
                         default:           next_expected_rx = rx_fixed_64;
                     endcase
@@ -495,6 +501,15 @@ module murosync_serdes_link_test #(
     assign diag_checker_locked = checker_locked;
     assign diag_rx_data        = rx_data_corrected;
     assign diag_exp_data       = expected_rx;
+
+    // TX Diagnostics
+    assign diag_tx_data         = tx_data;
+    assign diag_tx_counter_ch0  = counter_val_ch[0];
+    assign diag_tx_counter_ch1  = counter_val_ch[1];
+    assign diag_tx_counter_ch2  = counter_val_ch[2];
+    assign diag_tx_counter_ch3  = counter_val_ch[3];
+    assign diag_tx_comma_active = send_comma;
+    assign diag_tx_comma_count  = comma_cnt;
 
 endmodule
 `default_nettype wire

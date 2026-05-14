@@ -109,7 +109,19 @@ module murosync_gt_wrapper #(
 
     // 312.5 MHz GT datapath clocks (for clocking logic in RXUSRCLK2/TXUSRCLK2 domain)
     output wire gtwiz_userclk_rx_usrclk2_out,
-    output wire gtwiz_userclk_tx_usrclk2_out
+    output wire gtwiz_userclk_tx_usrclk2_out,
+
+    //=== GT DEBUG PORTS ===//
+    output wire [NCH-1:0]   gt_debug_rxcommadet_out,
+    output wire [NCH-1:0]   gt_debug_rxbyteisaligned_out, 
+    output wire [NCH-1:0]   gt_debug_rxbyterealign_out,
+    output wire [3*NCH-1:0] gt_debug_rxbufstatus_out,
+    output wire [2*NCH-1:0] gt_debug_txbufstatus_out,
+    output wire [NCH-1:0]   gt_debug_rxsyncdone_out,
+    output wire [NCH-1:0]   gt_debug_rxphaligndone_out,
+    output wire [NCH-1:0]   gt_debug_eyescandataerror_out,
+    output wire [NCH-1:0]   gt_debug_rxresetdone_out,
+    output wire [NCH-1:0]   gt_debug_txresetdone_out
 );
 
     // --------------------------------------------------------------------------
@@ -243,6 +255,17 @@ module murosync_gt_wrapper #(
         .cplllock_out                       (cplllock_out),
         .qpll0lock_out                      (qpll0lock_out),
         .qpll1lock_out                      (qpll1lock_out),
+
+        .rxcommadet_out                     (gt_debug_rxcommadet_out),
+        .rxbyteisaligned_out                (gt_debug_rxbyteisaligned_out),
+        .rxbyterealign_out                  (gt_debug_rxbyterealign_out),
+        .rxbufstatus_out                    (gt_debug_rxbufstatus_out),
+        .txbufstatus_out                    (gt_debug_txbufstatus_out),
+        .rxsyncdone_out                     (gt_debug_rxsyncdone_out),
+        .rxphaligndone_out                  (gt_debug_rxphaligndone_out),
+        .eyescandataerror_out               (gt_debug_eyescandataerror_out),
+        .rxresetdone_out                    (gt_debug_rxresetdone_out),
+        .txresetdone_out                    (gt_debug_txresetdone_out),
 
         .pll_lock_vec_out                   (pll_lock_out)
     );

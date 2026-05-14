@@ -346,7 +346,7 @@
 	#define MUROSYNC_LNK_DIAG_LOCKED_OFS          16
 	#define MUROSYNC_LNK_DIAG_LOCKED_MSK          (0x1u << MUROSYNC_LNK_DIAG_LOCKED_OFS)
 
-	// FSM state values — must match RTL localparam in murosync_serdes_link_test.sv
+	// FSM state values Â— must match RTL localparam in murosync_serdes_link_test.sv
 	#define MUROSYNC_LNK_FSM_IDLE                 0u
 	#define MUROSYNC_LNK_FSM_CAPTURE_CFG          1u
 	#define MUROSYNC_LNK_FSM_WAIT_ALIGN           2u
@@ -357,5 +357,193 @@
 #define MUROSYNC_LNK_DIAG_RX_HI                 (0x038)  // RO: last received word [63:32]
 #define MUROSYNC_LNK_DIAG_EXP_LO                (0x03C)  // RO: current expected word [31:0]
 #define MUROSYNC_LNK_DIAG_EXP_HI                (0x040)  // RO: current expected word [63:32]
+
+
+
+//========================================================================================
+// TX Diagnostics
+//========================================================================================
+
+#define MUROSYNC_LNK_DIAG_TX_DATA_LO                (0x044)
+
+	/*
+	Type        :   RO
+	Description :   Last transmitted word [31:0]
+	*/
+
+#define MUROSYNC_LNK_DIAG_TX_DATA_HI                (0x048)
+
+	/*
+	Type        :   RO
+	Description :   Last transmitted word [63:32]
+	*/
+
+#define MUROSYNC_LNK_DIAG_TX_COUNTERS_LO            (0x04C)
+
+	/*
+	Type        :   RO
+	Description :   TX counters for Channels 0 and 1
+	                [15:0] CH0_COUNT: Counter for CH0
+	                [31:16] CH1_COUNT: Counter for CH1
+	*/
+
+	#define MUROSYNC_LNK_DIAG_TX_CH0_COUNT_OFS          0
+	#define MUROSYNC_LNK_DIAG_TX_CH0_COUNT_MSK          (0xFFFFu << MUROSYNC_LNK_DIAG_TX_CH0_COUNT_OFS)
+
+	#define MUROSYNC_LNK_DIAG_TX_CH1_COUNT_OFS          16
+	#define MUROSYNC_LNK_DIAG_TX_CH1_COUNT_MSK          (0xFFFFu << MUROSYNC_LNK_DIAG_TX_CH1_COUNT_OFS)
+
+#define MUROSYNC_LNK_DIAG_TX_COUNTERS_HI            (0x050)
+
+	/*
+	Type        :   RO
+	Description :   TX counters for Channels 2 and 3
+	                [15:0] CH2_COUNT: Counter for CH2
+	                [31:16] CH3_COUNT: Counter for CH3
+	*/
+
+	#define MUROSYNC_LNK_DIAG_TX_CH2_COUNT_OFS          0
+	#define MUROSYNC_LNK_DIAG_TX_CH2_COUNT_MSK          (0xFFFFu << MUROSYNC_LNK_DIAG_TX_CH2_COUNT_OFS)
+
+	#define MUROSYNC_LNK_DIAG_TX_CH3_COUNT_OFS          16
+	#define MUROSYNC_LNK_DIAG_TX_CH3_COUNT_MSK          (0xFFFFu << MUROSYNC_LNK_DIAG_TX_CH3_COUNT_OFS)
+
+#define MUROSYNC_LNK_DIAG_TX_STATUS                 (0x054)
+
+	/*
+	Type        :   RO
+	Description :   TX Comma status
+	                [3:0] COMMA_ACTIVE: Active comma transmission per channel
+	                [15:4] COMMA_COUNT: Total commas transmitted
+	*/
+
+	#define MUROSYNC_LNK_DIAG_TX_COMMA_ACTIVE_OFS       0
+	#define MUROSYNC_LNK_DIAG_TX_COMMA_ACTIVE_MSK       (0xFu << MUROSYNC_LNK_DIAG_TX_COMMA_ACTIVE_OFS)
+
+	#define MUROSYNC_LNK_DIAG_TX_COMMA_COUNT_OFS        4
+	#define MUROSYNC_LNK_DIAG_TX_COMMA_COUNT_MSK        (0xFFFu << MUROSYNC_LNK_DIAG_TX_COMMA_COUNT_OFS)
+
+
+//========================================================================================
+// GT DEBUG REGISTERS
+//========================================================================================
+// Based on hardware implementation in murosync_serdes_array_axi_ctrl.sv
+// Registers 0x16-0x1B (word offsets) = 0x58-0x6C (byte offsets)
+
+#define MUROSYNC_GT_DEBUG_COMMA_ALIGN_REG           (0x058)
+
+	/*
+	Type        :   RO
+	Description :   GT comma detection and byte alignment status
+	                [3:0] RXCOMMADET: Comma detected per channel [CH3..CH0]
+	                [7:4] RXBYTEISALIGNED: Byte alignment status per channel [CH3..CH0]  
+	                [11:8] RXBYTEREALIGN: Realignment events per channel [CH3..CH0]
+	*/
+
+	#define MUROSYNC_GT_DEBUG_RXCOMMADET_OFS            0
+	#define MUROSYNC_GT_DEBUG_RXCOMMADET_MSK            (0xFu << MUROSYNC_GT_DEBUG_RXCOMMADET_OFS)
+
+	#define MUROSYNC_GT_DEBUG_RXBYTEISALIGNED_OFS       4  
+	#define MUROSYNC_GT_DEBUG_RXBYTEISALIGNED_MSK       (0xFu << MUROSYNC_GT_DEBUG_RXBYTEISALIGNED_OFS)
+
+	#define MUROSYNC_GT_DEBUG_RXBYTEREALIGN_OFS         8
+	#define MUROSYNC_GT_DEBUG_RXBYTEREALIGN_MSK         (0xFu << MUROSYNC_GT_DEBUG_RXBYTEREALIGN_OFS)
+
+#define MUROSYNC_GT_DEBUG_RXBUF_STATUS_REG          (0x05C)
+
+	/*
+	Type        :   RO  
+	Description :   RX buffer status per channel
+	                [2:0] CH0_RXBUF: RX buffer status for channel 0
+	                [5:3] CH1_RXBUF: RX buffer status for channel 1
+	                [8:6] CH2_RXBUF: RX buffer status for channel 2
+	                [11:9] CH3_RXBUF: RX buffer status for channel 3
+	*/
+
+	#define MUROSYNC_GT_DEBUG_RXBUF_CH0_OFS             0
+	#define MUROSYNC_GT_DEBUG_RXBUF_CH0_MSK             (0x7u << MUROSYNC_GT_DEBUG_RXBUF_CH0_OFS)
+
+	#define MUROSYNC_GT_DEBUG_RXBUF_CH1_OFS             3
+	#define MUROSYNC_GT_DEBUG_RXBUF_CH1_MSK             (0x7u << MUROSYNC_GT_DEBUG_RXBUF_CH1_OFS)
+
+	#define MUROSYNC_GT_DEBUG_RXBUF_CH2_OFS             6
+	#define MUROSYNC_GT_DEBUG_RXBUF_CH2_MSK             (0x7u << MUROSYNC_GT_DEBUG_RXBUF_CH2_OFS)
+
+	#define MUROSYNC_GT_DEBUG_RXBUF_CH3_OFS             9  
+	#define MUROSYNC_GT_DEBUG_RXBUF_CH3_MSK             (0x7u << MUROSYNC_GT_DEBUG_RXBUF_CH3_OFS)
+
+#define MUROSYNC_GT_DEBUG_TXBUF_STATUS_REG          (0x060)
+
+	/*
+	Type        :   RO  
+	Description :   TX buffer status per channel
+	                [1:0] CH0_TXBUF: TX buffer status for channel 0
+	                [3:2] CH1_TXBUF: TX buffer status for channel 1
+	                [5:4] CH2_TXBUF: TX buffer status for channel 2
+	                [7:6] CH3_TXBUF: TX buffer status for channel 3
+	*/
+
+	#define MUROSYNC_GT_DEBUG_TXBUF_CH0_OFS             0
+	#define MUROSYNC_GT_DEBUG_TXBUF_CH0_MSK             (0x3u << MUROSYNC_GT_DEBUG_TXBUF_CH0_OFS)
+
+	#define MUROSYNC_GT_DEBUG_TXBUF_CH1_OFS             2
+	#define MUROSYNC_GT_DEBUG_TXBUF_CH1_MSK             (0x3u << MUROSYNC_GT_DEBUG_TXBUF_CH1_OFS)
+
+	#define MUROSYNC_GT_DEBUG_TXBUF_CH2_OFS             4
+	#define MUROSYNC_GT_DEBUG_TXBUF_CH2_MSK             (0x3u << MUROSYNC_GT_DEBUG_TXBUF_CH2_OFS)
+
+	#define MUROSYNC_GT_DEBUG_TXBUF_CH3_OFS             6  
+	#define MUROSYNC_GT_DEBUG_TXBUF_CH3_MSK             (0x3u << MUROSYNC_GT_DEBUG_TXBUF_CH3_OFS)
+
+
+#define MUROSYNC_GT_DEBUG_SYNC_STATUS_REG           (0x064)
+
+	/*
+	Type        :   RO
+	Description :   Synchronization and phase alignment status
+	                [3:0] RXSYNCDONE: RX sync completion per channel [CH3..CH0]
+	                [7:4] RXPHALIGNDONE: RX phase alignment done per channel [CH3..CH0]
+	*/
+
+	#define MUROSYNC_GT_DEBUG_RXSYNCDONE_OFS            0
+	#define MUROSYNC_GT_DEBUG_RXSYNCDONE_MSK            (0xFu << MUROSYNC_GT_DEBUG_RXSYNCDONE_OFS)
+
+	#define MUROSYNC_GT_DEBUG_RXPHALIGNDONE_OFS         4
+	#define MUROSYNC_GT_DEBUG_RXPHALIGNDONE_MSK         (0xFu << MUROSYNC_GT_DEBUG_RXPHALIGNDONE_OFS)
+
+#define MUROSYNC_GT_DEBUG_SIGNAL_QUAL_REG           (0x068)
+
+	/*
+	Type        :   RO
+	Description :   Signal Quality (Eyescan error)
+	                [3:0] EYESCANDATAERROR: Eyescan error per channel [CH3..CH0]
+	*/
+
+	#define MUROSYNC_GT_DEBUG_EYESCANDATAERROR_OFS      0
+	#define MUROSYNC_GT_DEBUG_EYESCANDATAERROR_MSK      (0xFu << MUROSYNC_GT_DEBUG_EYESCANDATAERROR_OFS)
+
+#define MUROSYNC_GT_DEBUG_RESET_STATUS_REG          (0x06C)
+
+	/*
+	Type        :   RO
+	Description :   Reset Completion Status
+	                [3:0] RXRESETDONE: RX reset done per channel [CH3..CH0]
+	                [7:4] TXRESETDONE: TX reset done per channel [CH3..CH0]
+	                [11:8] RXPMARESETDONE: RX PMA reset done per channel [CH3..CH0]
+	                [15:12] TXPMARESETDONE: TX PMA reset done per channel [CH3..CH0]
+	*/
+
+	#define MUROSYNC_GT_DEBUG_RXRESETDONE_OFS           0
+	#define MUROSYNC_GT_DEBUG_RXRESETDONE_MSK           (0xFu << MUROSYNC_GT_DEBUG_RXRESETDONE_OFS)
+
+	#define MUROSYNC_GT_DEBUG_TXRESETDONE_OFS           4
+	#define MUROSYNC_GT_DEBUG_TXRESETDONE_MSK           (0xFu << MUROSYNC_GT_DEBUG_TXRESETDONE_OFS)
+
+	#define MUROSYNC_GT_DEBUG_RXPMARESETDONE_OFS        8
+	#define MUROSYNC_GT_DEBUG_RXPMARESETDONE_MSK        (0xFu << MUROSYNC_GT_DEBUG_RXPMARESETDONE_OFS)
+
+	#define MUROSYNC_GT_DEBUG_TXPMARESETDONE_OFS        12
+	#define MUROSYNC_GT_DEBUG_TXPMARESETDONE_MSK        (0xFu << MUROSYNC_GT_DEBUG_TXPMARESETDONE_OFS)
+
 
 #endif // MUROSYNC_SERDES_ARRAY_REGS_H

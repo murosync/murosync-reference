@@ -844,7 +844,7 @@
             "value": "8"
           },
           "C_S00_AXI_NUM_REGS": {
-            "value": "17"
+            "value": "28"
           },
           "MODE": {
             "value": "MASTER"
