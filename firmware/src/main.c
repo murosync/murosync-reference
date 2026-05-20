@@ -58,51 +58,31 @@ int main(void)
 
     init_platform();
     usleep(1000000);
-
     murosync_print_banner();
 
-    /* ----------------------------------------------------------------
-     * Phase 1: Internal loopback (Near-End PCS, loopback=1)
-     * TX loops back to RX inside GT — FMC card not involved.
-     * PASS → RTL is correct, problem is in FMC/physical layer
-     * FAIL → Problem is in RTL (alignment or checker logic)
-     * ---------------------------------------------------------------- */
-    xil_printf("\r\n[MUROSYNC] === PHASE 1: INTERNAL LOOPBACK ===\r\n");
-    stat = murosync_serdes_bring_up(1, 5000000);
-    if (stat != XST_SUCCESS)
-    {
-        xil_printf("[MUROSYNC][ERROR] Internal loopback bring-up FAILED\r\n");
-    }
-    else
-    {
-        xil_printf("[MUROSYNC] Internal loopback active\r\n");
-        murosync_serdes_run_link_test(MUROSYNC_LNK_TEST_MODE_COUNTER, 0x1, 0x0, 0x0, 0x0, 2000);
-        murosync_serdes_run_link_test(MUROSYNC_LNK_TEST_MODE_COUNTER, 0x2, 0x0, 0x0, 0x0, 2000);
-        murosync_serdes_run_link_test(MUROSYNC_LNK_TEST_MODE_COUNTER, 0x4, 0x0, 0x0, 0x0, 2000);
-        murosync_serdes_run_link_test(MUROSYNC_LNK_TEST_MODE_COUNTER, 0x8, 0x0, 0x0, 0x0, 2000);
-    }
-
-    /* ----------------------------------------------------------------
-     * Phase 2: Normal mode — external FMC loopback
-     * ---------------------------------------------------------------- */
-    xil_printf("\r\n[MUROSYNC] === PHASE 2: EXTERNAL FMC LOOPBACK ===\r\n");
-    stat = murosync_serdes_bring_up(0, 5000000);
+    // Single bring-up — single GT reset
+    xil_printf("\r\n[MUROSYNC] === FMC LOOPBACK — ALL CHANNELS ===\r\n");
+    stat = murosync_serdes_bring_up(0, 5000000);  // loopback=0, external
     if (stat != XST_SUCCESS)
     {
         xil_printf("[MUROSYNC][ERROR] Bring-up FAILED\r\n");
         return XST_FAILURE;
     }
-
     xil_printf("[MUROSYNC] Bring-up OK\r\n");
-    
-    // Test physical FMC connectivity on all channels
-    murosync_serdes_connectivity_test();
-    
-    // Test GT comma detection
-    murosync_serdes_test_comma_detection();
-    
-    // Run full diagnostic suite
-    murosync_serdes_link_test_run_diagnostics();
+
+    // Immediately after bring-up — all 4 channels in one test.
+    // CDR is fresh, comma burst aligns all channels simultaneously.
+    xil_printf("\r\n=== TEST: ALL CHANNELS, no reset between ===\r\n");
+    murosync_serdes_run_link_test(MUROSYNC_LNK_TEST_MODE_FIXED, 0xF, 0x0, 0x0, 0xAAAAAAAA, 2000);
+    murosync_serdes_link_test_print_diag();
+
+    // Per-channel tests — no bring-up between them
+    for (int ch = 0; ch < 4; ch++)
+    {
+        xil_printf("\r\n=== TEST: CH%d only ===\r\n", ch);
+        murosync_serdes_run_link_test(MUROSYNC_LNK_TEST_MODE_FIXED, 1 << ch, 0x0, 0x0, 0xAAAAAAAA, 500);
+        murosync_serdes_link_test_print_diag();
+    }
 
     for (;;)
     {
@@ -111,9 +91,6 @@ int main(void)
         usleep(1000000);
     }
 
-    /* never reached */
     cleanup_platform();
     return 0;
 }
-
-

@@ -422,7 +422,9 @@ module murosync_serdes_array #(
         .gt_debug_rxphaligndone_out   (gt_debug_rxphaligndone_int),
         .gt_debug_eyescandataerror_out(gt_debug_eyescandataerror_int),
         .gt_debug_rxresetdone_out     (gt_debug_rxresetdone_int),
-        .gt_debug_txresetdone_out     (gt_debug_txresetdone_int)
+        .gt_debug_txresetdone_out     (gt_debug_txresetdone_int),
+        .gt_debug_rxpmaresetdone_out  (rxpmaresetdone_int),
+        .gt_debug_txpmaresetdone_out  (txpmaresetdone_int)
     );
 
     // Wire declarations - must come BEFORE GT wrapper instantiation to avoid implicit 1-bit nets
@@ -432,7 +434,8 @@ module murosync_serdes_array #(
     wire        gt_userclk_tx_usrclk2_int;
     wire [7:0]  link_test_txctrl2;  // TXCHARISK: K28.5 comma control from link test
     wire [31:0] rxctrl2_int;         // RXBYTEISALIGNED + RXBYTEISCOMMA from GT
-    wire [63:0] rxctrl0_int;         // RXCHARISK from GT — K-symbol indicator
+    wire [63:0] rxctrl0_int;         // reserved — connected but unused (rxcharisk is in rxctrl3)
+    wire [31:0] rxctrl3_int;         // restore — was removed
 
     wire [3:0]  gt_debug_rxcommadet_int;
     wire [3:0]  gt_debug_rxbyteisaligned_int;
@@ -477,10 +480,10 @@ module murosync_serdes_array #(
     //
     // Reference: ADI util_adxcvr_xch.v line 3471: .RXCTRL0({rx_charisk_open_s, rx_charisk})
     wire [3:0]  rxcharisk_int = {
-        rxctrl0_int[7] | rxctrl0_int[6],  // CH3: K-symbol detected in either byte
-        rxctrl0_int[5] | rxctrl0_int[4],  // CH2: K-symbol detected in either byte
-        rxctrl0_int[3] | rxctrl0_int[2],  // CH1: K-symbol detected in either byte
-        rxctrl0_int[1] | rxctrl0_int[0]   // CH0: K-symbol detected in either byte
+        rxctrl3_int[7] | rxctrl3_int[6],  // CH3: K-symbol detected in either byte
+        rxctrl3_int[5] | rxctrl3_int[4],  // CH2: K-symbol detected in either byte
+        rxctrl3_int[3] | rxctrl3_int[2],  // CH1: K-symbol detected in either byte
+        rxctrl3_int[1] | rxctrl3_int[0]   // CH0: K-symbol detected in either byte
     };
 
     // ============================================================
@@ -528,7 +531,7 @@ module murosync_serdes_array #(
         .rxctrl0_out                (rxctrl0_int),
         .rxctrl1_out                (),
         .rxctrl2_out                (rxctrl2_int),  // rxbyteisaligned + rxbyteiscomma
-        .rxctrl3_out                (),             // rxcharisk was moved to rxctrl0
+        .rxctrl3_out                (rxctrl3_int),  // rxcharisk here
 
         .rxpmaresetdone_out         (rxpmaresetdone_int),
         .txpmaresetdone_out         (txpmaresetdone_int),

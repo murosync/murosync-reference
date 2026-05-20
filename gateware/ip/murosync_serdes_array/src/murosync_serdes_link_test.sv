@@ -94,7 +94,7 @@ module murosync_serdes_link_test #(
     wire rx_enable      = rx_enable_in;
 
     // Edge detectors for TX enable
-    logic tx_enable_d;
+    reg tx_enable_d;
     always @(posedge tx_clk or negedge core_rst_n) 
     begin
         if (!core_rst_n) tx_enable_d <= 1'b0;
@@ -105,15 +105,15 @@ module murosync_serdes_link_test #(
     // ------------------------------------------------------------
     // Shadow Registers (Fool-Proofing)
     // ------------------------------------------------------------
-    logic [63:0] tx_fixed_64;
-    logic [1:0]  tx_test_mode;
+    reg [63:0] tx_fixed_64;
+    reg [1:0]  tx_test_mode;
     
-    logic [63:0] rx_fixed_64;
-    logic [3:0]  rx_ch_mask;
-    logic [3:0]  rx_pol_mask;
-    logic [3:0]  tx_pol_mask;
-    logic [1:0]  rx_test_mode;
-    logic        capture_cfg; // Driven by RX Checker FSM
+    reg   [63:0] rx_fixed_64;
+    reg   [3:0]  rx_ch_mask;
+    reg   [3:0]  rx_pol_mask;
+    reg   [3:0]  tx_pol_mask;
+    reg   [1:0]  rx_test_mode;
+    logic        capture_cfg; // Combinational — driven by always @(*)
 
     localparam  TEST_MODE_FIXED   = 2'b00;
     localparam  TEST_MODE_TOGGLE  = 2'b01;
@@ -132,11 +132,13 @@ module murosync_serdes_link_test #(
         begin
             tx_fixed_64  <= 64'h0;
             tx_test_mode <= TEST_MODE_FIXED;
+            tx_pol_mask  <= 4'h0;
         end 
         else if (tx_enable_re) 
         begin
             tx_fixed_64  <= {fixed_patt, fixed_patt};
             tx_test_mode <= cnfg[1:0];
+            tx_pol_mask  <= cnfg[15:12];
         end
     end
 
@@ -147,6 +149,7 @@ module murosync_serdes_link_test #(
             rx_fixed_64  <= 64'h0;
             rx_test_mode <= TEST_MODE_FIXED;
             rx_ch_mask   <= 4'h0;
+            rx_pol_mask  <= 4'h0;
         end 
         else if (capture_cfg) 
         begin
@@ -154,64 +157,80 @@ module murosync_serdes_link_test #(
             rx_test_mode <= cnfg[1:0];
             rx_ch_mask   <= cnfg[7:4];
             rx_pol_mask  <= cnfg[11:8];
-            tx_pol_mask  <= cnfg[15:12];
         end
     end
 
     // ============================================================
     // TX Pattern Generator + Comma Burst
     // ============================================================
-    logic [15:0] counter_val_ch [0:3];
-    logic        toggle_state;
+    reg [15:0] counter_val_ch [0:3];
+    reg        toggle_state;
 
-    // Comma generator with training phase:
-    //   Phase 1 (TRAIN_LEN cycles): continuous K28.5 for GT byte alignment
-    //   Phase 2 (periodic):         K28.5 every COMMA_PERIOD to maintain alignment
-    logic [11:0] comma_cnt;     // large enough for TRAIN_LEN=4096
-    logic        training_done;
-    logic        send_comma;
+    // ============================================================
+    // TX Comma FSM
+    // ============================================================
+    localparam integer TX_ST_IDLE        = 0;
+    localparam integer TX_ST_TRAINING    = 1;
+    localparam integer TX_ST_MAINTENANCE = 2;
 
+    reg [1:0] tx_comma_next_state;
+    reg [1:0] tx_comma_curr_state;
+
+    reg [11:0] comma_cnt;
+    logic      send_comma;  // combinational output of FSM
+
+    // 1. Sequential state update
+    always @(posedge tx_clk or negedge core_rst_n)
+    begin
+        if (!core_rst_n) tx_comma_curr_state <= TX_ST_IDLE;
+        else             tx_comma_curr_state <= tx_comma_next_state;
+    end
+
+    // 2. Combinational next state + output logic
+    always @(*)
+    begin
+        tx_comma_next_state = tx_comma_curr_state;
+        send_comma          = 1'b0;
+
+        case (tx_comma_curr_state)
+            TX_ST_IDLE:
+            begin
+                if (tx_enable && !IS_SLAVE) tx_comma_next_state = TX_ST_TRAINING;
+            end
+
+            TX_ST_TRAINING:
+            begin
+                if (!tx_enable || IS_SLAVE)          tx_comma_next_state = TX_ST_IDLE;
+                else if (comma_cnt == TRAIN_LEN - 1) tx_comma_next_state = TX_ST_MAINTENANCE;
+
+                send_comma = 1'b1;
+            end
+
+            TX_ST_MAINTENANCE:
+            begin
+                if (!tx_enable || IS_SLAVE)             tx_comma_next_state = TX_ST_IDLE;
+                else if (comma_cnt == COMMA_PERIOD - 1) send_comma = 1'b1;
+            end
+
+            default: tx_comma_next_state = TX_ST_IDLE;
+        endcase
+    end
+
+    // 3. Sequential counter
     always @(posedge tx_clk or negedge core_rst_n)
     begin
         if (!core_rst_n)
         begin
-            comma_cnt    <= '0;
-            training_done <= 1'b0;
-            send_comma   <= 1'b0;
-        end
-        else if (tx_enable && !IS_SLAVE)
-        begin
-            if (!training_done)
-            begin
-                // Training phase: send K28.5 every cycle
-                send_comma <= 1'b1;
-                if (comma_cnt == TRAIN_LEN - 1)
-                begin
-                    comma_cnt    <= '0;
-                    training_done <= 1'b1;
-                end
-                else comma_cnt <= comma_cnt + 1'b1;
-            end
-            else
-            begin
-                // Maintenance phase: periodic K28.5
-                if (comma_cnt == COMMA_PERIOD - 1)
-                begin
-                    comma_cnt  <= '0;
-                    send_comma <= 1'b1;
-                end
-                else
-                begin
-                    comma_cnt  <= comma_cnt + 1'b1;
-                    send_comma <= 1'b0;
-                end
-            end
+            comma_cnt <= '0;
         end
         else
         begin
-            comma_cnt    <= '0;
-            training_done <= 1'b0;
-            send_comma   <= 1'b0;
+            case (tx_comma_curr_state)
+                TX_ST_IDLE:        comma_cnt <= '0;
+                TX_ST_TRAINING:    comma_cnt <= (comma_cnt == TRAIN_LEN - 1)    ? '0 : comma_cnt + 1'b1;
+                TX_ST_MAINTENANCE: comma_cnt <= (comma_cnt == COMMA_PERIOD - 1) ? '0 : comma_cnt + 1'b1;
+                default:           comma_cnt <= '0;
+            endcase
         end
     end
 
@@ -236,51 +255,44 @@ module murosync_serdes_link_test #(
     end
 
     // Simple fabric logical loopback register for Slave mode
-    logic [63:0] rx_data_r;
+    reg [63:0] rx_data_r;
     always @(posedge tx_clk or negedge core_rst_n) 
     begin
         if (!core_rst_n) rx_data_r <= 64'h0;
         else             rx_data_r <= rx_data;
     end
 
-    logic [63:0] tx_data_raw;
-
+// TXCHARISK — K-symbol control
     always @(posedge tx_clk or negedge core_rst_n)
     begin
-        if (!core_rst_n)
-        begin
-            tx_data_raw <= 64'h0;
-            txctrl2_out <= 8'h0;
-        end
-        else if (IS_SLAVE)
-        begin
-            tx_data_raw <= rx_data_r;  // reflector
-            txctrl2_out <= 8'h0;
-        end
-        else if (send_comma)  // K28.5 burst — both bytes of every channel
-        begin
-            tx_data_raw <= {8{K28_5}};  // 0xBCBCBCBCBCBCBCBC
-            txctrl2_out <= 8'hFF;        // TXCHARISK=1 for all 8 bytes
-        end
-        else
-        begin
-            txctrl2_out <= 8'h0;
-            if      (tx_test_mode == TEST_MODE_FIXED)   tx_data_raw <= tx_fixed_64;
-            else if (tx_test_mode == TEST_MODE_TOGGLE)  tx_data_raw <= toggle_state ? tx_fixed_64 : ~tx_fixed_64;
-            else if (tx_test_mode == TEST_MODE_COUNTER) tx_data_raw <= {
-                                                                        counter_val_ch[3],
-                                                                        counter_val_ch[2],
-                                                                        counter_val_ch[1],
-                                                                        counter_val_ch[0]
-                                                                       };
-        end
+        if (!core_rst_n)     txctrl2_out <= 8'h0;
+        else if (send_comma) txctrl2_out <= 8'hFF;
+        else                 txctrl2_out <= 8'h0;
     end
 
-    // Apply TX polarity inversion
-    assign tx_data[15:0]  = tx_pol_mask[0] ? ~tx_data_raw[15:0]  : tx_data_raw[15:0];
-    assign tx_data[31:16] = tx_pol_mask[1] ? ~tx_data_raw[31:16] : tx_data_raw[31:16];
-    assign tx_data[47:32] = tx_pol_mask[2] ? ~tx_data_raw[47:32] : tx_data_raw[47:32];
-    assign tx_data[63:48] = tx_pol_mask[3] ? ~tx_data_raw[63:48] : tx_data_raw[63:48];
+    // TX data pattern
+    always @(posedge tx_clk or negedge core_rst_n)
+    begin
+        if (!core_rst_n)           tx_data <= 64'h0;
+        else if (IS_SLAVE)         tx_data <= rx_data_r;
+        else if (send_comma)       tx_data <= {8{K28_5}};
+        else 
+        begin : tx_pattern
+            logic [63:0] raw;
+
+            if      (tx_test_mode == TEST_MODE_FIXED)   raw = tx_fixed_64;
+            else if (tx_test_mode == TEST_MODE_TOGGLE)  raw = toggle_state ? tx_fixed_64 : ~tx_fixed_64;
+            else                                        raw = {counter_val_ch[3],
+                                                               counter_val_ch[2],
+                                                               counter_val_ch[1],
+                                                               counter_val_ch[0]};
+
+            tx_data[15:0]  <= tx_pol_mask[0] ? ~raw[15:0]  : raw[15:0];
+            tx_data[31:16] <= tx_pol_mask[1] ? ~raw[31:16] : raw[31:16];
+            tx_data[47:32] <= tx_pol_mask[2] ? ~raw[47:32] : raw[47:32];
+            tx_data[63:48] <= tx_pol_mask[3] ? ~raw[63:48] : raw[63:48];
+        end
+    end
 
     // ============================================================
     // RX Checker
@@ -298,27 +310,35 @@ module murosync_serdes_link_test #(
     // ------------------------------------------------------------
     // FSM States
     // ------------------------------------------------------------
-    localparam integer ST_IDLE        = 0;
-    localparam integer ST_CAPTURE_CFG = 1;
-    localparam integer ST_WAIT_ALIGN  = 2;  // wait for rxbyteisaligned after config captured
-    localparam integer ST_SEARCH      = 3;
-    localparam integer ST_LOCKED      = 4;
+    localparam integer RX_ST_IDLE        = 0;
+    localparam integer RX_ST_CAPTURE_CFG = 1;
+    localparam integer RX_ST_WAIT_ALIGN  = 2;  // wait for rxbyteisaligned after config captured
+    localparam integer RX_ST_SEARCH      = 3;
+    localparam integer RX_ST_LOCKED      = 4;
 
     reg [3:0] rx_checker_next_state;
     (* keep = "true", mark_debug = "true" *) reg [3:0] rx_checker_curr_state;
 
-    logic        checker_locked;
-    logic [63:0] expected_rx;
+    logic        checker_locked; // Combinational — driven by always @(*)
+    reg   [63:0] expected_rx;
     
-    logic [63:0] rx_data_corrected;
-    assign rx_data_corrected[15:0]  = rx_pol_mask[0] ? ~rx_data[15:0]  : rx_data[15:0];
-    assign rx_data_corrected[31:16] = rx_pol_mask[1] ? ~rx_data[31:16] : rx_data[31:16];
-    assign rx_data_corrected[47:32] = rx_pol_mask[2] ? ~rx_data[47:32] : rx_data[47:32];
-    assign rx_data_corrected[63:48] = rx_pol_mask[3] ? ~rx_data[63:48] : rx_data[63:48];
+    reg [63:0] rx_data_corrected;
+    always @(posedge rx_clk or negedge core_rst_n) 
+    begin
+        if (!core_rst_n) rx_data_corrected <= 64'h0;
+        else 
+        begin
+            rx_data_corrected[15:0]  <= rx_pol_mask[0] ? ~rx_data[15:0]  : rx_data[15:0];
+            rx_data_corrected[31:16] <= rx_pol_mask[1] ? ~rx_data[31:16] : rx_data[31:16];
+            rx_data_corrected[47:32] <= rx_pol_mask[2] ? ~rx_data[47:32] : rx_data[47:32];
+            rx_data_corrected[63:48] <= rx_pol_mask[3] ? ~rx_data[63:48] : rx_data[63:48];
+        end
+    end
 
     // Previous data register for robust COUNTER lock
-    logic [63:0] rx_data_d;
-    always @(posedge rx_clk or negedge core_rst_n) begin
+    reg [63:0] rx_data_d;
+    always @(posedge rx_clk or negedge core_rst_n) 
+    begin
         if (!core_rst_n) rx_data_d <= 64'h0;
         else             rx_data_d <= rx_data_corrected;
     end
@@ -347,28 +367,39 @@ module murosync_serdes_link_test #(
     // 1. Sequential State Update
     always @(posedge rx_clk or negedge core_rst_n) 
     begin
-        if (!core_rst_n) rx_checker_curr_state <= ST_IDLE;
+        if (!core_rst_n) rx_checker_curr_state <= RX_ST_IDLE;
         else             rx_checker_curr_state <= rx_checker_next_state;
     end
 
     // 8B10B alignment gate: latch RXCHARISCOMMA per channel
     // RXCHARISCOMMA is a 1-cycle pulse; latch it until test resets.
     // With GT Wizard comma detection enabled, this fires reliably after K28.5 is received.
-    logic [3:0] rx_comma_seen;
+    reg [3:0] rx_comma_seen;
     always @(posedge rx_clk or negedge core_rst_n)
     begin
         if (!core_rst_n)         rx_comma_seen <= 4'b0;
         else if (rx_reset_pulse) rx_comma_seen <= 4'b0;
+        else if (capture_cfg)    rx_comma_seen <= 4'b0;  // clear on new test start
         else                     rx_comma_seen <= rx_comma_seen | rxbyteisaligned;
     end
 
     // Gate: all channels in mask must have rxbyteisaligned=1 (latched)
-    wire all_aligned       = (rx_comma_seen & rx_ch_mask) == rx_ch_mask;
-    wire aligned_or_nomask = (rx_ch_mask == 4'h0) ? 1'b1 : all_aligned;
+    // Registered to break combinational path into FSM next_expected_rx computation
+    reg aligned_or_nomask_r;
+    reg any_ksymbol_r;
 
-    // K-symbol filter: skip any cycle where a masked channel carries a K-symbol
-    // (comma/control words — not payload data)
-    wire any_ksymbol = |(rxcharisk & rx_ch_mask);
+    always @(posedge rx_clk or negedge core_rst_n) 
+    begin
+        if (!core_rst_n) aligned_or_nomask_r <= 1'b0;
+        else             aligned_or_nomask_r <= (rx_ch_mask == 4'h0) ? 1'b1 :
+                                                (((rx_comma_seen | rxbyteisaligned) & rx_ch_mask) == rx_ch_mask);
+    end
+
+    always @(posedge rx_clk or negedge core_rst_n) 
+    begin
+        if (!core_rst_n) any_ksymbol_r <= 1'b0;
+        else             any_ksymbol_r <= |(rxcharisk & rx_ch_mask);
+    end
 
     // 2. Combinational Next State & Output Logic
     always @(*) 
@@ -385,59 +416,64 @@ module murosync_serdes_link_test #(
         next_expected_rx      = expected_rx; // Default hold
 
         case (rx_checker_curr_state)
-            ST_IDLE: 
+            RX_ST_IDLE: 
             begin
-                if (rx_enable && !IS_SLAVE && !rx_reset_pulse) rx_checker_next_state = ST_CAPTURE_CFG;
+                if (rx_enable && !IS_SLAVE && !rx_reset_pulse) rx_checker_next_state = RX_ST_CAPTURE_CFG;
             end
 
-            ST_CAPTURE_CFG: 
+            RX_ST_CAPTURE_CFG: 
             begin
                 // 1 cycle only: capture config into shadow registers.
                 // rx_ch_mask will be valid on the NEXT clock edge.
                 // Transition unconditionally to ST_WAIT_ALIGN.
                 capture_cfg = 1'b1;
 
-                if (!rx_enable || rx_reset_pulse) rx_checker_next_state = ST_IDLE;
-                else                              rx_checker_next_state = ST_WAIT_ALIGN;
+                if (!rx_enable || rx_reset_pulse) rx_checker_next_state = RX_ST_IDLE;
+                else                              rx_checker_next_state = RX_ST_WAIT_ALIGN;
             end
 
-            ST_WAIT_ALIGN:
+            RX_ST_WAIT_ALIGN:
             begin
                 // rx_ch_mask is now valid (captured in ST_CAPTURE_CFG).
                 // Wait here until all masked channels assert rxbyteisaligned.
                 // rx_comma_seen accumulates rxbyteisaligned OR each cycle.
-                if (!rx_enable || rx_reset_pulse) rx_checker_next_state = ST_IDLE;
-                else if (aligned_or_nomask)       rx_checker_next_state = ST_SEARCH;
+                if (!rx_enable || rx_reset_pulse) rx_checker_next_state = RX_ST_IDLE;
+                else if (aligned_or_nomask_r)     rx_checker_next_state = RX_ST_SEARCH;
                 // else: stay until GT completes 8B10B word alignment
             end
 
-            ST_SEARCH: 
+            RX_ST_SEARCH: 
             begin
                 // Skip K-symbol cycles — they are comma/control, not data
-                if (!any_ksymbol && match_any) lock_acquired = 1'b1;
+                if (!any_ksymbol_r && match_any) lock_acquired = 1'b1;
 
-                if (!rx_enable || rx_reset_pulse) rx_checker_next_state = ST_IDLE;
-                else if (lock_acquired)           rx_checker_next_state = ST_LOCKED;
+                if (!rx_enable || rx_reset_pulse) rx_checker_next_state = RX_ST_IDLE;
+                else if (lock_acquired)           rx_checker_next_state = RX_ST_LOCKED;
 
                 if (lock_acquired) begin
                     case (rx_test_mode)
                         TEST_MODE_FIXED:   next_expected_rx = rx_fixed_64;
                         TEST_MODE_TOGGLE:  next_expected_rx = match_toggle_pos ? ~rx_fixed_64 : rx_fixed_64;
-                        TEST_MODE_COUNTER: next_expected_rx = {16'h0001, 16'h0001, 16'h0001, 16'h0001};
+                        TEST_MODE_COUNTER: next_expected_rx = {
+                            rx_data_corrected[63:48] + 16'h1,
+                            rx_data_corrected[47:32] + 16'h1,
+                            rx_data_corrected[31:16] + 16'h1,
+                            rx_data_corrected[15:0]  + 16'h1
+                        };
 
                         default:           next_expected_rx = rx_fixed_64;
                     endcase
                 end
             end
 
-            ST_LOCKED: 
+            RX_ST_LOCKED: 
             begin
-                if (!rx_enable || rx_reset_pulse) rx_checker_next_state = ST_IDLE;
+                if (!rx_enable || rx_reset_pulse) rx_checker_next_state = RX_ST_IDLE;
 
                 checker_locked = 1'b1;
 
                 // Skip K-symbol words: don't count, don't check, don't advance expected
-                if (!any_ksymbol) begin
+                if (!any_ksymbol_r) begin
                     wrd_cnt_inc = 1'b1;
                     if (!match_expected) err_cnt_inc = 1'b1;
                 end
@@ -446,7 +482,7 @@ module murosync_serdes_link_test #(
                     TEST_MODE_FIXED:   next_expected_rx = rx_fixed_64;
                     TEST_MODE_TOGGLE:  next_expected_rx = ~expected_rx;
                     TEST_MODE_COUNTER: next_expected_rx =
-                        any_ksymbol      ? expected_rx :       // K-symbol: hold unchanged
+                        any_ksymbol_r    ? expected_rx :       // K-symbol: hold unchanged
                         err_cnt_inc      ?                     // Error: resync from received
                             {
                                 rx_data_corrected[63:48] + 16'h1,
@@ -465,7 +501,7 @@ module murosync_serdes_link_test #(
                 endcase
             end
 
-            default: rx_checker_next_state = ST_IDLE;
+            default: rx_checker_next_state = RX_ST_IDLE;
         endcase
     end
 
