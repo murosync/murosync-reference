@@ -42,7 +42,7 @@ module murosync_serdes_array #(
     parameter integer C_S00_AXI_DATA_WIDTH = 32,
 
     // CTRL, LOOPBACK, STATUS, DBG_LO, DBG_HI, TEST_CONST, TEST_SCRATCH
-    parameter integer C_S00_AXI_NUM_REGS   = 28,
+    parameter integer C_S00_AXI_NUM_REGS   = 29,
 
     // Pattern copied from axis_wavecap_streamer.sv
     parameter integer OPT_MEM_ADDR_BITS    = $clog2(C_S00_AXI_NUM_REGS),
@@ -279,6 +279,8 @@ module murosync_serdes_array #(
     wire [15:0] link_test_diag_tx_counter_ch3;
     wire        link_test_diag_tx_comma_active;
     wire [11:0] link_test_diag_tx_comma_count;
+    wire        link_test_diag_ever_locked;
+    wire [3:0]  link_test_diag_last_fsm_state;
 
     // ============================================================
     // LINK STATUS (bring-up definition: "GT is alive")
@@ -411,6 +413,8 @@ module murosync_serdes_array #(
         .link_test_tx_counter_ch3     (link_test_diag_tx_counter_ch3),
         .link_test_tx_comma_active    (link_test_diag_tx_comma_active),
         .link_test_tx_comma_count     (link_test_diag_tx_comma_count),
+        .link_test_ever_locked        (link_test_diag_ever_locked),
+        .link_test_last_fsm_state     (link_test_diag_last_fsm_state),
 
         // GT debug signals from wrapper
         .gt_debug_rxcommadet_out      (gt_debug_rxcommadet_int),
@@ -656,7 +660,9 @@ module murosync_serdes_array #(
         .diag_tx_counter_ch2    (link_test_diag_tx_counter_ch2),
         .diag_tx_counter_ch3    (link_test_diag_tx_counter_ch3),
         .diag_tx_comma_active   (link_test_diag_tx_comma_active),
-        .diag_tx_comma_count    (link_test_diag_tx_comma_count)
+        .diag_tx_comma_count    (link_test_diag_tx_comma_count),
+        .diag_ever_locked       (link_test_diag_ever_locked),
+        .diag_last_fsm_state    (link_test_diag_last_fsm_state)
     );
 
 endmodule

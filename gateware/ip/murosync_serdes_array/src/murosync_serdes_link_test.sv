@@ -82,7 +82,11 @@ module murosync_serdes_link_test #(
     output wire [15:0] diag_tx_counter_ch2,    // TX counter channel 2
     output wire [15:0] diag_tx_counter_ch3,    // TX counter channel 3
     output wire        diag_tx_comma_active,   // TX sending comma
-    output wire [11:0] diag_tx_comma_count     // comma training counter
+    output wire [11:0] diag_tx_comma_count,    // comma training counter
+
+    // Additional diagnostic outputs (rx_clk domain) — Tier 1
+    output wire        diag_ever_locked,        // Sticky: FSM reached LOCKED at least once during this test
+    output wire [3:0]  diag_last_fsm_state      // Last non-IDLE state before drop on rx_enable=0
 );
 
     // ============================================================
@@ -371,16 +375,48 @@ module murosync_serdes_link_test #(
         else             rx_checker_curr_state <= rx_checker_next_state;
     end
 
-    // 8B10B alignment gate: latch RXCHARISCOMMA per channel
-    // RXCHARISCOMMA is a 1-cycle pulse; latch it until test resets.
-    // With GT Wizard comma detection enabled, this fires reliably after K28.5 is received.
-    reg [3:0] rx_comma_seen;
+    // Sticky alignment latch — per-channel.
+    // Accumulates `rxbyteisaligned` (level signal from GT Wizard dedicated port).
+    // Cleared on reset_pulse and on test start (capture_cfg).
+    // Once a channel has been aligned during this test run, the bit stays high
+    // even if alignment is momentarily lost — useful for post-mortem diagnostic.
+    //
+    // NOTE: prior name was rx_comma_seen — inaccurate, because what is latched is
+    // rxbyteisaligned (post-alignment status), not rxchariscomma (comma detection).
+    reg [3:0] rx_aligned_seen;
     always @(posedge rx_clk or negedge core_rst_n)
     begin
-        if (!core_rst_n)         rx_comma_seen <= 4'b0;
-        else if (rx_reset_pulse) rx_comma_seen <= 4'b0;
-        else if (capture_cfg)    rx_comma_seen <= 4'b0;  // clear on new test start
-        else                     rx_comma_seen <= rx_comma_seen | rxbyteisaligned;
+        if (!core_rst_n)         rx_aligned_seen <= 4'b0;
+        else if (rx_reset_pulse) rx_aligned_seen <= 4'b0;
+        else if (capture_cfg)    rx_aligned_seen <= 4'b0;
+        else                     rx_aligned_seen <= rx_aligned_seen | rxbyteisaligned;
+    end
+
+    // Sticky flag — was the checker ever in LOCKED state during this test run?
+    // Cleared on reset_pulse and on test start (capture_cfg).
+    // Set when FSM enters RX_ST_LOCKED for the first time and held until next reset.
+    // Survives transition back to IDLE on test stop — critical for post-mortem diagnostic.
+    reg ever_locked;
+    always @(posedge rx_clk or negedge core_rst_n)
+    begin
+        if (!core_rst_n)                                 ever_locked <= 1'b0;
+        else if (rx_reset_pulse)                         ever_locked <= 1'b0;
+        else if (capture_cfg)                            ever_locked <= 1'b0;
+        else if (rx_checker_curr_state == RX_ST_LOCKED)  ever_locked <= 1'b1;
+    end
+
+    // Latches the LAST ACTIVE state before FSM drops to IDLE on rx_enable=0.
+    // "Active" = any state other than IDLE.
+    // Allows post-stop diagnostic: "FSM exit state was LOCKED" vs "FSM never left WAIT_ALIGN".
+    // Reset on test start (capture_cfg), updated whenever current state is non-IDLE.
+    reg [3:0] last_fsm_state;
+    always @(posedge rx_clk or negedge core_rst_n)
+    begin
+        if (!core_rst_n)                              last_fsm_state <= RX_ST_IDLE;
+        else if (rx_reset_pulse)                      last_fsm_state <= RX_ST_IDLE;
+        else if (capture_cfg)                         last_fsm_state <= RX_ST_IDLE;
+        else if (rx_checker_curr_state != RX_ST_IDLE) last_fsm_state <= rx_checker_curr_state[3:0];
+        // else: FSM is in IDLE — hold last_fsm_state with the value before the transition
     end
 
     // Gate: all channels in mask must have rxbyteisaligned=1 (latched)
@@ -392,7 +428,7 @@ module murosync_serdes_link_test #(
     begin
         if (!core_rst_n) aligned_or_nomask_r <= 1'b0;
         else             aligned_or_nomask_r <= (rx_ch_mask == 4'h0) ? 1'b1 :
-                                                (((rx_comma_seen | rxbyteisaligned) & rx_ch_mask) == rx_ch_mask);
+                                                (((rx_aligned_seen | rxbyteisaligned) & rx_ch_mask) == rx_ch_mask);
     end
 
     always @(posedge rx_clk or negedge core_rst_n) 
@@ -436,7 +472,7 @@ module murosync_serdes_link_test #(
             begin
                 // rx_ch_mask is now valid (captured in ST_CAPTURE_CFG).
                 // Wait here until all masked channels assert rxbyteisaligned.
-                // rx_comma_seen accumulates rxbyteisaligned OR each cycle.
+                // rx_aligned_seen accumulates rxbyteisaligned OR each cycle.
                 if (!rx_enable || rx_reset_pulse) rx_checker_next_state = RX_ST_IDLE;
                 else if (aligned_or_nomask_r)     rx_checker_next_state = RX_ST_SEARCH;
                 // else: stay until GT completes 8B10B word alignment
@@ -532,7 +568,8 @@ module murosync_serdes_link_test #(
     // ------------------------------------------------------------
     assign diag_fsm_state      = rx_checker_curr_state[3:0];
     assign diag_rx_aligned     = rxbyteisaligned;
-    assign diag_rx_comma_seen  = rx_comma_seen;
+    assign diag_rx_comma_seen  = rx_aligned_seen;  // Sticky alignment status per channel
+                                                    // (name kept for AXI register backwards compatibility)
     assign diag_rx_charisk     = rxcharisk;
     assign diag_checker_locked = checker_locked;
     assign diag_rx_data        = rx_data_corrected;
@@ -546,6 +583,10 @@ module murosync_serdes_link_test #(
     assign diag_tx_counter_ch3  = counter_val_ch[3];
     assign diag_tx_comma_active = send_comma;
     assign diag_tx_comma_count  = comma_cnt;
+
+    // Tier 1 sticky diagnostics
+    assign diag_ever_locked    = ever_locked;
+    assign diag_last_fsm_state = last_fsm_state;
 
 endmodule
 `default_nettype wire

@@ -517,6 +517,24 @@ int murosync_serdes_link_test_get_wrd_cnt(unsigned int *wrd_cnt)
     return murosync_serdes_reg_rd(MUROSYNC_LNK_RX_WRD_CNT, wrd_cnt);
 }
 
+int murosync_serdes_link_test_get_ever_locked(unsigned int *ever_locked)
+{
+    unsigned int reg_val;
+    int stat = murosync_serdes_reg_rd(MUROSYNC_LNK_DIAG_STATUS2_REG, &reg_val);
+    if (stat != XST_SUCCESS) return stat;
+    *ever_locked = (reg_val & MUROSYNC_LNK_DIAG_EVER_LOCKED_MSK) >> MUROSYNC_LNK_DIAG_EVER_LOCKED_OFS;
+    return XST_SUCCESS;
+}
+
+int murosync_serdes_link_test_get_last_fsm_state(unsigned int *last_state)
+{
+    unsigned int reg_val;
+    int stat = murosync_serdes_reg_rd(MUROSYNC_LNK_DIAG_STATUS2_REG, &reg_val);
+    if (stat != XST_SUCCESS) return stat;
+    *last_state = (reg_val & MUROSYNC_LNK_DIAG_LAST_FSM_STATE_MSK) >> MUROSYNC_LNK_DIAG_LAST_FSM_STATE_OFS;
+    return XST_SUCCESS;
+}
+
 int murosync_serdes_run_link_test(unsigned char mode, unsigned char ch_mask, unsigned char rx_pol_mask, unsigned char tx_pol_mask, unsigned int pattern, unsigned int test_time_ms)
 {
     unsigned int err_cnt = 0;
@@ -610,23 +628,36 @@ int murosync_serdes_run_link_test(unsigned char mode, unsigned char ch_mask, uns
     }
 
     // 9. Make conclusions
+    unsigned int ever_locked = 0;
+    unsigned int last_state  = 0;
+    murosync_serdes_link_test_get_ever_locked(&ever_locked);
+    murosync_serdes_link_test_get_last_fsm_state(&last_state);
+
     xil_printf("\tMUROSYNC SERDES | --- LINK TEST RESULTS ---\r\n");
     xil_printf("\t\tWords Rx    : %u\r\n", wrd_cnt);
     xil_printf("\t\tErrors      : %u\r\n", err_cnt);
 
-    if (wrd_cnt == 0)
-    {
-        xil_printf("\t\tRESULT      : FAIL (No data received)\r\n");
-        return XST_FAILURE;
-    } else if (err_cnt > 0)
-    {
-        xil_printf("\t\tRESULT      : FAIL (Errors detected)\r\n");
-        return XST_FAILURE;
-    } else
-    {
-        xil_printf("\t\tRESULT      : PASS\r\n");
-        return XST_SUCCESS;
+    const char *result;
+    int rc;
+    if (wrd_cnt == 0) {
+        result = "FAIL (no data)";
+        rc = XST_FAILURE;
+    } else if (err_cnt > 0) {
+        result = "FAIL (errors)";
+        rc = XST_FAILURE;
+    } else if (!ever_locked) {
+        result = "FAIL (FSM never locked)";
+        rc = XST_FAILURE;
+    } else if (last_state != MUROSYNC_LNK_FSM_LOCKED) {
+        result = "WARN (FSM exited not from LOCKED)";
+        rc = XST_SUCCESS;
+    } else {
+        result = "PASS";
+        rc = XST_SUCCESS;
     }
+
+    xil_printf("\t\tRESULT      : %s\r\n", result);
+    return rc;
 }
 /************************************************************************/
 
@@ -650,8 +681,15 @@ void murosync_serdes_link_test_print_diag(void)
     unsigned int charisk = (diag & MUROSYNC_LNK_DIAG_RX_CHARISK_MSK) >> MUROSYNC_LNK_DIAG_RX_CHARISK_OFS;
     unsigned int locked  = (diag & MUROSYNC_LNK_DIAG_LOCKED_MSK)     >> MUROSYNC_LNK_DIAG_LOCKED_OFS;
 
-    const char *fsm_name[] = { "IDLE", "CAPTURE_CFG", "WAIT_ALIGN", "SEARCH", "LOCKED" };
-    const char *fsm_str = (fsm <= 4u) ? fsm_name[fsm] : "UNKNOWN";
+    unsigned int ever_locked = 0, last_state = 0;
+    murosync_serdes_link_test_get_ever_locked(&ever_locked);
+    murosync_serdes_link_test_get_last_fsm_state(&last_state);
+
+    static const char *fsm_names[] = {
+        "IDLE", "CAPTURE_CFG", "WAIT_ALIGN", "SEARCH", "LOCKED"
+    };
+    const char *fsm_str  = (fsm       <= 4u) ? fsm_names[fsm]       : "UNKNOWN";
+    const char *last_str = (last_state <= 4u) ? fsm_names[last_state] : "UNKNOWN";
 
     xil_printf("\t[DIAG] FSM         : %u (%s)\r\n", fsm, fsm_str);
     xil_printf("\t[DIAG] RX aligned  : 0x%X [CH3=%u CH2=%u CH1=%u CH0=%u]\r\n",
@@ -660,6 +698,8 @@ void murosync_serdes_link_test_print_diag(void)
                comma, (comma>>3)&1u, (comma>>2)&1u, (comma>>1)&1u, comma&1u);
     xil_printf("\t[DIAG] RX charisk  : 0x%X\r\n", charisk);
     xil_printf("\t[DIAG] Locked      : %u\r\n", locked);
+    xil_printf("\t[DIAG] Ever locked : %u  (1 = FSM reached LOCKED at least once)\r\n", ever_locked);
+    xil_printf("\t[DIAG] Last state  : %u (%s)  (last active state before stop)\r\n", last_state, last_str);
     xil_printf("\t[DIAG] RX data     : 0x%08X%08X\r\n", rx_hi, rx_lo);
     xil_printf("\t[DIAG] EXP data    : 0x%08X%08X\r\n", ex_hi, ex_lo);
 }

@@ -546,4 +546,20 @@
 	#define MUROSYNC_GT_DEBUG_TXPMARESETDONE_MSK        (0xFu << MUROSYNC_GT_DEBUG_TXPMARESETDONE_OFS)
 
 
+/* ========================================================================
+ * LNK_DIAG_STATUS2 — Tier 1 sticky diagnostic flags
+ * Sticky values held until next test start (capture_cfg) or reset.
+ * Read AFTER link_test_stop() for post-mortem diagnostic.
+ * ======================================================================== */
+#define MUROSYNC_LNK_DIAG_STATUS2_REG            (0x070)
+
+    /* [0] EVER_LOCKED: 1 = FSM reached LOCKED at least once during this test run */
+    #define MUROSYNC_LNK_DIAG_EVER_LOCKED_OFS        0
+    #define MUROSYNC_LNK_DIAG_EVER_LOCKED_MSK        (0x1u << MUROSYNC_LNK_DIAG_EVER_LOCKED_OFS)
+
+    /* [7:4] LAST_FSM_STATE: last non-IDLE state before FSM dropped to IDLE on rx_enable=0 */
+    #define MUROSYNC_LNK_DIAG_LAST_FSM_STATE_OFS     4
+    #define MUROSYNC_LNK_DIAG_LAST_FSM_STATE_MSK     (0xFu << MUROSYNC_LNK_DIAG_LAST_FSM_STATE_OFS)
+
+
 #endif // MUROSYNC_SERDES_ARRAY_REGS_H

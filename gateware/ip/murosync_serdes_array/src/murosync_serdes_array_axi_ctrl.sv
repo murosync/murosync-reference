@@ -111,6 +111,10 @@ module murosync_serdes_array_axi_ctrl #(
     input  wire                                link_test_tx_comma_active,
     input  wire [11:0]                         link_test_tx_comma_count,
 
+    // Tier 1 sticky diagnostics (rx_clk domain — 2FF sync below)
+    input  wire                                link_test_ever_locked,
+    input  wire [3:0]                          link_test_last_fsm_state,
+
     //=== GT DEBUG INPUT PORTS ===//
     input wire [3:0]  gt_debug_rxcommadet_out,
     input wire [3:0]  gt_debug_rxbyteisaligned_out,
@@ -163,6 +167,9 @@ module murosync_serdes_array_axi_ctrl #(
     localparam int SERDES_LNK_DIAG_TX_COUNTERS_LO = 'h13; // RO Offset 0x4C (CH1, CH0)
     localparam int SERDES_LNK_DIAG_TX_COUNTERS_HI = 'h14; // RO Offset 0x50 (CH3, CH2)
     localparam int SERDES_LNK_DIAG_TX_STATUS      = 'h15; // RO Offset 0x54
+
+    // Tier 1 sticky diagnostics register
+    localparam int SERDES_LNK_DIAG_STATUS2     = 'h1C; // RO Offset 0x70
 
     // GT DEBUG REGISTERS
     localparam int GT_DEBUG_COMMA_ALIGN  = 'h16; // RO Offset 0x58
@@ -548,6 +555,32 @@ module murosync_serdes_array_axi_ctrl #(
     assign axi_reg_rd[SERDES_LNK_DIAG_TX_COUNTERS_LO] = diag_tx_counters_axi[31:0];
     assign axi_reg_rd[SERDES_LNK_DIAG_TX_COUNTERS_HI] = diag_tx_counters_axi[63:32];
     assign axi_reg_rd[SERDES_LNK_DIAG_TX_STATUS]      = diag_tx_status_axi;
+
+    // Tier 1 sticky diagnostics CDC: rx_clk → axi_clk
+    wire       diag_ever_locked_axi;
+    wire [3:0] diag_last_fsm_state_axi;
+
+    murosync_cdc_level_sync #(.WIDTH(1), .SYNC_STAGES(2)) u_cdc_diag_ever_locked (
+        .clk  (axi_clk),
+        .rst_n(axi_rst_n),
+        .in   (link_test_ever_locked),
+        .out  (diag_ever_locked_axi)
+    );
+
+    murosync_cdc_level_sync #(.WIDTH(4), .SYNC_STAGES(2)) u_cdc_diag_last_fsm (
+        .clk  (axi_clk),
+        .rst_n(axi_rst_n),
+        .in   (link_test_last_fsm_state),
+        .out  (diag_last_fsm_state_axi)
+    );
+
+    // LNK_DIAG_STATUS2: [0] ever_locked | [7:4] last_fsm_state
+    assign axi_reg_rd[SERDES_LNK_DIAG_STATUS2] = {
+        24'h0,
+        diag_last_fsm_state_axi,
+        3'h0,
+        diag_ever_locked_axi
+    };
 
     // GT DEBUG REGISTERS CDC
     (* keep = "true" *) logic [31:0] gt_debug_comma_align_axi;
