@@ -247,7 +247,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>6dd01dcc</spirit:value>
+            <spirit:value>a55083c9</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -266,7 +266,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>62170fc6</spirit:value>
+            <spirit:value>e7d4753d</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -1614,7 +1614,7 @@
       <spirit:file>
         <spirit:name>src/murosync_serdes_array.sv</spirit:name>
         <spirit:fileType>systemVerilogSource</spirit:fileType>
-        <spirit:userFileType>CHECKSUM_1912d039</spirit:userFileType>
+        <spirit:userFileType>CHECKSUM_596a1c2d</spirit:userFileType>
       </spirit:file>
     </spirit:fileSet>
     <spirit:fileSet>
@@ -1780,14 +1780,14 @@
       </xilinx:taxonomies>
       <xilinx:displayName>murosync_serdes_array_v1_0</xilinx:displayName>
       <xilinx:definitionSource>package_project</xilinx:definitionSource>
-      <xilinx:coreRevision>3</xilinx:coreRevision>
-      <xilinx:coreCreationDateTime>2026-05-20T20:04:45Z</xilinx:coreCreationDateTime>
+      <xilinx:coreRevision>2</xilinx:coreRevision>
+      <xilinx:coreCreationDateTime>2026-05-21T03:41:20Z</xilinx:coreCreationDateTime>
     </xilinx:coreExtensions>
     <xilinx:packagingInfo>
       <xilinx:xilinxVersion>2022.2</xilinx:xilinxVersion>
       <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="9add38af"/>
       <xilinx:checksum xilinx:scope="memoryMaps" xilinx:value="4f19a26b"/>
-      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="19f0b109"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="c7026bee"/>
       <xilinx:checksum xilinx:scope="ports" xilinx:value="475be2a5"/>
       <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="bab20391"/>
       <xilinx:checksum xilinx:scope="parameters" xilinx:value="a4431a78"/>

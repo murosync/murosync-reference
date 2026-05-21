@@ -433,9 +433,13 @@ module murosync_serdes_array #(
     wire        gt_userclk_rx_usrclk2_int;
     wire        gt_userclk_tx_usrclk2_int;
     wire [7:0]  link_test_txctrl2;  // TXCHARISK: K28.5 comma control from link test
-    wire [31:0] rxctrl2_int;         // RXBYTEISALIGNED + RXBYTEISCOMMA from GT
-    wire [63:0] rxctrl0_int;         // reserved — connected but unused (rxcharisk is in rxctrl3)
-    wire [31:0] rxctrl3_int;         // restore — was removed
+    wire [31:0] rxctrl2_int;   // RXBYTEISALIGNED + RXBYTEISCOMMA (8 bits × 4 channels)
+                               // NOTE: connected to GT but not currently consumed.
+                               // rxbyteisaligned is sourced from dedicated wizard port
+                               // (gt_debug_rxbyteisaligned_int) — see u_link_test inst.
+                               // Reserved for future diagnostics (BYTEISCOMMA, etc).
+    wire [63:0] rxctrl0_int;   // RXCHARISK + RXCHARISCOMMA (16 bits × 4 channels)
+    wire [31:0] rxctrl3_int;   // RXNOTINTABLE (8 bits × 4 channels) — kept for future diagnostics
 
     wire [3:0]  gt_debug_rxcommadet_int;
     wire [3:0]  gt_debug_rxbyteisaligned_int;
@@ -447,43 +451,38 @@ module murosync_serdes_array #(
     wire [3:0]  gt_debug_eyescandataerror_int;
     wire [3:0]  gt_debug_rxresetdone_int;
     wire [3:0]  gt_debug_txresetdone_int;
-    // rxbyteisaligned: per UG576, rxctrl2[2N+1]=rxbyteisaligned (level), rxctrl2[2N]=rxbyteiscomma (pulse)
-    wire [3:0]  rxbyteisaligned_int = {
-        rxctrl2_int[7],   // CH3: rxbyteisaligned
-        rxctrl2_int[5],   // CH2: rxbyteisaligned
-        rxctrl2_int[3],   // CH1: rxbyteisaligned
-        rxctrl2_int[1]    // CH0: rxbyteisaligned
-    };
 
-    // RXCHARISK Signal Extraction from RXCTRL0
-    // 
-    // GT Wizard packs RXCHARISK signals into RXCTRL0[7:0] with 2 bits per channel:
-    // - RXCTRL0[2N+1] = RXCHARISK for byte 1 (upper byte) of channel N
-    // - RXCTRL0[2N]   = RXCHARISK for byte 0 (lower byte) of channel N
+    // ============================================================
+    // RXCHARISK extraction from RXCTRL0
+    // ============================================================
+    // Per pg182 (v1.7) page 2886: rxctrl0_out = 16 × Num.channels
+    // For 4 channels, rxctrl0_int is [63:0], packed as:
+    //   CH0 (X0Y4) → rxctrl0_int[15:0]
+    //   CH1 (X0Y5) → rxctrl0_int[31:16]
+    //   CH2 (X0Y6) → rxctrl0_int[47:32]
+    //   CH3 (X0Y7) → rxctrl0_int[63:48]
     //
-    // For 8B10B encoding with 16-bit user data width:
-    // - Each channel receives 2 bytes per clock cycle 
-    // - Each byte can independently contain a K-symbol (special control character)
-    // - We OR both bytes together because if EITHER byte contains a K-symbol,
-    //   the entire 16-bit word should be flagged as containing K-symbols
+    // Within each 16-bit per-channel slice, for 8B/10B + 16-bit user data:
+    //   bit [0] = RXCHARISK byte 0 (lower byte)
+    //   bit [1] = RXCHARISK byte 1 (upper byte)
+    //   bits [15:2] = RXCHARISCOMMA / RXDISPERR / unused (depends on RX internal data width)
     //
-    // RXCTRL0 bit mapping for 4 channels:
-    // [7] = CH3 byte1,  [6] = CH3 byte0
-    // [5] = CH2 byte1,  [4] = CH2 byte0  
-    // [3] = CH1 byte1,  [2] = CH1 byte0
-    // [1] = CH0 byte1,  [0] = CH0 byte0
+    // Per pg182 page 4469: "active portion is least significant bit-aligned"
+    // Reference: ADI util_adxcvr_xch.v: .RXCTRL0({rx_charisk_open_s, rx_charisk})
     //
-    // K-symbols (like comma characters 0xBC, 0x3C) are critical for:
-    // - Word alignment (finding byte boundaries in the serial stream)
-    // - Frame synchronization 
-    // - Protocol control signaling
+    // We OR byte0 | byte1 because either K-symbol byte should flag the cycle as
+    // containing control characters — the link-test checker uses this to skip
+    // K-symbol cycles when counting data words.
     //
-    // Reference: ADI util_adxcvr_xch.v line 3471: .RXCTRL0({rx_charisk_open_s, rx_charisk})
+    // History: prior implementation pulled rxcharisk from RXCTRL3 which is
+    // RXNOTINTABLE (8B/10B decode error). On non-aligned channels NOTINTABLE
+    // is high most of the time, which masqueraded as "K-symbols detected"
+    // while in reality the bytes were undecodable garbage. Fixed 2026-05-20.
     wire [3:0]  rxcharisk_int = {
-        rxctrl3_int[7] | rxctrl3_int[6],  // CH3: K-symbol detected in either byte
-        rxctrl3_int[5] | rxctrl3_int[4],  // CH2: K-symbol detected in either byte
-        rxctrl3_int[3] | rxctrl3_int[2],  // CH1: K-symbol detected in either byte
-        rxctrl3_int[1] | rxctrl3_int[0]   // CH0: K-symbol detected in either byte
+        rxctrl0_int[49] | rxctrl0_int[48],  // CH3 (X0Y7): rxctrl0[16*3+1:16*3] = [49:48]
+        rxctrl0_int[33] | rxctrl0_int[32],  // CH2 (X0Y6): rxctrl0[16*2+1:16*2] = [33:32]
+        rxctrl0_int[17] | rxctrl0_int[16],  // CH1 (X0Y5): rxctrl0[16*1+1:16*1] = [17:16]
+        rxctrl0_int[1]  | rxctrl0_int[0]    // CH0 (X0Y4): rxctrl0[16*0+1:16*0] = [1:0]
     };
 
     // ============================================================
@@ -525,13 +524,18 @@ module murosync_serdes_array #(
         .tx8b10ben_in ({4{1'b1}}),
         .txctrl0_in   (64'h0),
         .txctrl1_in   (64'h0),
-        .txctrl2_in ({24'h0, link_test_txctrl2}), // TXCHARISK from link test
+        .txctrl2_in ({
+            6'h0, link_test_txctrl2[7:6],   // CH3 (X0Y7): TXCHARISK at [25:24]
+            6'h0, link_test_txctrl2[5:4],   // CH2 (X0Y6): TXCHARISK at [17:16]
+            6'h0, link_test_txctrl2[3:2],   // CH1 (X0Y5): TXCHARISK at [9:8]
+            6'h0, link_test_txctrl2[1:0]    // CH0 (X0Y4): TXCHARISK at [1:0]
+        }),
 
         .gtpowergood_out            (gtpowergood_int),
         .rxctrl0_out                (rxctrl0_int),
         .rxctrl1_out                (),
         .rxctrl2_out                (rxctrl2_int),  // rxbyteisaligned + rxbyteiscomma
-        .rxctrl3_out                (rxctrl3_int),  // rxcharisk here
+        .rxctrl3_out                (rxctrl3_int),  // RXNOTINTABLE — diagnostic only
 
         .rxpmaresetdone_out         (rxpmaresetdone_int),
         .txpmaresetdone_out         (txpmaresetdone_int),
@@ -625,7 +629,10 @@ module murosync_serdes_array #(
         .rx_reset_counters (link_test_rst_cnt_rx),
         .cnfg            (link_test_cnfg),
         .fixed_patt      (link_test_patt),
-        .rxbyteisaligned (rxbyteisaligned_int),   // 8B10B byte alignment status
+        .rxbyteisaligned (gt_debug_rxbyteisaligned_int),  // Clean per-channel signal from GT Wizard dedicated port
+                                                          //   (was: manual unpacking from rxctrl2_int — bit position
+                                                          //    was wrong for current IP configuration; bypassed.
+                                                          //    Verified by ground-truth probe 2026-05-21.)
         .rxcharisk       (rxcharisk_int),           // K-symbol indicator — skip in checker
         .tx_data         (link_test_tx_data),
         .rx_data         (gtwiz_userdata_rx_int),
