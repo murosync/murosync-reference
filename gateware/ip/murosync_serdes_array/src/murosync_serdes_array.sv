@@ -292,6 +292,8 @@ module murosync_serdes_array #(
     wire [15:0] link_test_diag_err_cnt_ch1;
     wire [15:0] link_test_diag_err_cnt_ch2;
     wire [15:0] link_test_diag_err_cnt_ch3;
+    wire        link_test_diag_rx_data_at_lock_valid;
+    wire        link_test_diag_first_err_valid;
 
     // Tier 2: GT sticky event counters (packed 16-bit per channel, 4 channels = 64 bits)
     wire [63:0] gt_debug_rxbyterealign_cnt_int;
@@ -457,7 +459,11 @@ module murosync_serdes_array #(
         .gt_debug_rxresetdone_out     (gt_debug_rxresetdone_int),
         .gt_debug_txresetdone_out     (gt_debug_txresetdone_int),
         .gt_debug_rxpmaresetdone_out  (rxpmaresetdone_int),
-        .gt_debug_txpmaresetdone_out  (txpmaresetdone_int)
+        .gt_debug_txpmaresetdone_out  (txpmaresetdone_int),
+
+        // Snapshot valid bits — Tier 2
+        .link_test_rx_data_at_lock_valid (link_test_diag_rx_data_at_lock_valid),
+        .link_test_first_err_valid       (link_test_diag_first_err_valid)
     );
 
     // Wire declarations - must come BEFORE GT wrapper instantiation to avoid implicit 1-bit nets
@@ -705,7 +711,9 @@ module murosync_serdes_array #(
         .diag_err_cnt_ch0           (link_test_diag_err_cnt_ch0),
         .diag_err_cnt_ch1           (link_test_diag_err_cnt_ch1),
         .diag_err_cnt_ch2           (link_test_diag_err_cnt_ch2),
-        .diag_err_cnt_ch3           (link_test_diag_err_cnt_ch3)
+        .diag_err_cnt_ch3           (link_test_diag_err_cnt_ch3),
+        .diag_rx_data_at_lock_valid (link_test_diag_rx_data_at_lock_valid),
+        .diag_first_err_valid       (link_test_diag_first_err_valid)
     );
 
 endmodule

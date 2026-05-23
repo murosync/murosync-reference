@@ -111,6 +111,20 @@ int murosync_serdes_link_test_get_err_cnt(unsigned int *err_cnt);
 int murosync_serdes_link_test_get_wrd_cnt(unsigned int *wrd_cnt);
 int murosync_serdes_link_test_get_ever_locked(unsigned int *ever_locked);
 int murosync_serdes_link_test_get_last_fsm_state(unsigned int *last_state);
+
+/* Tier 2 snapshot valid bits (from LNK_DIAG_STATUS2 bits [16], [17]) */
+int murosync_serdes_link_test_get_rx_data_at_lock_valid(unsigned int *valid);
+int murosync_serdes_link_test_get_first_err_valid(unsigned int *valid);
+
+/* Tier 2 link_test diagnostic snapshots */
+int murosync_serdes_link_test_get_time_to_lock(unsigned int *cycles);
+int murosync_serdes_link_test_get_locked_cycle_count(unsigned int *cycles);
+int murosync_serdes_link_test_get_rx_data_at_lock(unsigned long long *data);
+int murosync_serdes_link_test_get_rx_data_at_first_err(unsigned long long *data);
+
+/* Tier 2 per-channel error counters (ch = 0..3) */
+int murosync_serdes_link_test_get_err_cnt_ch(unsigned char ch, unsigned int *cnt);
+
 int murosync_serdes_run_link_test(unsigned char mode, unsigned char ch_mask, unsigned char rx_pol_mask, unsigned char tx_pol_mask, unsigned int pattern, unsigned int test_time_ms);
 void murosync_serdes_link_test_print_diag(void);
 void murosync_serdes_link_test_print_full_diag(void);
@@ -140,6 +154,10 @@ void murosync_gt_debug_print_status(murosync_gt_debug_status_t *status);
 int murosync_gt_debug_check_comma_detection(void);
 void murosync_gt_debug_monitor_comma_detection(int duration_seconds);
 void murosync_serdes_test_comma_detection(void);
+
+/* Tier 2 GT sticky event counters (ch = 0..3, returns 16-bit value as unsigned int) */
+int murosync_serdes_get_rxbyterealign_cnt(unsigned char ch, unsigned int *cnt);
+int murosync_serdes_get_eyescandataerror_cnt(unsigned char ch, unsigned int *cnt);
 /************************************************************************/
 
 /******************************* TASK ***********************************/

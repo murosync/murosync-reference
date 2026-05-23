@@ -547,9 +547,19 @@
 
 
 /* ========================================================================
- * LNK_DIAG_STATUS2 — Tier 1 sticky diagnostic flags
+ * LNK_DIAG_STATUS2 — Tier 1 + Tier 2 sticky diagnostic flags (offset 0x070)
+ *
  * Sticky values held until next test start (capture_cfg) or reset.
  * Read AFTER link_test_stop() for post-mortem diagnostic.
+ *
+ * Layout:
+ *   [0]     ever_locked            (Tier 1) 1 = FSM reached LOCKED at least once
+ *   [3:1]   reserved
+ *   [7:4]   last_fsm_state         (Tier 1) last non-IDLE state before drop
+ *   [15:8]  reserved
+ *   [16]    rx_data_at_lock_valid  (Tier 2) 1 = at_lock snapshot was taken
+ *   [17]    first_err_valid        (Tier 2) 1 = at_first_err snapshot was taken
+ *   [31:18] reserved
  * ======================================================================== */
 #define MUROSYNC_LNK_DIAG_STATUS2_REG            (0x070)
 
@@ -561,5 +571,88 @@
     #define MUROSYNC_LNK_DIAG_LAST_FSM_STATE_OFS     4
     #define MUROSYNC_LNK_DIAG_LAST_FSM_STATE_MSK     (0xFu << MUROSYNC_LNK_DIAG_LAST_FSM_STATE_OFS)
 
+    /* [16] RX_DATA_AT_LOCK_VALID: 1 = at_lock snapshot was taken */
+    #define MUROSYNC_LNK_DIAG_RX_DATA_AT_LOCK_VALID_OFS  16
+    #define MUROSYNC_LNK_DIAG_RX_DATA_AT_LOCK_VALID_MSK  (0x1u << MUROSYNC_LNK_DIAG_RX_DATA_AT_LOCK_VALID_OFS)
+
+    /* [17] FIRST_ERR_VALID: 1 = at_first_err snapshot was taken */
+    #define MUROSYNC_LNK_DIAG_FIRST_ERR_VALID_OFS     17
+    #define MUROSYNC_LNK_DIAG_FIRST_ERR_VALID_MSK     (0x1u << MUROSYNC_LNK_DIAG_FIRST_ERR_VALID_OFS)
+
+
+/* ========================================================================
+ * Tier 2 Link Test Snapshots and Counters (offsets 0x080-0x094)
+ *
+ * All cleared on rx_reset_pulse or on test start (capture_cfg).
+ * Snapshots are frozen after first event (latch-once semantics).
+ * Validity indicated by LNK_DIAG_STATUS2 bits [16] and [17].
+ * ======================================================================== */
+
+/* TIME_TO_LOCK — cycles from first WAIT_ALIGN entry to first LOCKED entry.
+ * Frozen on first LOCKED. Metric of link convergence speed.
+ * At 312.5 MHz, 1 cycle = 3.2 ns. */
+#define MUROSYNC_LNK_TIME_TO_LOCK_REG            (0x080)
+    #define MUROSYNC_LNK_TIME_TO_LOCK_MSK            (0xFFFFFFFFu)
+
+/* LOCKED_CYCLE_COUNT — total cycles spent in RX_ST_LOCKED.
+ * Includes K-symbol cycles. Metric of link stability. */
+#define MUROSYNC_LNK_LOCKED_CYCLE_COUNT_REG      (0x084)
+    #define MUROSYNC_LNK_LOCKED_CYCLE_COUNT_MSK      (0xFFFFFFFFu)
+
+/* RX_DATA_AT_LOCK — snapshot of rx_data_corrected at first LOCKED entry.
+ * Latched once. Verify lock acquired on expected pattern.
+ * Validity: LNK_DIAG_STATUS2 [16]. */
+#define MUROSYNC_LNK_RX_DATA_AT_LOCK_LO_REG      (0x088)  /* rx_data_at_lock[31:0] */
+#define MUROSYNC_LNK_RX_DATA_AT_LOCK_HI_REG      (0x08C)  /* rx_data_at_lock[63:32] */
+
+/* RX_DATA_AT_FIRST_ERR — snapshot of rx_data_corrected at first error.
+ * Latched once on first err_cnt_inc.
+ * Validity: LNK_DIAG_STATUS2 [17]. */
+#define MUROSYNC_LNK_RX_DATA_AT_FIRST_ERR_LO_REG (0x090)
+#define MUROSYNC_LNK_RX_DATA_AT_FIRST_ERR_HI_REG (0x094)
+
+
+/* ========================================================================
+ * Tier 2 Per-Channel Error Counters (offsets 0x098-0x0A4)
+ *
+ * Each counter is 16 bits in the lower half of its 32-bit register.
+ * Counters increment in LOCKED state on non-K-symbol cycles when this
+ * channel's 16-bit slice doesn't match expected_rx.
+ * Global err_cnt is unchanged for backwards compatibility.
+ * On FMC loopback (symmetric channels) expect all = 0.
+ * ======================================================================== */
+#define MUROSYNC_LNK_ERR_CNT_CH0_REG             (0x098)
+    #define MUROSYNC_LNK_ERR_CNT_CH_MSK              (0xFFFFu)   /* shared mask for all channels */
+#define MUROSYNC_LNK_ERR_CNT_CH1_REG             (0x09C)
+#define MUROSYNC_LNK_ERR_CNT_CH2_REG             (0x0A0)
+#define MUROSYNC_LNK_ERR_CNT_CH3_REG             (0x0A4)
+
+
+/* ========================================================================
+ * Tier 2 GT Sticky Event Counters (offsets 0x0A8-0x0B4)
+ *
+ * RXBYTEREALIGN — counts GT byte-alignment re-acquisition events.
+ *   Frequent counts = channel instability.
+ * EYESCANDATAERROR — counts GT eye scan error events.
+ *   Direct signal quality indicator.
+ *
+ * Layout per register pair (LO/HI):
+ *   LO  [15:0]  CH0,   LO  [31:16] CH1
+ *   HI  [15:0]  CH2,   HI  [31:16] CH3
+ *
+ * Reset: tied to gtwiz_reset_all_in (full GT reset clears all counters).
+ * ======================================================================== */
+#define MUROSYNC_GT_RXBYTEREALIGN_CNT_LO_REG     (0x0A8)
+#define MUROSYNC_GT_RXBYTEREALIGN_CNT_HI_REG     (0x0AC)
+#define MUROSYNC_GT_EYESCANDATAERROR_CNT_LO_REG  (0x0B0)
+#define MUROSYNC_GT_EYESCANDATAERROR_CNT_HI_REG  (0x0B4)
+
+    /* Shared masks for extracting per-channel 16-bit counters from packed registers */
+    #define MUROSYNC_GT_STICKY_CNT_CH_LO_OFS         0
+    #define MUROSYNC_GT_STICKY_CNT_CH_LO_MSK         (0xFFFFu << MUROSYNC_GT_STICKY_CNT_CH_LO_OFS)
+    #define MUROSYNC_GT_STICKY_CNT_CH_HI_OFS         16
+    #define MUROSYNC_GT_STICKY_CNT_CH_HI_MSK         (0xFFFFu << MUROSYNC_GT_STICKY_CNT_CH_HI_OFS)
+
 
 #endif // MUROSYNC_SERDES_ARRAY_REGS_H
+

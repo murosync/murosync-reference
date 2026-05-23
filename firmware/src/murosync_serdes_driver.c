@@ -323,7 +323,7 @@ int murosync_serdes_bring_up(unsigned char loopback, int timeout_usec)
 int murosync_gt_debug_read_status(murosync_gt_debug_status_t *status) {
     if (!status) return XST_FAILURE;
     
-    uint32_t comma_reg, rxbuf_reg, txbuf_reg, sync_reg, signal_reg, reset_reg;
+    unsigned int comma_reg, rxbuf_reg, txbuf_reg, sync_reg, signal_reg, reset_reg;
     
     // Read all GT debug registers
     if (murosync_serdes_reg_rd(MUROSYNC_GT_DEBUG_COMMA_ALIGN_REG, &comma_reg) != XST_SUCCESS) return XST_FAILURE;
@@ -397,7 +397,7 @@ void murosync_gt_debug_print_status(murosync_gt_debug_status_t *status) {
 }
  
 int murosync_gt_debug_check_comma_detection(void) {
-    uint32_t comma_reg;
+    unsigned int comma_reg;
     if (murosync_serdes_reg_rd(MUROSYNC_GT_DEBUG_COMMA_ALIGN_REG, &comma_reg) != XST_SUCCESS) {
         xil_printf("[GT_DEBUG][ERROR] Failed to read comma detection register\r\n");
         return 0;
@@ -415,7 +415,7 @@ void murosync_gt_debug_monitor_comma_detection(int duration_seconds) {
     xil_printf("=== Monitoring GT Comma Detection for %d seconds ===\r\n", duration_seconds);
     
     for (int i = 0; i < duration_seconds; i++) {
-        uint32_t comma_reg;
+        unsigned int comma_reg;
         if (murosync_serdes_reg_rd(MUROSYNC_GT_DEBUG_COMMA_ALIGN_REG, &comma_reg) == XST_SUCCESS) {
             uint8_t comma_det = (comma_reg & MUROSYNC_GT_DEBUG_RXCOMMADET_MSK) >> MUROSYNC_GT_DEBUG_RXCOMMADET_OFS;
             uint8_t byte_aligned = (comma_reg & MUROSYNC_GT_DEBUG_RXBYTEISALIGNED_MSK) >> MUROSYNC_GT_DEBUG_RXBYTEISALIGNED_OFS;
@@ -535,6 +535,117 @@ int murosync_serdes_link_test_get_last_fsm_state(unsigned int *last_state)
     return XST_SUCCESS;
 }
 
+/* ---- Tier 2 snapshot valid bits (LNK_DIAG_STATUS2) ---- */
+
+int murosync_serdes_link_test_get_rx_data_at_lock_valid(unsigned int *valid)
+{
+    unsigned int reg_val;
+    int stat = murosync_serdes_reg_rd(MUROSYNC_LNK_DIAG_STATUS2_REG, &reg_val);
+    if (stat != XST_SUCCESS) return stat;
+    *valid = (reg_val & MUROSYNC_LNK_DIAG_RX_DATA_AT_LOCK_VALID_MSK)
+             >> MUROSYNC_LNK_DIAG_RX_DATA_AT_LOCK_VALID_OFS;
+    return XST_SUCCESS;
+}
+
+int murosync_serdes_link_test_get_first_err_valid(unsigned int *valid)
+{
+    unsigned int reg_val;
+    int stat = murosync_serdes_reg_rd(MUROSYNC_LNK_DIAG_STATUS2_REG, &reg_val);
+    if (stat != XST_SUCCESS) return stat;
+    *valid = (reg_val & MUROSYNC_LNK_DIAG_FIRST_ERR_VALID_MSK)
+             >> MUROSYNC_LNK_DIAG_FIRST_ERR_VALID_OFS;
+    return XST_SUCCESS;
+}
+
+/* ---- Tier 2 timing/convergence counters ---- */
+
+int murosync_serdes_link_test_get_time_to_lock(unsigned int *cycles)
+{
+    return murosync_serdes_reg_rd(MUROSYNC_LNK_TIME_TO_LOCK_REG, cycles);
+}
+
+int murosync_serdes_link_test_get_locked_cycle_count(unsigned int *cycles)
+{
+    return murosync_serdes_reg_rd(MUROSYNC_LNK_LOCKED_CYCLE_COUNT_REG, cycles);
+}
+
+/* ---- Tier 2 64-bit snapshot getters ---- */
+
+int murosync_serdes_link_test_get_rx_data_at_lock(unsigned long long *data)
+{
+    unsigned int lo, hi;
+    int stat;
+    stat = murosync_serdes_reg_rd(MUROSYNC_LNK_RX_DATA_AT_LOCK_LO_REG, &lo);
+    if (stat != XST_SUCCESS) return stat;
+    stat = murosync_serdes_reg_rd(MUROSYNC_LNK_RX_DATA_AT_LOCK_HI_REG, &hi);
+    if (stat != XST_SUCCESS) return stat;
+    *data = ((unsigned long long)hi << 32) | (unsigned long long)lo;
+    return XST_SUCCESS;
+}
+
+int murosync_serdes_link_test_get_rx_data_at_first_err(unsigned long long *data)
+{
+    unsigned int lo, hi;
+    int stat;
+    stat = murosync_serdes_reg_rd(MUROSYNC_LNK_RX_DATA_AT_FIRST_ERR_LO_REG, &lo);
+    if (stat != XST_SUCCESS) return stat;
+    stat = murosync_serdes_reg_rd(MUROSYNC_LNK_RX_DATA_AT_FIRST_ERR_HI_REG, &hi);
+    if (stat != XST_SUCCESS) return stat;
+    *data = ((unsigned long long)hi << 32) | (unsigned long long)lo;
+    return XST_SUCCESS;
+}
+
+/* ---- Tier 2 per-channel error counters ---- */
+
+int murosync_serdes_link_test_get_err_cnt_ch(unsigned char ch, unsigned int *cnt)
+{
+    static const unsigned int reg_ofs[4] = {
+        MUROSYNC_LNK_ERR_CNT_CH0_REG,
+        MUROSYNC_LNK_ERR_CNT_CH1_REG,
+        MUROSYNC_LNK_ERR_CNT_CH2_REG,
+        MUROSYNC_LNK_ERR_CNT_CH3_REG
+    };
+    if (ch > 3) return XST_FAILURE;
+    unsigned int reg_val;
+    int stat = murosync_serdes_reg_rd(reg_ofs[ch], &reg_val);
+    if (stat != XST_SUCCESS) return stat;
+    *cnt = reg_val & MUROSYNC_LNK_ERR_CNT_CH_MSK;
+    return XST_SUCCESS;
+}
+
+/* ---- Tier 2 GT sticky event counters ---- */
+/* Layout: LO register holds CH0 in [15:0] and CH1 in [31:16];
+ *         HI register holds CH2 in [15:0] and CH3 in [31:16].
+ * Trick: (ch < 2) selects LO vs HI; (ch & 1) selects low vs high half. */
+
+int murosync_serdes_get_rxbyterealign_cnt(unsigned char ch, unsigned int *cnt)
+{
+    if (ch > 3) return XST_FAILURE;
+    unsigned int reg_val;
+    unsigned int reg_ofs = (ch < 2) ? MUROSYNC_GT_RXBYTEREALIGN_CNT_LO_REG
+                                    : MUROSYNC_GT_RXBYTEREALIGN_CNT_HI_REG;
+    int stat = murosync_serdes_reg_rd(reg_ofs, &reg_val);
+    if (stat != XST_SUCCESS) return stat;
+    unsigned int shift = (ch & 1) ? MUROSYNC_GT_STICKY_CNT_CH_HI_OFS
+                                  : MUROSYNC_GT_STICKY_CNT_CH_LO_OFS;
+    *cnt = (reg_val >> shift) & 0xFFFFu;
+    return XST_SUCCESS;
+}
+
+int murosync_serdes_get_eyescandataerror_cnt(unsigned char ch, unsigned int *cnt)
+{
+    if (ch > 3) return XST_FAILURE;
+    unsigned int reg_val;
+    unsigned int reg_ofs = (ch < 2) ? MUROSYNC_GT_EYESCANDATAERROR_CNT_LO_REG
+                                    : MUROSYNC_GT_EYESCANDATAERROR_CNT_HI_REG;
+    int stat = murosync_serdes_reg_rd(reg_ofs, &reg_val);
+    if (stat != XST_SUCCESS) return stat;
+    unsigned int shift = (ch & 1) ? MUROSYNC_GT_STICKY_CNT_CH_HI_OFS
+                                  : MUROSYNC_GT_STICKY_CNT_CH_LO_OFS;
+    *cnt = (reg_val >> shift) & 0xFFFFu;
+    return XST_SUCCESS;
+}
+
 int murosync_serdes_run_link_test(unsigned char mode, unsigned char ch_mask, unsigned char rx_pol_mask, unsigned char tx_pol_mask, unsigned int pattern, unsigned int test_time_ms)
 {
     unsigned int err_cnt = 0;
@@ -630,12 +741,21 @@ int murosync_serdes_run_link_test(unsigned char mode, unsigned char ch_mask, uns
     // 9. Make conclusions
     unsigned int ever_locked = 0;
     unsigned int last_state  = 0;
+    unsigned int at_lock_valid = 0;
+    unsigned int err_ch[4] = {0,0,0,0};
     murosync_serdes_link_test_get_ever_locked(&ever_locked);
     murosync_serdes_link_test_get_last_fsm_state(&last_state);
+    murosync_serdes_link_test_get_rx_data_at_lock_valid(&at_lock_valid);
+    for (int i = 0; i < 4; i++) {
+        murosync_serdes_link_test_get_err_cnt_ch((unsigned char)i, &err_ch[i]);
+    }
+    unsigned int any_per_ch_err = err_ch[0] | err_ch[1] | err_ch[2] | err_ch[3];
 
     xil_printf("\tMUROSYNC SERDES | --- LINK TEST RESULTS ---\r\n");
     xil_printf("\t\tWords Rx    : %u\r\n", wrd_cnt);
     xil_printf("\t\tErrors      : %u\r\n", err_cnt);
+    xil_printf("\t\tPer-CH err  : CH0=%u CH1=%u CH2=%u CH3=%u\r\n",
+               err_ch[0], err_ch[1], err_ch[2], err_ch[3]);
 
     const char *result;
     int rc;
@@ -643,10 +763,16 @@ int murosync_serdes_run_link_test(unsigned char mode, unsigned char ch_mask, uns
         result = "FAIL (no data)";
         rc = XST_FAILURE;
     } else if (err_cnt > 0) {
-        result = "FAIL (errors)";
+        result = "FAIL (errors, global)";
+        rc = XST_FAILURE;
+    } else if (any_per_ch_err > 0) {
+        result = "FAIL (per-channel errors)";
         rc = XST_FAILURE;
     } else if (!ever_locked) {
         result = "FAIL (FSM never locked)";
+        rc = XST_FAILURE;
+    } else if (!at_lock_valid) {
+        result = "FAIL (at_lock snapshot not taken)";
         rc = XST_FAILURE;
     } else if (last_state != MUROSYNC_LNK_FSM_LOCKED) {
         result = "WARN (FSM exited not from LOCKED)";
@@ -702,6 +828,63 @@ void murosync_serdes_link_test_print_diag(void)
     xil_printf("\t[DIAG] Last state  : %u (%s)  (last active state before stop)\r\n", last_state, last_str);
     xil_printf("\t[DIAG] RX data     : 0x%08X%08X\r\n", rx_hi, rx_lo);
     xil_printf("\t[DIAG] EXP data    : 0x%08X%08X\r\n", ex_hi, ex_lo);
+
+    /* ===================================================================
+     * Tier 2 diagnostic — snapshots, counters, GT sticky events
+     * =================================================================== */
+
+    /* Snapshot validity bits */
+    unsigned int at_lock_valid = 0, first_err_valid_flag = 0;
+    murosync_serdes_link_test_get_rx_data_at_lock_valid(&at_lock_valid);
+    murosync_serdes_link_test_get_first_err_valid(&first_err_valid_flag);
+
+    /* Timing / convergence */
+    unsigned int time_to_lock = 0, locked_cycles = 0;
+    murosync_serdes_link_test_get_time_to_lock(&time_to_lock);
+    murosync_serdes_link_test_get_locked_cycle_count(&locked_cycles);
+
+    xil_printf("\t[DIAG] Time to lock      : %u cycles\r\n", time_to_lock);
+    xil_printf("\t[DIAG] Locked cycle cnt  : %u\r\n", locked_cycles);
+
+    /* At-lock snapshot */
+    if (at_lock_valid) {
+        unsigned long long at_lock_data = 0;
+        murosync_serdes_link_test_get_rx_data_at_lock(&at_lock_data);
+        xil_printf("\t[DIAG] At-lock data      : 0x%08X%08X  (valid=1)\r\n",
+                   (unsigned int)(at_lock_data >> 32), (unsigned int)(at_lock_data & 0xFFFFFFFFu));
+    } else {
+        xil_printf("\t[DIAG] At-lock data      : N/A (snapshot not taken, valid=0)\r\n");
+    }
+
+    /* At-first-error snapshot */
+    if (first_err_valid_flag) {
+        unsigned long long got = 0;
+        murosync_serdes_link_test_get_rx_data_at_first_err(&got);
+        xil_printf("\t[DIAG] At-1st-err GOT    : 0x%08X%08X  (valid=1)\r\n",
+                   (unsigned int)(got >> 32), (unsigned int)(got & 0xFFFFFFFFu));
+    } else {
+        xil_printf("\t[DIAG] At-1st-err data   : N/A (no errors observed, valid=0)\r\n");
+    }
+
+    /* Per-channel error counters */
+    unsigned int err_ch[4] = {0,0,0,0};
+    for (int i = 0; i < 4; i++) {
+        murosync_serdes_link_test_get_err_cnt_ch((unsigned char)i, &err_ch[i]);
+    }
+    xil_printf("\t[DIAG] Per-CH errors     : CH0=%u CH1=%u CH2=%u CH3=%u\r\n",
+               err_ch[0], err_ch[1], err_ch[2], err_ch[3]);
+
+    /* GT sticky event counters */
+    unsigned int realign_ch[4] = {0,0,0,0};
+    unsigned int eyescan_ch[4] = {0,0,0,0};
+    for (int i = 0; i < 4; i++) {
+        murosync_serdes_get_rxbyterealign_cnt((unsigned char)i, &realign_ch[i]);
+        murosync_serdes_get_eyescandataerror_cnt((unsigned char)i, &eyescan_ch[i]);
+    }
+    xil_printf("\t[DIAG] RX byte realign   : CH0=%u CH1=%u CH2=%u CH3=%u\r\n",
+               realign_ch[0], realign_ch[1], realign_ch[2], realign_ch[3]);
+    xil_printf("\t[DIAG] Eye scan errors   : CH0=%u CH1=%u CH2=%u CH3=%u\r\n",
+               eyescan_ch[0], eyescan_ch[1], eyescan_ch[2], eyescan_ch[3]);
 }
 
 void murosync_serdes_link_test_print_full_diag(void)

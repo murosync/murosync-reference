@@ -96,7 +96,11 @@ module murosync_serdes_link_test #(
     output wire [15:0] diag_err_cnt_ch0,           // Per-channel error count — CH0
     output wire [15:0] diag_err_cnt_ch1,           // Per-channel error count — CH1
     output wire [15:0] diag_err_cnt_ch2,           // Per-channel error count — CH2
-    output wire [15:0] diag_err_cnt_ch3            // Per-channel error count — CH3
+    output wire [15:0] diag_err_cnt_ch3,           // Per-channel error count — CH3
+
+    // Snapshot valid bits — Tier 2 (rx_clk domain)
+    output wire        diag_rx_data_at_lock_valid,  // 1 = rx_data_at_lock snapshot was taken
+    output wire        diag_first_err_valid          // 1 = rx_data_at_first_err snapshot was taken
 );
 
     // ============================================================
@@ -785,6 +789,8 @@ module murosync_serdes_link_test #(
     assign diag_err_cnt_ch1           = err_cnt_ch[1];
     assign diag_err_cnt_ch2           = err_cnt_ch[2];
     assign diag_err_cnt_ch3           = err_cnt_ch[3];
+    assign diag_rx_data_at_lock_valid = rx_data_at_lock_valid;
+    assign diag_first_err_valid       = first_err_valid;
 
 endmodule
 `default_nettype wire

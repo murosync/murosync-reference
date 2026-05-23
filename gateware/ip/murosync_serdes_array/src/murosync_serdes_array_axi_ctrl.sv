@@ -143,7 +143,11 @@ module murosync_serdes_array_axi_ctrl #(
 
     // Tier 2 GT sticky event counters (RXUSRCLK2 domain — CDC below)
     input  wire [63:0]                         gt_debug_rxbyterealign_cnt,     // 4 × 16-bit packed
-    input  wire [63:0]                         gt_debug_eyescandataerror_cnt   // 4 × 16-bit packed
+    input  wire [63:0]                         gt_debug_eyescandataerror_cnt,  // 4 × 16-bit packed
+
+    // Snapshot valid bits (rx_clk domain — CDC below)
+    input  wire                                link_test_rx_data_at_lock_valid,  // 1 = at_lock snapshot taken
+    input  wire                                link_test_first_err_valid          // 1 = at_first_err snapshot taken
 );
 
     wire axi_clk   = s00_axi_aclk;
@@ -613,12 +617,43 @@ module murosync_serdes_array_axi_ctrl #(
         .out  (diag_last_fsm_state_axi)
     );
 
-    // LNK_DIAG_STATUS2: [0] ever_locked | [7:4] last_fsm_state
+    // Snapshot valid bits CDC: rx_clk → axi_clk
+    // Both signals are sticky (set once, cleared only on reset/test restart) —
+    // level_sync is correct here; no coherence risk.
+    wire diag_rx_data_at_lock_valid_axi;
+    wire diag_first_err_valid_axi;
+
+    murosync_cdc_level_sync #(.WIDTH(1), .SYNC_STAGES(2)) u_cdc_diag_at_lock_valid (
+        .clk  (axi_clk),
+        .rst_n(axi_rst_n),
+        .in   (link_test_rx_data_at_lock_valid),
+        .out  (diag_rx_data_at_lock_valid_axi)
+    );
+
+    murosync_cdc_level_sync #(.WIDTH(1), .SYNC_STAGES(2)) u_cdc_diag_first_err_valid (
+        .clk  (axi_clk),
+        .rst_n(axi_rst_n),
+        .in   (link_test_first_err_valid),
+        .out  (diag_first_err_valid_axi)
+    );
+
+    // LNK_DIAG_STATUS2 layout:
+    //   [0]    ever_locked
+    //   [3:1]  reserved
+    //   [7:4]  last_fsm_state
+    //   [15:8] reserved
+    //   [16]   rx_data_at_lock_valid  (1 = at_lock snapshot was taken)
+    //   [17]   first_err_valid        (1 = at_first_err snapshot was taken)
+    //   [31:18] reserved
+    // Width check: 14 + 1 + 1 + 8 + 4 + 3 + 1 = 32 ✓
     assign axi_reg_rd[SERDES_LNK_DIAG_STATUS2] = {
-        24'h0,
-        diag_last_fsm_state_axi,
-        3'h0,
-        diag_ever_locked_axi
+        14'h0,                              // [31:18] reserved
+        diag_first_err_valid_axi,           // [17]
+        diag_rx_data_at_lock_valid_axi,     // [16]
+        8'h0,                               // [15:8]  reserved
+        diag_last_fsm_state_axi,            // [7:4]
+        3'h0,                               // [3:1]   reserved
+        diag_ever_locked_axi                // [0]
     };
 
     // GT DEBUG REGISTERS CDC
