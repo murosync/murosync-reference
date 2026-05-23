@@ -67,10 +67,10 @@ module murosync_serdes_link_test #(
     output logic [31:0] wrd_cnt,
 
     // Diagnostic outputs — rx_clk domain, 2FF sync in axi_ctrl
-    output wire [3:0]  diag_fsm_state,      // rx_checker_curr_state
-    output wire [3:0]  diag_rx_aligned,     // rxbyteisaligned (direct from GT)
-    output wire [3:0]  diag_rx_comma_seen,  // rx_comma_seen (sticky latch)
-    output wire [3:0]  diag_rx_charisk,     // rxcharisk (current cycle)
+    output wire [3:0]  diag_fsm_state,         // rx_checker_curr_state
+    output wire [3:0]  diag_rx_aligned,        // rxbyteisaligned (direct from GT)
+    output wire [3:0]  diag_rx_aligned_seen,   // sticky rxbyteisaligned (latched OR over test run)
+    output wire [3:0]  diag_rx_charisk,        // rxcharisk (current cycle)
     output wire        diag_checker_locked, // 1 = FSM in ST_LOCKED
     output wire [63:0] diag_rx_data,        // rx_data_corrected
     output wire [63:0] diag_exp_data,       // expected_rx
@@ -100,7 +100,11 @@ module murosync_serdes_link_test #(
 
     // Snapshot valid bits — Tier 2 (rx_clk domain)
     output wire        diag_rx_data_at_lock_valid,  // 1 = rx_data_at_lock snapshot was taken
-    output wire        diag_first_err_valid          // 1 = rx_data_at_first_err snapshot was taken
+    output wire        diag_first_err_valid,        // 1 = rx_data_at_first_err snapshot was taken
+
+    // Expected-pattern snapshot at first error — Tier 2 (rx_clk domain)
+    // Paired with diag_rx_data_at_first_err; validity covered by diag_first_err_valid.
+    output wire [63:0] diag_exp_data_at_first_err
 );
 
     // ============================================================
@@ -758,11 +762,10 @@ module murosync_serdes_link_test #(
     // Diagnostic output assignments (rx_clk domain)
     // 2FF synchronization to axi_clk done in murosync_serdes_array_axi_ctrl
     // ------------------------------------------------------------
-    assign diag_fsm_state      = rx_checker_curr_state[3:0];
-    assign diag_rx_aligned     = rxbyteisaligned;
-    assign diag_rx_comma_seen  = rx_aligned_seen;  // Sticky alignment status per channel
-                                                    // (name kept for AXI register backwards compatibility)
-    assign diag_rx_charisk     = rxcharisk;
+    assign diag_fsm_state        = rx_checker_curr_state[3:0];
+    assign diag_rx_aligned       = rxbyteisaligned;
+    assign diag_rx_aligned_seen  = rx_aligned_seen;  // Sticky alignment status per channel (latched OR)
+    assign diag_rx_charisk       = rxcharisk;
     assign diag_checker_locked = checker_locked;
     assign diag_rx_data        = rx_data_corrected;
     assign diag_exp_data       = expected_rx;
@@ -791,6 +794,7 @@ module murosync_serdes_link_test #(
     assign diag_err_cnt_ch3           = err_cnt_ch[3];
     assign diag_rx_data_at_lock_valid = rx_data_at_lock_valid;
     assign diag_first_err_valid       = first_err_valid;
+    assign diag_exp_data_at_first_err = exp_data_at_first_err;
 
 endmodule
 `default_nettype wire

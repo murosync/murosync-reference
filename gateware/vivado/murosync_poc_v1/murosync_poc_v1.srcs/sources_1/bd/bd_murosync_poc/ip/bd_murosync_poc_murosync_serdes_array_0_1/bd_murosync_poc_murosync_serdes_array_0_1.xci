@@ -12,7 +12,7 @@
         "IS_SLAVE": [ { "value": "false", "resolve_type": "dependent", "format": "bool", "usage": "all" } ],
         "IS_MASTER": [ { "value": "true", "resolve_type": "dependent", "format": "bool", "usage": "all" } ],
         "C_S00_AXI_DATA_WIDTH": [ { "value": "32", "resolve_type": "dependent", "format": "long", "usage": "all" } ],
-        "C_S00_AXI_NUM_REGS": [ { "value": "46", "resolve_type": "dependent", "format": "long", "usage": "all" } ],
+        "C_S00_AXI_NUM_REGS": [ { "value": "48", "resolve_type": "dependent", "format": "long", "usage": "all" } ],
         "OPT_MEM_ADDR_BITS": [ { "value": "6", "resolve_type": "dependent", "format": "long", "usage": "all" } ],
         "ADDR_WIDTH_NEEDED": [ { "value": "9", "resolve_type": "dependent", "format": "long", "usage": "all" } ],
         "Component_Name": [ { "value": "bd_murosync_poc_murosync_serdes_array_0_1", "resolve_type": "user", "usage": "all" } ]
@@ -22,7 +22,7 @@
         "IS_SLAVE": [ { "value": "false", "resolve_type": "generated", "format": "bool", "usage": "all" } ],
         "IS_MASTER": [ { "value": "true", "resolve_type": "generated", "format": "bool", "usage": "all" } ],
         "C_S00_AXI_DATA_WIDTH": [ { "value": "32", "resolve_type": "generated", "format": "long", "usage": "all" } ],
-        "C_S00_AXI_NUM_REGS": [ { "value": "46", "resolve_type": "generated", "format": "long", "usage": "all" } ],
+        "C_S00_AXI_NUM_REGS": [ { "value": "48", "resolve_type": "generated", "format": "long", "usage": "all" } ],
         "OPT_MEM_ADDR_BITS": [ { "value": "6", "resolve_type": "generated", "format": "long", "usage": "all" } ],
         "ADDR_WIDTH_NEEDED": [ { "value": "9", "resolve_type": "generated", "format": "long", "usage": "all" } ]
       },

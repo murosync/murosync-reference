@@ -43,7 +43,8 @@ module murosync_serdes_array #(
 
     // CTRL, LOOPBACK, STATUS, DBG_LO, DBG_HI, TEST_CONST, TEST_SCRATCH
     // +14 Tier 2 diagnostic registers (0x80..0xB4, indices 32..45)
-    parameter integer C_S00_AXI_NUM_REGS   = 46,
+    // +2  Stage 5 LNK_EXP_DATA_AT_FIRST_ERR_LO/HI (0xB8/0xBC, indices 46..47)
+    parameter integer C_S00_AXI_NUM_REGS   = 48,
 
     // Pattern copied from axis_wavecap_streamer.sv
     parameter integer OPT_MEM_ADDR_BITS    = $clog2(C_S00_AXI_NUM_REGS),
@@ -266,7 +267,7 @@ module murosync_serdes_array #(
     // Diagnostic wires: link test engine → axi_ctrl (rx_clk domain, synced in axi_ctrl)
     wire [3:0]  link_test_diag_fsm_state;
     wire [3:0]  link_test_diag_rx_aligned;
-    wire [3:0]  link_test_diag_rx_comma_seen;
+    wire [3:0]  link_test_diag_rx_aligned_seen;
     wire [3:0]  link_test_diag_rx_charisk;
     wire        link_test_diag_checker_locked;
     wire [63:0] link_test_diag_rx_data;
@@ -288,6 +289,7 @@ module murosync_serdes_array #(
     wire [31:0] link_test_diag_locked_cycle_cnt;
     wire [63:0] link_test_diag_rx_data_at_lock;
     wire [63:0] link_test_diag_rx_data_at_first_err;
+    wire [63:0] link_test_diag_exp_data_at_first_err;
     wire [15:0] link_test_diag_err_cnt_ch0;
     wire [15:0] link_test_diag_err_cnt_ch1;
     wire [15:0] link_test_diag_err_cnt_ch2;
@@ -416,7 +418,7 @@ module murosync_serdes_array #(
         // Diagnostic inputs from link test engine
         .link_test_fsm_state          (link_test_diag_fsm_state),
         .link_test_rx_aligned         (link_test_diag_rx_aligned),
-        .link_test_rx_comma_seen      (link_test_diag_rx_comma_seen),
+        .link_test_rx_aligned_seen    (link_test_diag_rx_aligned_seen),
         .link_test_rx_charisk         (link_test_diag_rx_charisk),
         .link_test_checker_locked     (link_test_diag_checker_locked),
         .link_test_rx_data            (link_test_diag_rx_data),
@@ -438,6 +440,7 @@ module murosync_serdes_array #(
         .link_test_locked_cycle_cnt      (link_test_diag_locked_cycle_cnt),
         .link_test_rx_data_at_lock       (link_test_diag_rx_data_at_lock),
         .link_test_rx_data_at_first_err  (link_test_diag_rx_data_at_first_err),
+        .link_test_exp_data_at_first_err (link_test_diag_exp_data_at_first_err),
         .link_test_err_cnt_ch0           (link_test_diag_err_cnt_ch0),
         .link_test_err_cnt_ch1           (link_test_diag_err_cnt_ch1),
         .link_test_err_cnt_ch2           (link_test_diag_err_cnt_ch2),
@@ -684,13 +687,13 @@ module murosync_serdes_array #(
         .wrd_cnt         (link_test_wrd_cnt),
 
         // Diagnostic outputs → axi_ctrl → AXI registers → firmware
-        .diag_fsm_state      (link_test_diag_fsm_state),
-        .diag_rx_aligned     (link_test_diag_rx_aligned),
-        .diag_rx_comma_seen  (link_test_diag_rx_comma_seen),
-        .diag_rx_charisk     (link_test_diag_rx_charisk),
-        .diag_checker_locked (link_test_diag_checker_locked),
-        .diag_rx_data        (link_test_diag_rx_data),
-        .diag_exp_data       (link_test_diag_exp_data),
+        .diag_fsm_state        (link_test_diag_fsm_state),
+        .diag_rx_aligned       (link_test_diag_rx_aligned),
+        .diag_rx_aligned_seen  (link_test_diag_rx_aligned_seen),
+        .diag_rx_charisk       (link_test_diag_rx_charisk),
+        .diag_checker_locked   (link_test_diag_checker_locked),
+        .diag_rx_data          (link_test_diag_rx_data),
+        .diag_exp_data         (link_test_diag_exp_data),
 
         // Diagnostic outputs (TX)
         .diag_tx_data           (link_test_diag_tx_data),
@@ -708,6 +711,7 @@ module murosync_serdes_array #(
         .diag_locked_cycle_cnt      (link_test_diag_locked_cycle_cnt),
         .diag_rx_data_at_lock       (link_test_diag_rx_data_at_lock),
         .diag_rx_data_at_first_err  (link_test_diag_rx_data_at_first_err),
+        .diag_exp_data_at_first_err (link_test_diag_exp_data_at_first_err),
         .diag_err_cnt_ch0           (link_test_diag_err_cnt_ch0),
         .diag_err_cnt_ch1           (link_test_diag_err_cnt_ch1),
         .diag_err_cnt_ch2           (link_test_diag_err_cnt_ch2),

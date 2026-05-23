@@ -96,7 +96,7 @@ module murosync_serdes_array_axi_ctrl #(
     // Diagnostic inputs from link test engine (rx_clk domain — 2FF sync below)
     input  wire [3:0]                          link_test_fsm_state,
     input  wire [3:0]                          link_test_rx_aligned,
-    input  wire [3:0]                          link_test_rx_comma_seen,
+    input  wire [3:0]                          link_test_rx_aligned_seen,
     input  wire [3:0]                          link_test_rx_charisk,
     input  wire                                link_test_checker_locked,
     input  wire [63:0]                         link_test_rx_data,
@@ -134,6 +134,7 @@ module murosync_serdes_array_axi_ctrl #(
     input  wire [31:0]                         link_test_locked_cycle_cnt,
     input  wire [63:0]                         link_test_rx_data_at_lock,
     input  wire [63:0]                         link_test_rx_data_at_first_err,
+    input  wire [63:0]                         link_test_exp_data_at_first_err,
 
     // Tier 2 per-channel error counters (rx_clk domain — CDC below)
     input  wire [15:0]                         link_test_err_cnt_ch0,
@@ -211,8 +212,13 @@ module murosync_serdes_array_axi_ctrl #(
     localparam int GT_RXBYTEREALIGN_CNT_HI      = 'h2B; // RO 0xAC  [15:0]=CH2, [31:16]=CH3
     localparam int GT_EYESCANDATAERROR_CNT_LO   = 'h2C; // RO 0xB0  [15:0]=CH0, [31:16]=CH1
     localparam int GT_EYESCANDATAERROR_CNT_HI   = 'h2D; // RO 0xB4  [15:0]=CH2, [31:16]=CH3
-    // Total Tier 2 new registers: 14 (offsets 'h20..'h2D = indices 32..45)
-    // C_S00_AXI_NUM_REGS must be >= 46 ('h2E) to cover all registers.
+
+    // === Tier 2 (Stage 5): EXP data snapshot at first error (paired with RX_DATA_AT_FIRST_ERR) ===
+    localparam int LNK_EXP_DATA_AT_FIRST_ERR_LO = 'h2E; // RO 0xB8  exp_data_at_first_err[31:0]
+    localparam int LNK_EXP_DATA_AT_FIRST_ERR_HI = 'h2F; // RO 0xBC  exp_data_at_first_err[63:32]
+
+    // Total registers: 14 Tier 2 + 2 EXP = 16 (offsets 'h20..'h2F = indices 32..47)
+    // C_S00_AXI_NUM_REGS must be >= 48 ('h30) to cover all registers.
 
     // GT DEBUG REGISTERS
     localparam int GT_DEBUG_COMMA_ALIGN  = 'h16; // RO Offset 0x58
@@ -510,7 +516,7 @@ module murosync_serdes_array_axi_ctrl #(
 
     wire [3:0] diag_fsm_axi;
     wire [3:0] diag_aligned_axi;
-    wire [3:0] diag_comma_axi;
+    wire [3:0] diag_aligned_seen_axi;
     wire [3:0] diag_charisk_axi;
     wire       diag_locked_axi;
 
@@ -528,11 +534,11 @@ module murosync_serdes_array_axi_ctrl #(
         .out  (diag_aligned_axi)
     );
 
-    murosync_cdc_level_sync #(.WIDTH(4), .SYNC_STAGES(2)) u_cdc_diag_comma (
+    murosync_cdc_level_sync #(.WIDTH(4), .SYNC_STAGES(2)) u_cdc_diag_aligned_seen (
         .clk  (axi_clk),
         .rst_n(axi_rst_n),
-        .in   (link_test_rx_comma_seen),
-        .out  (diag_comma_axi)
+        .in   (link_test_rx_aligned_seen),
+        .out  (diag_aligned_seen_axi)
     );
 
     murosync_cdc_level_sync #(.WIDTH(4), .SYNC_STAGES(2)) u_cdc_diag_charisk (
@@ -579,12 +585,12 @@ module murosync_serdes_array_axi_ctrl #(
         end
     end
 
-    // LNK_DIAG_STATUS: [3:0] fsm | [7:4] aligned | [11:8] comma | [15:12] charisk | [16] locked
+    // LNK_DIAG_STATUS: [3:0] fsm | [7:4] aligned | [11:8] aligned_seen | [15:12] charisk | [16] locked
     assign axi_reg_rd[SERDES_LNK_DIAG_STATUS] = {
         15'h0,
         diag_locked_axi,
         diag_charisk_axi,
-        diag_comma_axi,
+        diag_aligned_seen_axi,
         diag_aligned_axi,
         diag_fsm_axi
     };
@@ -728,6 +734,14 @@ module murosync_serdes_array_axi_ctrl #(
         .out  (diag_rx_data_at_first_err_axi)
     );
 
+    // -- exp_data_at_first_err (64-bit, frozen snapshot, paired with rx_data_at_first_err) --
+    wire [63:0] diag_exp_data_at_first_err_axi;
+    murosync_cdc_level_sync #(.WIDTH(64), .SYNC_STAGES(2)) u_cdc_t2_exp_at_err (
+        .clk  (axi_clk), .rst_n(axi_rst_n),
+        .in   (link_test_exp_data_at_first_err),
+        .out  (diag_exp_data_at_first_err_axi)
+    );
+
     // -- per-channel error counters (16-bit each) --
     wire [15:0] diag_err_cnt_ch0_axi;
     wire [15:0] diag_err_cnt_ch1_axi;
@@ -774,6 +788,10 @@ module murosync_serdes_array_axi_ctrl #(
     assign axi_reg_rd[GT_RXBYTEREALIGN_CNT_HI]     = {gt_rxbyterealign_cnt_axi[63:48], gt_rxbyterealign_cnt_axi[47:32]};  // CH3[31:16], CH2[15:0]
     assign axi_reg_rd[GT_EYESCANDATAERROR_CNT_LO]  = {gt_eyescandataerror_cnt_axi[31:16], gt_eyescandataerror_cnt_axi[15:0]};
     assign axi_reg_rd[GT_EYESCANDATAERROR_CNT_HI]  = {gt_eyescandataerror_cnt_axi[63:48], gt_eyescandataerror_cnt_axi[47:32]};
+
+    // -- Tier 2 Stage 5: EXP data snapshot at first error --
+    assign axi_reg_rd[LNK_EXP_DATA_AT_FIRST_ERR_LO] = diag_exp_data_at_first_err_axi[31:0];
+    assign axi_reg_rd[LNK_EXP_DATA_AT_FIRST_ERR_HI] = diag_exp_data_at_first_err_axi[63:32];
 
 endmodule
 `default_nettype wire

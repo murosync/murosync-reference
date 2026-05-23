@@ -121,6 +121,7 @@ int murosync_serdes_link_test_get_time_to_lock(unsigned int *cycles);
 int murosync_serdes_link_test_get_locked_cycle_count(unsigned int *cycles);
 int murosync_serdes_link_test_get_rx_data_at_lock(unsigned long long *data);
 int murosync_serdes_link_test_get_rx_data_at_first_err(unsigned long long *data);
+int murosync_serdes_link_test_get_exp_data_at_first_err(unsigned long long *data);
 
 /* Tier 2 per-channel error counters (ch = 0..3) */
 int murosync_serdes_link_test_get_err_cnt_ch(unsigned char ch, unsigned int *cnt);

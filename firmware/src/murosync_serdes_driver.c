@@ -632,6 +632,18 @@ int murosync_serdes_link_test_get_rx_data_at_first_err(unsigned long long *data)
     return XST_SUCCESS;
 }
 
+int murosync_serdes_link_test_get_exp_data_at_first_err(unsigned long long *data)
+{
+    unsigned int lo, hi;
+    int stat;
+    stat = murosync_serdes_reg_rd(MUROSYNC_LNK_EXP_DATA_AT_FIRST_ERR_LO_REG, &lo);
+    if (stat != XST_SUCCESS) return stat;
+    stat = murosync_serdes_reg_rd(MUROSYNC_LNK_EXP_DATA_AT_FIRST_ERR_HI_REG, &hi);
+    if (stat != XST_SUCCESS) return stat;
+    *data = ((unsigned long long)hi << 32) | (unsigned long long)lo;
+    return XST_SUCCESS;
+}
+
 /* ---- Tier 2 per-channel error counters ---- */
 
 int murosync_serdes_link_test_get_err_cnt_ch(unsigned char ch, unsigned int *cnt)
@@ -1005,11 +1017,11 @@ void murosync_serdes_link_test_print_diag(void)
     murosync_serdes_reg_rd(MUROSYNC_LNK_DIAG_EXP_LO, &ex_lo);
     murosync_serdes_reg_rd(MUROSYNC_LNK_DIAG_EXP_HI, &ex_hi);
 
-    unsigned int fsm     = (diag & MUROSYNC_LNK_DIAG_FSM_STATE_MSK) >> MUROSYNC_LNK_DIAG_FSM_STATE_OFS;
-    unsigned int aligned = (diag & MUROSYNC_LNK_DIAG_RX_ALIGNED_MSK) >> MUROSYNC_LNK_DIAG_RX_ALIGNED_OFS;
-    unsigned int comma   = (diag & MUROSYNC_LNK_DIAG_RX_COMMA_MSK)   >> MUROSYNC_LNK_DIAG_RX_COMMA_OFS;
-    unsigned int charisk = (diag & MUROSYNC_LNK_DIAG_RX_CHARISK_MSK) >> MUROSYNC_LNK_DIAG_RX_CHARISK_OFS;
-    unsigned int locked  = (diag & MUROSYNC_LNK_DIAG_LOCKED_MSK)     >> MUROSYNC_LNK_DIAG_LOCKED_OFS;
+    unsigned int fsm          = (diag & MUROSYNC_LNK_DIAG_FSM_STATE_MSK)       >> MUROSYNC_LNK_DIAG_FSM_STATE_OFS;
+    unsigned int aligned      = (diag & MUROSYNC_LNK_DIAG_RX_ALIGNED_MSK)      >> MUROSYNC_LNK_DIAG_RX_ALIGNED_OFS;
+    unsigned int aligned_seen = (diag & MUROSYNC_LNK_DIAG_RX_ALIGNED_SEEN_MSK) >> MUROSYNC_LNK_DIAG_RX_ALIGNED_SEEN_OFS;
+    unsigned int charisk      = (diag & MUROSYNC_LNK_DIAG_RX_CHARISK_MSK)      >> MUROSYNC_LNK_DIAG_RX_CHARISK_OFS;
+    unsigned int locked       = (diag & MUROSYNC_LNK_DIAG_LOCKED_MSK)          >> MUROSYNC_LNK_DIAG_LOCKED_OFS;
 
     unsigned int ever_locked = 0, last_state = 0;
     murosync_serdes_link_test_get_ever_locked(&ever_locked);
@@ -1024,8 +1036,8 @@ void murosync_serdes_link_test_print_diag(void)
     xil_printf("\t[DIAG] FSM         : %u (%s)\r\n", fsm, fsm_str);
     xil_printf("\t[DIAG] RX aligned  : 0x%X [CH3=%u CH2=%u CH1=%u CH0=%u]\r\n",
                aligned, (aligned>>3)&1u, (aligned>>2)&1u, (aligned>>1)&1u, aligned&1u);
-    xil_printf("\t[DIAG] Comma seen  : 0x%X [CH3=%u CH2=%u CH1=%u CH0=%u]\r\n",
-               comma, (comma>>3)&1u, (comma>>2)&1u, (comma>>1)&1u, comma&1u);
+    xil_printf("\t[DIAG] Aligned seen: 0x%X [CH3=%u CH2=%u CH1=%u CH0=%u]  (sticky)\r\n",
+               aligned_seen, (aligned_seen>>3)&1u, (aligned_seen>>2)&1u, (aligned_seen>>1)&1u, aligned_seen&1u);
     xil_printf("\t[DIAG] RX charisk  : 0x%X\r\n", charisk);
     xil_printf("\t[DIAG] Locked      : %u\r\n", locked);
     xil_printf("\t[DIAG] Ever locked : %u  (1 = FSM reached LOCKED at least once)\r\n", ever_locked);
@@ -1060,12 +1072,21 @@ void murosync_serdes_link_test_print_diag(void)
         xil_printf("\t[DIAG] At-lock data      : N/A (snapshot not taken, valid=0)\r\n");
     }
 
-    /* At-first-error snapshot */
+    /* At-first-error snapshot — GOT vs EXP for diff diagnostic.
+     * XOR popcount: small (1-3 bits) = bit-flip, large (~32) = full decorrelation. */
     if (first_err_valid_flag) {
         unsigned long long got = 0;
+        unsigned long long exp = 0;
+        unsigned long long diff;
         murosync_serdes_link_test_get_rx_data_at_first_err(&got);
+        murosync_serdes_link_test_get_exp_data_at_first_err(&exp);
+        diff = got ^ exp;
         xil_printf("\t[DIAG] At-1st-err GOT    : 0x%08X%08X  (valid=1)\r\n",
                    (unsigned int)(got >> 32), (unsigned int)(got & 0xFFFFFFFFu));
+        xil_printf("\t[DIAG] At-1st-err EXP    : 0x%08X%08X\r\n",
+                   (unsigned int)(exp >> 32), (unsigned int)(exp & 0xFFFFFFFFu));
+        xil_printf("\t[DIAG] At-1st-err XOR    : 0x%08X%08X  (popcount = bit-flip count)\r\n",
+                   (unsigned int)(diff >> 32), (unsigned int)(diff & 0xFFFFFFFFu));
     } else {
         xil_printf("\t[DIAG] At-1st-err data   : N/A (no errors observed, valid=0)\r\n");
     }
@@ -1123,13 +1144,13 @@ void murosync_serdes_link_test_print_full_diag(void)
                (fsm==0)?"IDLE":(fsm==1)?"CAPTURE_CFG":(fsm==2)?"WAIT_ALIGN":
                (fsm==3)?"SEARCH":(fsm==4)?"LOCKED":"UNKNOWN");
                
-    unsigned int aligned = (diag >> 4) & 0xF;
-    unsigned int comma   = (diag >> 8) & 0xF;
-    unsigned int charisk = (diag >> 12) & 0xF;
-    unsigned int locked  = (diag >> 16) & 1;
-               
+    unsigned int aligned      = (diag >> 4) & 0xF;
+    unsigned int aligned_seen = (diag >> 8) & 0xF;
+    unsigned int charisk      = (diag >> 12) & 0xF;
+    unsigned int locked       = (diag >> 16) & 1;
+
     xil_printf("\t[RX] aligned     : 0x%X\r\n", aligned);
-    xil_printf("\t[RX] comma_seen  : 0x%X\r\n", comma);
+    xil_printf("\t[RX] aligned_seen: 0x%X  (sticky)\r\n", aligned_seen);
     xil_printf("\t[RX] charisk     : 0x%X\r\n", charisk);
     xil_printf("\t[RX] locked      : %u\r\n", locked);
                
@@ -1152,7 +1173,7 @@ static void murosync_serdes_link_test_run_one(
     murosync_serdes_run_link_test(mode, ch_mask, rx_pol, tx_pol, pattern, 500);
 
     // Read diagnostics immediately after stop — FSM will be IDLE but
-    // aligned/comma_seen are sticky and reflect what happened during the run
+    // aligned_seen is sticky and reflects what happened during the run
     xil_printf("\t[DIAG after 500ms run]\r\n");
     murosync_serdes_link_test_print_full_diag();
 

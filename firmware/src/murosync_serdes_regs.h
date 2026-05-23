@@ -67,6 +67,72 @@
 #ifndef MUROSYNC_SERDES_ARRAY_REGS_H
 #define MUROSYNC_SERDES_ARRAY_REGS_H
 
+/* ========================================================================
+ * MuroSync SERDES Array — AXI Register Map Summary
+ *
+ *  Offset    Name                              RW   Purpose
+ *  --------  --------------------------------  ---- ----------------------------------
+ *  Control / Status:
+ *  0x000     CTRL                              W1P  LINK_LATCH_RESET, GT_RESET_ALL
+ *  0x004     LOOPBACK                          RW   GT loopback mode
+ *  0x008     STATUS                            RO   link_up, latched, pll_lock, ...
+ *  0x00C     DBG_LO / 0x010 DBG_HI             RO   64-bit debug snapshot
+ *  0x014     TEST_CONST                        RO   0x4D55524F (AXI self-test)
+ *  0x018     TEST_SCRATCH                      RW   AXI write/read self-test
+ *
+ *  Link Test (basic):
+ *  0x01C     LNK_TEST_CTRL                     W1P  ENABLE, RESET (W1P bit 1)
+ *  0x020     LNK_TEST_CNFG                     RW   Mode, Ch Mask, Pol Mask
+ *  0x024     LNK_TEST_PATT                     RW   Fixed test pattern [31:0]
+ *  0x028     LNK_RX_ERR_CNT                    RO   Global error count
+ *  0x02C     LNK_RX_WRD_CNT                    RO   Global word count
+ *
+ *  Link Test Diagnostic (Tier 0):
+ *  0x030     LNK_DIAG_STATUS                   RO   FSM, aligned, aligned_seen, charisk, locked
+ *  0x034/038 LNK_DIAG_RX_LO/HI                 RO   Last received word (64-bit)
+ *  0x03C/040 LNK_DIAG_EXP_LO/HI                RO   Current expected word (64-bit)
+ *  0x044/048 LNK_DIAG_TX_DATA_LO/HI            RO   Current TX pattern
+ *  0x04C/050 LNK_DIAG_TX_COUNTERS_LO/HI        RO   Per-channel TX counter values
+ *  0x054     LNK_DIAG_TX_STATUS                RO   TX comma active, comma count
+ *
+ *  GT Wizard Debug:
+ *  0x058     GT_DEBUG_COMMA_ALIGN              RO   rxcommadet, rxbyteisaligned, rxbyterealign
+ *  0x05C     GT_DEBUG_RXBUF_STATUS             RO
+ *  0x060     GT_DEBUG_TXBUF_STATUS             RO
+ *  0x064     GT_DEBUG_SYNC_STATUS              RO
+ *  0x068     GT_DEBUG_SIGNAL_QUAL              RO
+ *  0x06C     GT_DEBUG_RESET_STATUS             RO
+ *
+ *  Tier 1+2 Sticky Diagnostic:
+ *  0x070     LNK_DIAG_STATUS2                  RO   ever_locked, last_fsm_state, snapshot valid bits
+ *
+ *  Tier 2 Snapshots & Timing:
+ *  0x080     LNK_TIME_TO_LOCK                  RO   Cycles WAIT_ALIGN -> LOCKED (frozen)
+ *  0x084     LNK_LOCKED_CYCLE_COUNT            RO   Total cycles in LOCKED
+ *  0x088/08C LNK_RX_DATA_AT_LOCK_LO/HI         RO   rx_data at first LOCKED entry
+ *  0x090/094 LNK_RX_DATA_AT_FIRST_ERR_LO/HI    RO   rx_data at first error
+ *
+ *  Tier 2 Per-Channel Errors (16-bit in lower half each):
+ *  0x098..0A4  LNK_ERR_CNT_CH0..CH3            RO   Per-channel error counters
+ *
+ *  Tier 2 GT Sticky Counters (CH packed: LO[15:0]=CHn, LO[31:16]=CHn+1):
+ *  0x0A8/0AC GT_RXBYTEREALIGN_CNT_LO/HI        RO   Per-channel realign events
+ *  0x0B0/0B4 GT_EYESCANDATAERROR_CNT_LO/HI     RO   Per-channel eye scan errors
+ *
+ *  Tier 2 Stage 5 — paired snapshot for diff diagnostic:
+ *  0x0B8/0BC LNK_EXP_DATA_AT_FIRST_ERR_LO/HI   RO   Expected pattern at first error
+ *                                                   (XOR with RX_DATA_AT_FIRST_ERR =
+ *                                                    error pattern; popcount = bit-flip count)
+ *
+ *  Validity bits (read from LNK_DIAG_STATUS2 at 0x070):
+ *    [0]    ever_locked
+ *    [7:4]  last_fsm_state
+ *    [16]   rx_data_at_lock_valid
+ *    [17]   first_err_valid  (covers RX_DATA_AT_FIRST_ERR and EXP_DATA_AT_FIRST_ERR)
+ *
+ *  Total registers used: 48 (0x000 - 0x0BC). Free slots: 0x074-0x07C (3 slots).
+ * ======================================================================== */
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////  SERDES_CTRL  ///////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -325,11 +391,11 @@
 
 #define MUROSYNC_LNK_DIAG_STATUS                (0x030)  // RO: FSM state + alignment
 
-	// [3:0]   FSM_STATE: 0=IDLE 1=CAPTURE_CFG 2=WAIT_ALIGN 3=SEARCH 4=LOCKED
-	// [7:4]   RX_ALIGNED:    rxbyteisaligned per channel [CH3..CH0]
-	// [11:8]  RX_COMMA_SEEN: sticky comma received per channel
-	// [15:12] RX_CHARISK:    current cycle K-symbol per channel
-	// [16]    CHECKER_LOCKED: 1 = FSM in ST_LOCKED
+	// [3:0]   FSM_STATE:         0=IDLE 1=CAPTURE_CFG 2=WAIT_ALIGN 3=SEARCH 4=LOCKED
+	// [7:4]   RX_ALIGNED:        rxbyteisaligned per channel [CH3..CH0] (current)
+	// [11:8]  RX_ALIGNED_SEEN:   sticky rxbyteisaligned per channel (latched OR over test run)
+	// [15:12] RX_CHARISK:        current cycle K-symbol per channel
+	// [16]    CHECKER_LOCKED:    1 = FSM in ST_LOCKED
 
 	#define MUROSYNC_LNK_DIAG_FSM_STATE_OFS       0
 	#define MUROSYNC_LNK_DIAG_FSM_STATE_MSK       (0xFu << MUROSYNC_LNK_DIAG_FSM_STATE_OFS)
@@ -337,8 +403,8 @@
 	#define MUROSYNC_LNK_DIAG_RX_ALIGNED_OFS      4
 	#define MUROSYNC_LNK_DIAG_RX_ALIGNED_MSK      (0xFu << MUROSYNC_LNK_DIAG_RX_ALIGNED_OFS)
 
-	#define MUROSYNC_LNK_DIAG_RX_COMMA_OFS        8
-	#define MUROSYNC_LNK_DIAG_RX_COMMA_MSK        (0xFu << MUROSYNC_LNK_DIAG_RX_COMMA_OFS)
+	#define MUROSYNC_LNK_DIAG_RX_ALIGNED_SEEN_OFS 8
+	#define MUROSYNC_LNK_DIAG_RX_ALIGNED_SEEN_MSK (0xFu << MUROSYNC_LNK_DIAG_RX_ALIGNED_SEEN_OFS)
 
 	#define MUROSYNC_LNK_DIAG_RX_CHARISK_OFS      12
 	#define MUROSYNC_LNK_DIAG_RX_CHARISK_MSK      (0xFu << MUROSYNC_LNK_DIAG_RX_CHARISK_OFS)
@@ -610,6 +676,13 @@
  * Validity: LNK_DIAG_STATUS2 [17]. */
 #define MUROSYNC_LNK_RX_DATA_AT_FIRST_ERR_LO_REG (0x090)
 #define MUROSYNC_LNK_RX_DATA_AT_FIRST_ERR_HI_REG (0x094)
+
+/* EXP_DATA_AT_FIRST_ERR — expected pattern snapshot at first error in LOCKED.
+ * Paired with RX_DATA_AT_FIRST_ERR. Use both to distinguish bit-flip from
+ * full decorrelation: bit-flip = small XOR popcount, decorrelation = large XOR.
+ * Validity: LNK_DIAG_STATUS2 [17] (same as RX_DATA_AT_FIRST_ERR — captured together). */
+#define MUROSYNC_LNK_EXP_DATA_AT_FIRST_ERR_LO_REG (0x0B8)
+#define MUROSYNC_LNK_EXP_DATA_AT_FIRST_ERR_HI_REG (0x0BC)
 
 
 /* ========================================================================
