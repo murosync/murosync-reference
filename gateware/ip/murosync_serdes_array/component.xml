@@ -247,7 +247,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>d9723dfe</spirit:value>
+            <spirit:value>d4cbc448</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -266,7 +266,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>bc37489e</spirit:value>
+            <spirit:value>53994bde</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -1201,7 +1201,7 @@
         <spirit:wire>
           <spirit:direction>in</spirit:direction>
           <spirit:vector>
-            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.ADDR_WIDTH_NEEDED&apos;)) - 1)">7</spirit:left>
+            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.ADDR_WIDTH_NEEDED&apos;)) - 1)">8</spirit:left>
             <spirit:right spirit:format="long">0</spirit:right>
           </spirit:vector>
           <spirit:wireTypeDefs>
@@ -1385,7 +1385,7 @@
         <spirit:wire>
           <spirit:direction>in</spirit:direction>
           <spirit:vector>
-            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.ADDR_WIDTH_NEEDED&apos;)) - 1)">7</spirit:left>
+            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.ADDR_WIDTH_NEEDED&apos;)) - 1)">8</spirit:left>
             <spirit:right spirit:format="long">0</spirit:right>
           </spirit:vector>
           <spirit:wireTypeDefs>
@@ -1537,17 +1537,17 @@
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_S00_AXI_NUM_REGS</spirit:name>
         <spirit:displayName>C S00 Axi Num Regs</spirit:displayName>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_S00_AXI_NUM_REGS">29</spirit:value>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_S00_AXI_NUM_REGS">46</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>OPT_MEM_ADDR_BITS</spirit:name>
         <spirit:displayName>Opt Mem Addr Bits</spirit:displayName>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.OPT_MEM_ADDR_BITS" spirit:dependency="spirit:ceil(spirit:log(2,spirit:decode(id(&apos;MODELPARAM_VALUE.C_S00_AXI_NUM_REGS&apos;))))">5</spirit:value>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.OPT_MEM_ADDR_BITS" spirit:dependency="spirit:ceil(spirit:log(2,spirit:decode(id(&apos;MODELPARAM_VALUE.C_S00_AXI_NUM_REGS&apos;))))">6</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>ADDR_WIDTH_NEEDED</spirit:name>
         <spirit:displayName>Addr Width Needed</spirit:displayName>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.ADDR_WIDTH_NEEDED" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.OPT_MEM_ADDR_BITS&apos;)) + 3)">8</spirit:value>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.ADDR_WIDTH_NEEDED" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.OPT_MEM_ADDR_BITS&apos;)) + 3)">9</spirit:value>
       </spirit:modelParameter>
     </spirit:modelParameters>
   </spirit:model>
@@ -1614,7 +1614,7 @@
       <spirit:file>
         <spirit:name>src/murosync_serdes_array.sv</spirit:name>
         <spirit:fileType>systemVerilogSource</spirit:fileType>
-        <spirit:userFileType>CHECKSUM_3e4dab9a</spirit:userFileType>
+        <spirit:userFileType>CHECKSUM_6552dbbb</spirit:userFileType>
       </spirit:file>
     </spirit:fileSet>
     <spirit:fileSet>
@@ -1729,17 +1729,17 @@
     <spirit:parameter>
       <spirit:name>C_S00_AXI_NUM_REGS</spirit:name>
       <spirit:displayName>C S00 Axi Num Regs</spirit:displayName>
-      <spirit:value spirit:format="long" spirit:resolve="dependent" spirit:id="PARAM_VALUE.C_S00_AXI_NUM_REGS">29</spirit:value>
+      <spirit:value spirit:format="long" spirit:resolve="dependent" spirit:id="PARAM_VALUE.C_S00_AXI_NUM_REGS">46</spirit:value>
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>OPT_MEM_ADDR_BITS</spirit:name>
       <spirit:displayName>Opt Mem Addr Bits</spirit:displayName>
-      <spirit:value spirit:format="long" spirit:resolve="dependent" spirit:id="PARAM_VALUE.OPT_MEM_ADDR_BITS">5</spirit:value>
+      <spirit:value spirit:format="long" spirit:resolve="dependent" spirit:id="PARAM_VALUE.OPT_MEM_ADDR_BITS">6</spirit:value>
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>ADDR_WIDTH_NEEDED</spirit:name>
       <spirit:displayName>Addr Width Needed</spirit:displayName>
-      <spirit:value spirit:format="long" spirit:resolve="dependent" spirit:id="PARAM_VALUE.ADDR_WIDTH_NEEDED">8</spirit:value>
+      <spirit:value spirit:format="long" spirit:resolve="dependent" spirit:id="PARAM_VALUE.ADDR_WIDTH_NEEDED">9</spirit:value>
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>Component_Name</spirit:name>
@@ -1781,16 +1781,16 @@
       <xilinx:displayName>murosync_serdes_array_v1_0</xilinx:displayName>
       <xilinx:definitionSource>package_project</xilinx:definitionSource>
       <xilinx:coreRevision>2</xilinx:coreRevision>
-      <xilinx:coreCreationDateTime>2026-05-21T21:15:00Z</xilinx:coreCreationDateTime>
+      <xilinx:coreCreationDateTime>2026-05-23T17:08:00Z</xilinx:coreCreationDateTime>
     </xilinx:coreExtensions>
     <xilinx:packagingInfo>
       <xilinx:xilinxVersion>2022.2</xilinx:xilinxVersion>
       <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="9add38af"/>
       <xilinx:checksum xilinx:scope="memoryMaps" xilinx:value="4f19a26b"/>
-      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="c61dbb49"/>
-      <xilinx:checksum xilinx:scope="ports" xilinx:value="475be2a5"/>
-      <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="d6548cbb"/>
-      <xilinx:checksum xilinx:scope="parameters" xilinx:value="9ad959b5"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="2a57ae0b"/>
+      <xilinx:checksum xilinx:scope="ports" xilinx:value="be2bf923"/>
+      <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="18ca5ed9"/>
+      <xilinx:checksum xilinx:scope="parameters" xilinx:value="f23e69cf"/>
     </xilinx:packagingInfo>
   </spirit:vendorExtensions>
 </spirit:component>

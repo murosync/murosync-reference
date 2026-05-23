@@ -127,7 +127,23 @@ module murosync_serdes_array_axi_ctrl #(
     input wire [3:0]  gt_debug_rxresetdone_out,
     input wire [3:0]  gt_debug_txresetdone_out,
     input wire [3:0]  gt_debug_rxpmaresetdone_out,
-    input wire [3:0]  gt_debug_txpmaresetdone_out
+    input wire [3:0]  gt_debug_txpmaresetdone_out,
+
+    // Tier 2 link_test diagnostic snapshots (rx_clk domain — CDC below)
+    input  wire [31:0]                         link_test_time_to_lock,
+    input  wire [31:0]                         link_test_locked_cycle_cnt,
+    input  wire [63:0]                         link_test_rx_data_at_lock,
+    input  wire [63:0]                         link_test_rx_data_at_first_err,
+
+    // Tier 2 per-channel error counters (rx_clk domain — CDC below)
+    input  wire [15:0]                         link_test_err_cnt_ch0,
+    input  wire [15:0]                         link_test_err_cnt_ch1,
+    input  wire [15:0]                         link_test_err_cnt_ch2,
+    input  wire [15:0]                         link_test_err_cnt_ch3,
+
+    // Tier 2 GT sticky event counters (RXUSRCLK2 domain — CDC below)
+    input  wire [63:0]                         gt_debug_rxbyterealign_cnt,     // 4 × 16-bit packed
+    input  wire [63:0]                         gt_debug_eyescandataerror_cnt   // 4 × 16-bit packed
 );
 
     wire axi_clk   = s00_axi_aclk;
@@ -170,6 +186,29 @@ module murosync_serdes_array_axi_ctrl #(
 
     // Tier 1 sticky diagnostics register
     localparam int SERDES_LNK_DIAG_STATUS2     = 'h1C; // RO Offset 0x70
+
+    // === Tier 2: Link Test Snapshots and Per-Channel Counters (0x80 = 'h20 onwards) ===
+    // NOTE: offsets 'h1D..'h1F (0x74..0x7C) are reserved for future use.
+    localparam int LNK_TIME_TO_LOCK            = 'h20; // RO 0x80  cycles WAIT_ALIGN -> LOCKED
+    localparam int LNK_LOCKED_CYCLE_CNT        = 'h21; // RO 0x84  total cycles in LOCKED
+    localparam int LNK_RX_DATA_AT_LOCK_LO      = 'h22; // RO 0x88  rx_data_at_lock[31:0]
+    localparam int LNK_RX_DATA_AT_LOCK_HI      = 'h23; // RO 0x8C  rx_data_at_lock[63:32]
+    localparam int LNK_RX_DATA_AT_FIRST_ERR_LO = 'h24; // RO 0x90  rx_data_at_first_err[31:0]
+    localparam int LNK_RX_DATA_AT_FIRST_ERR_HI = 'h25; // RO 0x94  rx_data_at_first_err[63:32]
+
+    // === Tier 2: Per-Channel Error Counters (0xA4 = 'h29 onwards, 16-bit each) ===
+    localparam int LNK_ERR_CNT_CH0             = 'h26; // RO 0x98  per-channel error cnt CH0
+    localparam int LNK_ERR_CNT_CH1             = 'h27; // RO 0x9C  per-channel error cnt CH1
+    localparam int LNK_ERR_CNT_CH2             = 'h28; // RO 0xA0  per-channel error cnt CH2
+    localparam int LNK_ERR_CNT_CH3             = 'h29; // RO 0xA4  per-channel error cnt CH3
+
+    // === Tier 2: GT Sticky Counters (packed 16-bit per channel) ===
+    localparam int GT_RXBYTEREALIGN_CNT_LO      = 'h2A; // RO 0xA8  [15:0]=CH0, [31:16]=CH1
+    localparam int GT_RXBYTEREALIGN_CNT_HI      = 'h2B; // RO 0xAC  [15:0]=CH2, [31:16]=CH3
+    localparam int GT_EYESCANDATAERROR_CNT_LO   = 'h2C; // RO 0xB0  [15:0]=CH0, [31:16]=CH1
+    localparam int GT_EYESCANDATAERROR_CNT_HI   = 'h2D; // RO 0xB4  [15:0]=CH2, [31:16]=CH3
+    // Total Tier 2 new registers: 14 (offsets 'h20..'h2D = indices 32..45)
+    // C_S00_AXI_NUM_REGS must be >= 46 ('h2E) to cover all registers.
 
     // GT DEBUG REGISTERS
     localparam int GT_DEBUG_COMMA_ALIGN  = 'h16; // RO Offset 0x58
@@ -614,6 +653,92 @@ module murosync_serdes_array_axi_ctrl #(
     assign axi_reg_rd[GT_DEBUG_SYNC_STATUS]  = gt_debug_sync_status_axi;
     assign axi_reg_rd[GT_DEBUG_SIGNAL_QUAL]  = gt_debug_signal_qual_axi;
     assign axi_reg_rd[GT_DEBUG_RESET_STATUS] = gt_debug_reset_status_axi;
+
+    // ============================================================
+    // Tier 2 CDC: rx_clk domain -> axi_clk
+    // Using level_sync (eventually consistent — acceptable for diagnostic counters and
+    // frozen snapshots). Snapshots (rx_data_at_lock, rx_data_at_first_err) are frozen
+    // after first latch so no coherence risk. Counters may be off by 1-2 reads — acceptable.
+    // ============================================================
+
+    // -- time_to_lock (32-bit, frozen after first LOCKED) --
+    wire [31:0] diag_time_to_lock_axi;
+    murosync_cdc_level_sync #(.WIDTH(32), .SYNC_STAGES(2)) u_cdc_t2_time_to_lock (
+        .clk  (axi_clk), .rst_n(axi_rst_n),
+        .in   (link_test_time_to_lock),
+        .out  (diag_time_to_lock_axi)
+    );
+
+    // -- locked_cycle_cnt (32-bit, running counter) --
+    wire [31:0] diag_locked_cycle_cnt_axi;
+    murosync_cdc_level_sync #(.WIDTH(32), .SYNC_STAGES(2)) u_cdc_t2_locked_cnt (
+        .clk  (axi_clk), .rst_n(axi_rst_n),
+        .in   (link_test_locked_cycle_cnt),
+        .out  (diag_locked_cycle_cnt_axi)
+    );
+
+    // -- rx_data_at_lock (64-bit, frozen snapshot) --
+    wire [63:0] diag_rx_data_at_lock_axi;
+    murosync_cdc_level_sync #(.WIDTH(64), .SYNC_STAGES(2)) u_cdc_t2_rx_at_lock (
+        .clk  (axi_clk), .rst_n(axi_rst_n),
+        .in   (link_test_rx_data_at_lock),
+        .out  (diag_rx_data_at_lock_axi)
+    );
+
+    // -- rx_data_at_first_err (64-bit, frozen snapshot) --
+    wire [63:0] diag_rx_data_at_first_err_axi;
+    murosync_cdc_level_sync #(.WIDTH(64), .SYNC_STAGES(2)) u_cdc_t2_rx_at_err (
+        .clk  (axi_clk), .rst_n(axi_rst_n),
+        .in   (link_test_rx_data_at_first_err),
+        .out  (diag_rx_data_at_first_err_axi)
+    );
+
+    // -- per-channel error counters (16-bit each) --
+    wire [15:0] diag_err_cnt_ch0_axi;
+    wire [15:0] diag_err_cnt_ch1_axi;
+    wire [15:0] diag_err_cnt_ch2_axi;
+    wire [15:0] diag_err_cnt_ch3_axi;
+    murosync_cdc_level_sync #(.WIDTH(16), .SYNC_STAGES(2)) u_cdc_t2_err_ch0 (
+        .clk(axi_clk), .rst_n(axi_rst_n), .in(link_test_err_cnt_ch0), .out(diag_err_cnt_ch0_axi)
+    );
+    murosync_cdc_level_sync #(.WIDTH(16), .SYNC_STAGES(2)) u_cdc_t2_err_ch1 (
+        .clk(axi_clk), .rst_n(axi_rst_n), .in(link_test_err_cnt_ch1), .out(diag_err_cnt_ch1_axi)
+    );
+    murosync_cdc_level_sync #(.WIDTH(16), .SYNC_STAGES(2)) u_cdc_t2_err_ch2 (
+        .clk(axi_clk), .rst_n(axi_rst_n), .in(link_test_err_cnt_ch2), .out(diag_err_cnt_ch2_axi)
+    );
+    murosync_cdc_level_sync #(.WIDTH(16), .SYNC_STAGES(2)) u_cdc_t2_err_ch3 (
+        .clk(axi_clk), .rst_n(axi_rst_n), .in(link_test_err_cnt_ch3), .out(diag_err_cnt_ch3_axi)
+    );
+
+    // -- GT sticky counters (sampled directly, debug-only, eventual consistency) --
+    (* keep = "true" *) logic [63:0] gt_rxbyterealign_cnt_axi;
+    (* keep = "true" *) logic [63:0] gt_eyescandataerror_cnt_axi;
+    always @(posedge axi_clk or negedge axi_rst_n) begin
+        if (!axi_rst_n) begin
+            gt_rxbyterealign_cnt_axi    <= 64'h0;
+            gt_eyescandataerror_cnt_axi <= 64'h0;
+        end else begin
+            gt_rxbyterealign_cnt_axi    <= gt_debug_rxbyterealign_cnt;
+            gt_eyescandataerror_cnt_axi <= gt_debug_eyescandataerror_cnt;
+        end
+    end
+
+    // Tier 2 AXI register read assignments
+    assign axi_reg_rd[LNK_TIME_TO_LOCK]            = diag_time_to_lock_axi;
+    assign axi_reg_rd[LNK_LOCKED_CYCLE_CNT]        = diag_locked_cycle_cnt_axi;
+    assign axi_reg_rd[LNK_RX_DATA_AT_LOCK_LO]      = diag_rx_data_at_lock_axi[31:0];
+    assign axi_reg_rd[LNK_RX_DATA_AT_LOCK_HI]      = diag_rx_data_at_lock_axi[63:32];
+    assign axi_reg_rd[LNK_RX_DATA_AT_FIRST_ERR_LO] = diag_rx_data_at_first_err_axi[31:0];
+    assign axi_reg_rd[LNK_RX_DATA_AT_FIRST_ERR_HI] = diag_rx_data_at_first_err_axi[63:32];
+    assign axi_reg_rd[LNK_ERR_CNT_CH0]             = {16'h0, diag_err_cnt_ch0_axi};
+    assign axi_reg_rd[LNK_ERR_CNT_CH1]             = {16'h0, diag_err_cnt_ch1_axi};
+    assign axi_reg_rd[LNK_ERR_CNT_CH2]             = {16'h0, diag_err_cnt_ch2_axi};
+    assign axi_reg_rd[LNK_ERR_CNT_CH3]             = {16'h0, diag_err_cnt_ch3_axi};
+    assign axi_reg_rd[GT_RXBYTEREALIGN_CNT_LO]     = {gt_rxbyterealign_cnt_axi[31:16], gt_rxbyterealign_cnt_axi[15:0]};    // CH1[31:16], CH0[15:0]
+    assign axi_reg_rd[GT_RXBYTEREALIGN_CNT_HI]     = {gt_rxbyterealign_cnt_axi[63:48], gt_rxbyterealign_cnt_axi[47:32]};  // CH3[31:16], CH2[15:0]
+    assign axi_reg_rd[GT_EYESCANDATAERROR_CNT_LO]  = {gt_eyescandataerror_cnt_axi[31:16], gt_eyescandataerror_cnt_axi[15:0]};
+    assign axi_reg_rd[GT_EYESCANDATAERROR_CNT_HI]  = {gt_eyescandataerror_cnt_axi[63:48], gt_eyescandataerror_cnt_axi[47:32]};
 
 endmodule
 `default_nettype wire

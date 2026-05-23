@@ -42,7 +42,8 @@ module murosync_serdes_array #(
     parameter integer C_S00_AXI_DATA_WIDTH = 32,
 
     // CTRL, LOOPBACK, STATUS, DBG_LO, DBG_HI, TEST_CONST, TEST_SCRATCH
-    parameter integer C_S00_AXI_NUM_REGS   = 29,
+    // +14 Tier 2 diagnostic registers (0x80..0xB4, indices 32..45)
+    parameter integer C_S00_AXI_NUM_REGS   = 46,
 
     // Pattern copied from axis_wavecap_streamer.sv
     parameter integer OPT_MEM_ADDR_BITS    = $clog2(C_S00_AXI_NUM_REGS),
@@ -282,6 +283,20 @@ module murosync_serdes_array #(
     wire        link_test_diag_ever_locked;
     wire [3:0]  link_test_diag_last_fsm_state;
 
+    // Tier 2: link_test diagnostic snapshots and counters (rx_clk domain)
+    wire [31:0] link_test_diag_time_to_lock;
+    wire [31:0] link_test_diag_locked_cycle_cnt;
+    wire [63:0] link_test_diag_rx_data_at_lock;
+    wire [63:0] link_test_diag_rx_data_at_first_err;
+    wire [15:0] link_test_diag_err_cnt_ch0;
+    wire [15:0] link_test_diag_err_cnt_ch1;
+    wire [15:0] link_test_diag_err_cnt_ch2;
+    wire [15:0] link_test_diag_err_cnt_ch3;
+
+    // Tier 2: GT sticky event counters (packed 16-bit per channel, 4 channels = 64 bits)
+    wire [63:0] gt_debug_rxbyterealign_cnt_int;
+    wire [63:0] gt_debug_eyescandataerror_cnt_int;
+
     // ============================================================
     // LINK STATUS (bring-up definition: "GT is alive")
     // ============================================================
@@ -415,6 +430,20 @@ module murosync_serdes_array #(
         .link_test_tx_comma_count     (link_test_diag_tx_comma_count),
         .link_test_ever_locked        (link_test_diag_ever_locked),
         .link_test_last_fsm_state     (link_test_diag_last_fsm_state),
+
+        // Tier 2 link_test diagnostic inputs
+        .link_test_time_to_lock          (link_test_diag_time_to_lock),
+        .link_test_locked_cycle_cnt      (link_test_diag_locked_cycle_cnt),
+        .link_test_rx_data_at_lock       (link_test_diag_rx_data_at_lock),
+        .link_test_rx_data_at_first_err  (link_test_diag_rx_data_at_first_err),
+        .link_test_err_cnt_ch0           (link_test_diag_err_cnt_ch0),
+        .link_test_err_cnt_ch1           (link_test_diag_err_cnt_ch1),
+        .link_test_err_cnt_ch2           (link_test_diag_err_cnt_ch2),
+        .link_test_err_cnt_ch3           (link_test_diag_err_cnt_ch3),
+
+        // Tier 2 GT sticky counters
+        .gt_debug_rxbyterealign_cnt      (gt_debug_rxbyterealign_cnt_int),
+        .gt_debug_eyescandataerror_cnt   (gt_debug_eyescandataerror_cnt_int),
 
         // GT debug signals from wrapper
         .gt_debug_rxcommadet_out      (gt_debug_rxcommadet_int),
@@ -578,7 +607,11 @@ module murosync_serdes_array #(
         .gtwiz_userclk_rx_recclk_active_out(gtwiz_userclk_rx_recclk_alive_int),
 
         .gtwiz_userclk_rx_usrclk2_out (gt_userclk_rx_usrclk2_int),
-        .gtwiz_userclk_tx_usrclk2_out (gt_userclk_tx_usrclk2_int)
+        .gtwiz_userclk_tx_usrclk2_out (gt_userclk_tx_usrclk2_int),
+
+        // Tier 2 GT sticky event counters
+        .gt_debug_rxbyterealign_cnt_out    (gt_debug_rxbyterealign_cnt_int),
+        .gt_debug_eyescandataerror_cnt_out (gt_debug_eyescandataerror_cnt_int)
     );
 
     // ============================================================
@@ -662,7 +695,17 @@ module murosync_serdes_array #(
         .diag_tx_comma_active   (link_test_diag_tx_comma_active),
         .diag_tx_comma_count    (link_test_diag_tx_comma_count),
         .diag_ever_locked       (link_test_diag_ever_locked),
-        .diag_last_fsm_state    (link_test_diag_last_fsm_state)
+        .diag_last_fsm_state    (link_test_diag_last_fsm_state),
+
+        // Tier 2 diagnostic outputs from link_test
+        .diag_time_to_lock          (link_test_diag_time_to_lock),
+        .diag_locked_cycle_cnt      (link_test_diag_locked_cycle_cnt),
+        .diag_rx_data_at_lock       (link_test_diag_rx_data_at_lock),
+        .diag_rx_data_at_first_err  (link_test_diag_rx_data_at_first_err),
+        .diag_err_cnt_ch0           (link_test_diag_err_cnt_ch0),
+        .diag_err_cnt_ch1           (link_test_diag_err_cnt_ch1),
+        .diag_err_cnt_ch2           (link_test_diag_err_cnt_ch2),
+        .diag_err_cnt_ch3           (link_test_diag_err_cnt_ch3)
     );
 
 endmodule

@@ -86,7 +86,17 @@ module murosync_serdes_link_test #(
 
     // Additional diagnostic outputs (rx_clk domain) — Tier 1
     output wire        diag_ever_locked,        // Sticky: FSM reached LOCKED at least once during this test
-    output wire [3:0]  diag_last_fsm_state      // Last non-IDLE state before drop on rx_enable=0
+    output wire [3:0]  diag_last_fsm_state,     // Last non-IDLE state before drop on rx_enable=0
+
+    // Additional diagnostic outputs (rx_clk domain) — Tier 2
+    output wire [31:0] diag_time_to_lock,         // Cycles from SEARCH entry to first LOCKED (frozen after first lock)
+    output wire [31:0] diag_locked_cycle_cnt,      // Total cycles spent in LOCKED state
+    output wire [63:0] diag_rx_data_at_lock,       // rx_data_corrected snapshot at first LOCKED entry
+    output wire [63:0] diag_rx_data_at_first_err,  // rx_data_corrected snapshot at first error in LOCKED
+    output wire [15:0] diag_err_cnt_ch0,           // Per-channel error count — CH0
+    output wire [15:0] diag_err_cnt_ch1,           // Per-channel error count — CH1
+    output wire [15:0] diag_err_cnt_ch2,           // Per-channel error count — CH2
+    output wire [15:0] diag_err_cnt_ch3            // Per-channel error count — CH3
 );
 
     // ============================================================
@@ -419,16 +429,194 @@ module murosync_serdes_link_test #(
         // else: FSM is in IDLE — hold last_fsm_state with the value before the transition
     end
 
+    // ============================================================
+    // Tier 2: time_to_lock — cycles from first WAIT_ALIGN entry to first LOCKED
+    // Frozen on first LOCKED entry; cleared on test start or reset.
+    // Width: 32 bits = ~13.7 s at 312.5 MHz.
+    // ============================================================
+    reg [31:0] time_to_lock_cnt;
+    reg        time_to_lock_counting;  // running flag
+    reg        time_to_lock_frozen;    // hit LOCKED — freeze the counter
+
+    // Predicate signals for time_to_lock counter (named conditions).
+    // Triggered on the first cycle the FSM enters WAIT_ALIGN, while timer
+    // has neither started nor finalized. Sets `time_to_lock_counting` next cycle.
+    wire lock_timer_start   = !time_to_lock_counting &&
+                              !time_to_lock_frozen   &&
+                              (rx_checker_curr_state == RX_ST_WAIT_ALIGN);
+    // Triggered on the first cycle the FSM enters LOCKED, while timer is
+    // running. Stops the counter and latches `time_to_lock_frozen`.
+    wire lock_timer_freeze  = time_to_lock_counting &&
+                              (rx_checker_curr_state == RX_ST_LOCKED);
+    // Active while the counter should be incremented each cycle.
+    // (counting AND not yet frozen — second condition is redundant in steady-state
+    // but kept for explicit safety; synthesizer optimizes away)
+    wire lock_timer_running = time_to_lock_counting && !time_to_lock_frozen;
+
+    always @(posedge rx_clk or negedge core_rst_n)
+    begin
+        if (!core_rst_n) begin
+            time_to_lock_cnt      <= 32'b0;
+            time_to_lock_counting <= 1'b0;
+            time_to_lock_frozen   <= 1'b0;
+        end
+        else if (rx_reset_pulse || capture_cfg) begin
+            time_to_lock_cnt      <= 32'b0;
+            time_to_lock_counting <= 1'b0;
+            time_to_lock_frozen   <= 1'b0;
+        end
+        else begin
+            if (lock_timer_start) begin
+                time_to_lock_counting <= 1'b1;
+            end
+            if (lock_timer_freeze) begin
+                time_to_lock_counting <= 1'b0;
+                time_to_lock_frozen   <= 1'b1;
+            end
+            if (lock_timer_running) begin
+                time_to_lock_cnt <= time_to_lock_cnt + 1;
+            end
+        end
+    end
+
+    // ============================================================
+    // Tier 2: locked_cycle_count — total cycles spent in RX_ST_LOCKED
+    // Includes K-symbol cycles (FSM is still LOCKED, just no data progress).
+    // Width: 32 bits = ~13.7 s of pure LOCKED time at 312.5 MHz.
+    // ============================================================
+    reg [31:0] locked_cycle_cnt;
+
+    always @(posedge rx_clk or negedge core_rst_n)
+    begin
+        if (!core_rst_n)                                          locked_cycle_cnt <= 32'b0;
+        else if (rx_reset_pulse || capture_cfg)                   locked_cycle_cnt <= 32'b0;
+        else if (rx_checker_curr_state == RX_ST_LOCKED)           locked_cycle_cnt <= locked_cycle_cnt + 1;
+    end
+
+    // ============================================================
+    // Tier 2: rx_data_at_lock — snapshot of rx_data_corrected at first LOCKED entry.
+    // Latched once on the first cycle curr_state==LOCKED (1-cycle after transition).
+    // Useful to verify lock was acquired on the expected pattern.
+    // ============================================================
+    reg [63:0] rx_data_at_lock;
+    reg        rx_data_at_lock_valid;  // 1 once snapshot was taken
+
+    // Triggered on the first cycle the FSM is in LOCKED, before the snapshot
+    // has been latched. Sets `rx_data_at_lock_valid` next cycle and freezes
+    // the snapshot value.
+    wire capture_at_lock = !rx_data_at_lock_valid &&
+                           (rx_checker_curr_state == RX_ST_LOCKED);
+
+    always @(posedge rx_clk or negedge core_rst_n)
+    begin
+        if (!core_rst_n) 
+        begin
+            rx_data_at_lock       <= 64'b0;
+            rx_data_at_lock_valid <= 1'b0;
+        end
+        else if (rx_reset_pulse || capture_cfg) 
+        begin
+            rx_data_at_lock       <= 64'b0;
+            rx_data_at_lock_valid <= 1'b0;
+        end
+        else if (capture_at_lock) 
+        begin
+            rx_data_at_lock       <= rx_data_corrected;
+            rx_data_at_lock_valid <= 1'b1;
+        end
+    end
+
+    // ============================================================
+    // Tier 2: rx_data_at_first_err — snapshot of rx_data_corrected and expected_rx
+    // at the first error event in LOCKED state.
+    // Captures BOTH received and expected for differential diagnostic
+    // (bit flip detection vs full decorrelation).
+    // ============================================================
+    reg [63:0] rx_data_at_first_err;
+    reg [63:0] exp_data_at_first_err;
+    reg        first_err_valid;
+
+    // Triggered on the first cycle an error is counted in LOCKED, before the
+    // error snapshot has been latched. Captures both received and expected
+    // data for differential diagnostic (bit-flip vs decorrelation).
+    wire capture_at_first_err = !first_err_valid && err_cnt_inc;
+
+    always @(posedge rx_clk or negedge core_rst_n)
+    begin
+        if (!core_rst_n) 
+        begin
+            rx_data_at_first_err  <= 64'b0;
+            exp_data_at_first_err <= 64'b0;
+            first_err_valid       <= 1'b0;
+        end
+        else if (rx_reset_pulse || capture_cfg) 
+        begin
+            rx_data_at_first_err  <= 64'b0;
+            exp_data_at_first_err <= 64'b0;
+            first_err_valid       <= 1'b0;
+        end
+        else if (capture_at_first_err) 
+        begin
+            rx_data_at_first_err  <= rx_data_corrected;
+            exp_data_at_first_err <= expected_rx;
+            first_err_valid       <= 1'b1;
+        end
+    end
+
+    // ============================================================
+    // Tier 2: per-channel error detection
+    // mismatch_by_ch[i] is high when channel i is in mask AND its 16-bit
+    // slice does not match the expected pattern for the current cycle.
+    // ============================================================
+    wire [3:0] mismatch_by_ch;
+    assign mismatch_by_ch[0] = rx_ch_mask[0] && (rx_data_corrected[15:0]  != expected_rx[15:0]);
+    assign mismatch_by_ch[1] = rx_ch_mask[1] && (rx_data_corrected[31:16] != expected_rx[31:16]);
+    assign mismatch_by_ch[2] = rx_ch_mask[2] && (rx_data_corrected[47:32] != expected_rx[47:32]);
+    assign mismatch_by_ch[3] = rx_ch_mask[3] && (rx_data_corrected[63:48] != expected_rx[63:48]);
+
+    // Per-channel error counters — 16 bits each, incremented only in LOCKED on non-K-symbol cycles.
+    // Note: global err_cnt is unchanged for backwards compatibility.
+    // Per-channel and global are DIFFERENT metrics: if N channels error in same cycle,
+    // global increments once, per-channel increments N times.
+    reg [15:0] err_cnt_ch [0:3];
+
+    // Per-channel increment trigger — high when channel i should count an error this cycle.
+    // Conditions: FSM in LOCKED, current word is not a K-symbol, channel slice mismatches expected.
+    // Declared as a flat bus so each bit is visible in ILA and indexes cleanly into the generate loop.
+    wire [3:0] count_err_ch;
+    assign count_err_ch[0] = (rx_checker_curr_state == RX_ST_LOCKED) && !any_ksymbol_r && mismatch_by_ch[0];
+    assign count_err_ch[1] = (rx_checker_curr_state == RX_ST_LOCKED) && !any_ksymbol_r && mismatch_by_ch[1];
+    assign count_err_ch[2] = (rx_checker_curr_state == RX_ST_LOCKED) && !any_ksymbol_r && mismatch_by_ch[2];
+    assign count_err_ch[3] = (rx_checker_curr_state == RX_ST_LOCKED) && !any_ksymbol_r && mismatch_by_ch[3];
+
+    genvar gi_ch;
+    generate
+        for (gi_ch = 0; gi_ch < 4; gi_ch = gi_ch + 1) begin : g_err_ch
+            always @(posedge rx_clk or negedge core_rst_n)
+            begin
+                if (!core_rst_n)              err_cnt_ch[gi_ch] <= 16'b0;
+                else if (rx_reset_pulse)      err_cnt_ch[gi_ch] <= 16'b0;
+                else if (count_err_ch[gi_ch]) err_cnt_ch[gi_ch] <= err_cnt_ch[gi_ch] + 1;
+            end
+        end
+    endgenerate
+
     // Gate: all channels in mask must have rxbyteisaligned=1 (latched)
     // Registered to break combinational path into FSM next_expected_rx computation
     reg aligned_or_nomask_r;
     reg any_ksymbol_r;
 
+    // True when every channel selected in rx_ch_mask is currently aligned
+    // or has been aligned at some point during this test run (sticky-OR).
+    // Combines instantaneous `rxbyteisaligned` with sticky `rx_aligned_seen`
+    // to tolerate momentary alignment loss after FSM has left WAIT_ALIGN.
+    wire all_masked_aligned = (((rx_aligned_seen | rxbyteisaligned) & rx_ch_mask) == rx_ch_mask);
+
     always @(posedge rx_clk or negedge core_rst_n) 
     begin
-        if (!core_rst_n) aligned_or_nomask_r <= 1'b0;
-        else             aligned_or_nomask_r <= (rx_ch_mask == 4'h0) ? 1'b1 :
-                                                (((rx_aligned_seen | rxbyteisaligned) & rx_ch_mask) == rx_ch_mask);
+        if (!core_rst_n)             aligned_or_nomask_r <= 1'b0;
+        else if (rx_ch_mask == 4'h0) aligned_or_nomask_r <= 1'b1;
+        else                         aligned_or_nomask_r <= all_masked_aligned;
     end
 
     always @(posedge rx_clk or negedge core_rst_n) 
@@ -587,6 +775,16 @@ module murosync_serdes_link_test #(
     // Tier 1 sticky diagnostics
     assign diag_ever_locked    = ever_locked;
     assign diag_last_fsm_state = last_fsm_state;
+
+    // Tier 2 diagnostic assigns
+    assign diag_time_to_lock          = time_to_lock_cnt;
+    assign diag_locked_cycle_cnt      = locked_cycle_cnt;
+    assign diag_rx_data_at_lock       = rx_data_at_lock;
+    assign diag_rx_data_at_first_err  = rx_data_at_first_err;
+    assign diag_err_cnt_ch0           = err_cnt_ch[0];
+    assign diag_err_cnt_ch1           = err_cnt_ch[1];
+    assign diag_err_cnt_ch2           = err_cnt_ch[2];
+    assign diag_err_cnt_ch3           = err_cnt_ch[3];
 
 endmodule
 `default_nettype wire

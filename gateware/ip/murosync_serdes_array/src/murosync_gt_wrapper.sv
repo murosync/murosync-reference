@@ -121,7 +121,11 @@ module murosync_gt_wrapper #(
     output wire [NCH-1:0]   gt_debug_rxphaligndone_out,
     output wire [NCH-1:0]   gt_debug_eyescandataerror_out,
     output wire [NCH-1:0]   gt_debug_rxresetdone_out,
-    output wire [NCH-1:0]   gt_debug_txresetdone_out
+    output wire [NCH-1:0]   gt_debug_txresetdone_out,
+
+    // Tier 2 GT sticky event counters (packed 16-bit per channel, NCH channels)
+    output wire [NCH*16-1:0] gt_debug_rxbyterealign_cnt_out,     // 16-bit per channel, accumulated rxbyterealign pulses
+    output wire [NCH*16-1:0] gt_debug_eyescandataerror_cnt_out   // 16-bit per channel, accumulated eyescandataerror pulses
 );
 
     // --------------------------------------------------------------------------
@@ -269,6 +273,60 @@ module murosync_gt_wrapper #(
 
         .pll_lock_vec_out                   (pll_lock_out)
     );
+
+    // ============================================================
+    // Tier 2: rxbyterealign sticky event counters — per channel
+    // rxbyterealign is a 1-cycle pulse from GT Wizard signalling that the
+    // GT re-acquired byte alignment. Each pulse counted separately.
+    // Frequent pulses indicate channel instability.
+    // Width: 16 bits per channel (65535 events max).
+    // Clock: gt_userclk_rx_usrclk2 (RXUSRCLK2 domain).
+    // Reset: asynchronous positive-edge gtwiz_reset_all_in.
+    // CDC: handled in axi_ctrl (level_sync, eventual consistency — acceptable for diagnostics).
+    // ============================================================
+    wire gt_userclk_rx_usrclk2_int = gtwiz_userclk_rx_usrclk2;
+
+    reg [15:0] rxbyterealign_cnt [0:NCH-1];
+
+    genvar gi_rea;
+    generate
+        for (gi_rea = 0; gi_rea < NCH; gi_rea = gi_rea + 1) begin : g_rxbyterealign_cnt
+            always @(posedge gt_userclk_rx_usrclk2_int or posedge gtwiz_reset_all_in)
+            begin
+                if (gtwiz_reset_all_in)                                rxbyterealign_cnt[gi_rea] <= 16'b0;
+                else if (gt_debug_rxbyterealign_out[gi_rea])           rxbyterealign_cnt[gi_rea] <= rxbyterealign_cnt[gi_rea] + 1;
+            end
+        end
+    endgenerate
+
+    // ============================================================
+    // Tier 2: eyescandataerror sticky event counters — per channel
+    // eyescandataerror pulses from GT Wizard when eye scan logic detects
+    // a bit error during sampling. Direct signal quality indicator.
+    // Width: 16 bits per channel.
+    // Reset: tied to gtwiz_reset_all_in.
+    // ============================================================
+    reg [15:0] eyescandataerror_cnt [0:NCH-1];
+
+    genvar gi_eye;
+    generate
+        for (gi_eye = 0; gi_eye < NCH; gi_eye = gi_eye + 1) begin : g_eyescan_cnt
+            always @(posedge gt_userclk_rx_usrclk2_int or posedge gtwiz_reset_all_in)
+            begin
+                if (gtwiz_reset_all_in)                                  eyescandataerror_cnt[gi_eye] <= 16'b0;
+                else if (gt_debug_eyescandataerror_out[gi_eye])          eyescandataerror_cnt[gi_eye] <= eyescandataerror_cnt[gi_eye] + 1;
+            end
+        end
+    endgenerate
+
+    // Pack per-channel sticky counters into flat vectors for cleaner port mapping
+    genvar gi_pack;
+    generate
+        for (gi_pack = 0; gi_pack < NCH; gi_pack = gi_pack + 1) begin : g_pack_sticky
+            assign gt_debug_rxbyterealign_cnt_out[gi_pack*16 +: 16]    = rxbyterealign_cnt[gi_pack];
+            assign gt_debug_eyescandataerror_cnt_out[gi_pack*16 +: 16] = eyescandataerror_cnt[gi_pack];
+        end
+    endgenerate
 
 endmodule
 
