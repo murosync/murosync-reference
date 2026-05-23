@@ -53,92 +53,41 @@ static void murosync_print_banner(void)
 
 int main(void)
 {
-    int stat;
     unsigned int alive_cnt = 0;
+
     init_platform();
     usleep(1000000);
     murosync_print_banner();
 
-    // Single bring-up — single GT reset
-    xil_printf("\r\n[MUROSYNC] === FMC LOOPBACK — ALL CHANNELS ===\r\n");
-    stat = murosync_serdes_bring_up(0, 5000000);  // loopback=0, external
-    if (stat != XST_SUCCESS)
+    xil_printf("\r\n[MUROSYNC] === FMC LOOPBACK BRING-UP ===\r\n");
+
+    /* Step 1: Bring-up with internal BIST validation.
+     * Runs AXI selftest, GT reset, NEAR-END loopback bring-up, BIST link test,
+     * then switches to requested final loopback (external = NONE = 0). */
+    if (murosync_serdes_bring_up_with_bist(MUROSYNC_SERDES_LOOPBACK_NONE, 5000000)
+        != XST_SUCCESS)
     {
-        xil_printf("[MUROSYNC][ERROR] Bring-up FAILED\r\n");
+        xil_printf("[MUROSYNC][FATAL] Bring-up FAILED\r\n");
         return XST_FAILURE;
     }
-    xil_printf("[MUROSYNC] Bring-up OK\r\n");
 
-    // ============================================================
-    // GROUND TRUTH CHECK: read RXBYTEISALIGNED directly from GT Wizard
-    // dedicated port (via 0x058 debug register).
-    //
-    // This is the clean per-channel signal exported by GT Wizard itself,
-    // bypassing the manual rxctrl2_int[1]/[9]/[17]/[25] unpacking in
-    // murosync_serdes_array.sv.
-    //
-    // Expected outcomes:
-    //   0xF  -> GT is aligned on all 4 channels; manual indexing in
-    //           serdes_array is wrong; RTL fix needed (point link_test
-    //           to gt_debug_rxbyteisaligned_int).
-    //   0x1  -> Only CH0 aligned; TX K28.5 not reaching CH1-3; need ILA
-    //           on txctrl2_in to verify per-channel slice bits.
-    //   0x0  -> GT does not see alignment at all; check IP comma config.
-    //
-    // We probe twice: immediately after bring-up (cold), and after the
-    // first run_link_test cycle (TX has been actively sending K28.5).
-    // ============================================================
+    /* Step 2: GT ground-truth check after bring-up.
+     * Expect RXBYTEISALIGNED = 0xF (BIST burst left GT aligned). */
+    murosync_serdes_print_gt_ground_truth("post bring-up");
+
+    /* Step 3: External loopback smoke test — confirm full data path works
+     * after BIST-to-external switch. */
+    if (murosync_serdes_run_all_channels_smoke_test() != XST_SUCCESS)
     {
-        unsigned int comma_reg = 0;
-        murosync_serdes_reg_rd(MUROSYNC_GT_DEBUG_COMMA_ALIGN_REG, &comma_reg);
-        unsigned char comma_det     = (comma_reg & MUROSYNC_GT_DEBUG_RXCOMMADET_MSK)      >> MUROSYNC_GT_DEBUG_RXCOMMADET_OFS;
-        unsigned char byte_aligned  = (comma_reg & MUROSYNC_GT_DEBUG_RXBYTEISALIGNED_MSK) >> MUROSYNC_GT_DEBUG_RXBYTEISALIGNED_OFS;
-        unsigned char realign       = (comma_reg & MUROSYNC_GT_DEBUG_RXBYTEREALIGN_MSK)   >> MUROSYNC_GT_DEBUG_RXBYTEREALIGN_OFS;
-
-        xil_printf("\r\n[MUROSYNC] === GT WIZARD GROUND TRUTH (post bring-up, idle TX) ===\r\n");
-        xil_printf("\tRXCOMMADET       : 0x%X [CH3=%u CH2=%u CH1=%u CH0=%u]\r\n",
-                   comma_det,
-                   (comma_det>>3)&1u, (comma_det>>2)&1u, (comma_det>>1)&1u, comma_det&1u);
-        xil_printf("\tRXBYTEISALIGNED  : 0x%X [CH3=%u CH2=%u CH1=%u CH0=%u]   <-- KEY SIGNAL\r\n",
-                   byte_aligned,
-                   (byte_aligned>>3)&1u, (byte_aligned>>2)&1u, (byte_aligned>>1)&1u, byte_aligned&1u);
-        xil_printf("\tRXBYTEREALIGN    : 0x%X\r\n", realign);
+        xil_printf("[MUROSYNC][FATAL] External loopback smoke test FAILED\r\n");
+        return XST_FAILURE;
     }
 
-    // Immediately after bring-up — all 4 channels in one test.
-    // CDR is fresh, comma burst aligns all channels simultaneously.
-    xil_printf("\r\n=== TEST: ALL CHANNELS, no reset between ===\r\n");
-    murosync_serdes_run_link_test(MUROSYNC_LNK_TEST_MODE_FIXED, 0xF, 0x0, 0x0, 0xAAAAAAAA, 2000);
-    murosync_serdes_link_test_print_diag();
+    /* Step 4: GT ground-truth check after smoke test.
+     * Confirm alignment held through data traffic. */
+    murosync_serdes_print_gt_ground_truth("post smoke test");
 
-    // Second ground-truth read AFTER TX has been sending K28.5 burst.
-    // If TX-side fix is working, alignment should now be set on all
-    // channels that comma actually reached.
-    {
-        unsigned int comma_reg = 0;
-        murosync_serdes_reg_rd(MUROSYNC_GT_DEBUG_COMMA_ALIGN_REG, &comma_reg);
-        unsigned char comma_det     = (comma_reg & MUROSYNC_GT_DEBUG_RXCOMMADET_MSK)      >> MUROSYNC_GT_DEBUG_RXCOMMADET_OFS;
-        unsigned char byte_aligned  = (comma_reg & MUROSYNC_GT_DEBUG_RXBYTEISALIGNED_MSK) >> MUROSYNC_GT_DEBUG_RXBYTEISALIGNED_OFS;
-        unsigned char realign       = (comma_reg & MUROSYNC_GT_DEBUG_RXBYTEREALIGN_MSK)   >> MUROSYNC_GT_DEBUG_RXBYTEREALIGN_OFS;
-
-        xil_printf("\r\n[MUROSYNC] === GT WIZARD GROUND TRUTH (after TX comma burst) ===\r\n");
-        xil_printf("\tRXCOMMADET       : 0x%X [CH3=%u CH2=%u CH1=%u CH0=%u]\r\n",
-                   comma_det,
-                   (comma_det>>3)&1u, (comma_det>>2)&1u, (comma_det>>1)&1u, comma_det&1u);
-        xil_printf("\tRXBYTEISALIGNED  : 0x%X [CH3=%u CH2=%u CH1=%u CH0=%u]   <-- KEY SIGNAL\r\n",
-                   byte_aligned,
-                   (byte_aligned>>3)&1u, (byte_aligned>>2)&1u, (byte_aligned>>1)&1u, byte_aligned&1u);
-        xil_printf("\tRXBYTEREALIGN    : 0x%X\r\n", realign);
-    }
-
-    // Per-channel tests — no bring-up between them
-    for (int ch = 0; ch < 4; ch++)
-    {
-        xil_printf("\r\n=== TEST: CH%d only ===\r\n", ch);
-        murosync_serdes_run_link_test(MUROSYNC_LNK_TEST_MODE_FIXED, 1 << ch, 0x0, 0x0, 0xAAAAAAAA, 500);
-        murosync_serdes_link_test_print_diag();
-    }
-
+    /* Production main loop — heartbeat + link monitor */
     for (;;)
     {
         xil_printf("[MUROSYNC] alive #%u\r\n", alive_cnt++);

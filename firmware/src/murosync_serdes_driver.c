@@ -457,6 +457,43 @@ void murosync_serdes_test_comma_detection(void) {
     
     xil_printf("[MUROSYNC] === GT COMMA DETECTION TEST COMPLETE ===\r\n\r\n");
 }
+
+/************************************************************************
+ * Print low-level GT Wizard ground truth — RXCOMMADET, RXBYTEISALIGNED,
+ * RXBYTEREALIGN — per channel, from dedicated debug register 0x058.
+ ************************************************************************/
+void murosync_serdes_print_gt_ground_truth(const char *tag)
+{
+    unsigned int  comma_reg = 0;
+    unsigned char comma_det;
+    unsigned char byte_aligned;
+    unsigned char realign;
+
+    murosync_serdes_reg_rd(MUROSYNC_GT_DEBUG_COMMA_ALIGN_REG, &comma_reg);
+
+    comma_det    = (comma_reg & MUROSYNC_GT_DEBUG_RXCOMMADET_MSK)
+                   >> MUROSYNC_GT_DEBUG_RXCOMMADET_OFS;
+    byte_aligned = (comma_reg & MUROSYNC_GT_DEBUG_RXBYTEISALIGNED_MSK)
+                   >> MUROSYNC_GT_DEBUG_RXBYTEISALIGNED_OFS;
+    realign      = (comma_reg & MUROSYNC_GT_DEBUG_RXBYTEREALIGN_MSK)
+                   >> MUROSYNC_GT_DEBUG_RXBYTEREALIGN_OFS;
+
+    xil_printf("\r\n[MUROSYNC] === GT WIZARD GROUND TRUTH (%s) ===\r\n",
+               (tag != NULL) ? tag : "no tag");
+    xil_printf("\tRXCOMMADET       : 0x%X [CH3=%u CH2=%u CH1=%u CH0=%u]\r\n",
+               comma_det,
+               (comma_det >> 3) & 1u,
+               (comma_det >> 2) & 1u,
+               (comma_det >> 1) & 1u,
+               comma_det & 1u);
+    xil_printf("\tRXBYTEISALIGNED  : 0x%X [CH3=%u CH2=%u CH1=%u CH0=%u]\r\n",
+               byte_aligned,
+               (byte_aligned >> 3) & 1u,
+               (byte_aligned >> 2) & 1u,
+               (byte_aligned >> 1) & 1u,
+               byte_aligned & 1u);
+    xil_printf("\tRXBYTEREALIGN    : 0x%X\r\n", realign);
+}
 /************************************************************************/
 
 /************************* LINK TEST ************************************/
@@ -643,6 +680,173 @@ int murosync_serdes_get_eyescandataerror_cnt(unsigned char ch, unsigned int *cnt
     unsigned int shift = (ch & 1) ? MUROSYNC_GT_STICKY_CNT_CH_HI_OFS
                                   : MUROSYNC_GT_STICKY_CNT_CH_LO_OFS;
     *cnt = (reg_val >> shift) & 0xFFFFu;
+    return XST_SUCCESS;
+}
+
+/************************************************************************
+ * BIST — Boot Self-Test
+ *
+ * Validates SERDES subsystem in internal PCS NEAR-END loopback.
+ * Returns bitmask: 0 = PASS, non-zero = specific failure bits set.
+ *
+ * Sequence:
+ *   1. Set NEAR-END loopback (loopback_ctrl = 1)
+ *   2. Wait briefly for link to settle in new loopback mode
+ *   3. Run short link_test on all 4 channels (200ms, FIXED pattern)
+ *   4. Read all status registers (wrd_cnt, err_cnt, ever_locked,
+ *      at_lock_valid, per-channel errors)
+ *   5. Build bitmask based on results (BIST-scope bits only;
+ *      AXI_FAIL/BRINGUP_FAIL stay set — orchestrator clears them)
+ *
+ * Pattern: 0xAAAAAAAA — alternating bits, good for catching stuck signals.
+ * Duration: 200ms — enough for ~62M words at 312.5 MHz.
+ ************************************************************************/
+unsigned int murosync_serdes_bist(void)
+{
+    unsigned int result = MUROSYNC_SERDES_TEST_RESULT_ALL_FAIL_MASK;
+    int test_rc;
+    unsigned int wrd_cnt = 0, err_cnt = 0;
+    unsigned int ever_locked = 0, at_lock_valid = 0;
+    unsigned int err_ch[4] = {0,0,0,0};
+    unsigned int any_per_ch_err = 0;
+
+    xil_printf("\r\n[BIST] === BOOT SELF-TEST START ===\r\n");
+    xil_printf("\tMode: PCS NEAR-END loopback\r\n");
+    xil_printf("\tPattern: 0xAAAAAAAA, Duration: 200ms, Channels: 0xF\r\n");
+
+    /* Step 1: switch to NEAR-END PCS loopback */
+    if (murosync_serdes_set_loopback(MUROSYNC_SERDES_LOOPBACK_NEAR) != XST_SUCCESS) {
+        xil_printf("[BIST][ERROR] Failed to set NEAR-END loopback\r\n");
+        goto bist_done;
+    }
+
+    /* Step 2: brief settle delay for loopback path to stabilize.
+     * GT does not need to re-bring-up — just internal mux switches. */
+    usleep(50000);  /* 50 ms */
+
+    /* Step 3: run BIST link test */
+    test_rc = murosync_serdes_run_link_test(
+        MUROSYNC_LNK_TEST_MODE_FIXED,
+        0xF,
+        0x0, 0x0,
+        0xAAAAAAAA,
+        200);
+    (void)test_rc;  /* evaluate individual bits below for diagnostic granularity */
+
+    /* Step 4: read all relevant status */
+    murosync_serdes_link_test_get_wrd_cnt(&wrd_cnt);
+    murosync_serdes_link_test_get_err_cnt(&err_cnt);
+    murosync_serdes_link_test_get_ever_locked(&ever_locked);
+    murosync_serdes_link_test_get_rx_data_at_lock_valid(&at_lock_valid);
+    for (int i = 0; i < 4; i++) {
+        murosync_serdes_link_test_get_err_cnt_ch((unsigned char)i, &err_ch[i]);
+    }
+    any_per_ch_err = err_ch[0] | err_ch[1] | err_ch[2] | err_ch[3];
+
+    /* Step 5: clear bits for each check that passed. AXI/BRINGUP bits remain
+     * set; orchestrator (bring_up_with_bist) clears them after its own checks. */
+    if (wrd_cnt > 0)            result &= ~MUROSYNC_SERDES_TEST_RESULT_BIST_NO_DATA;
+    if (err_cnt == 0)           result &= ~MUROSYNC_SERDES_TEST_RESULT_BIST_GLOBAL_ERR;
+    if (any_per_ch_err == 0)    result &= ~MUROSYNC_SERDES_TEST_RESULT_BIST_PER_CH_ERR;
+    if (ever_locked)            result &= ~MUROSYNC_SERDES_TEST_RESULT_BIST_NOT_LOCKED;
+    if (at_lock_valid)          result &= ~MUROSYNC_SERDES_TEST_RESULT_BIST_AT_LOCK_VOID;
+
+bist_done:
+    xil_printf("[BIST] === BOOT SELF-TEST COMPLETE ===\r\n");
+    return result;
+}
+
+/************************************************************************
+ * BIST result decoder — print human-readable summary to UART.
+ ************************************************************************/
+void murosync_serdes_print_bist_result(unsigned int result)
+{
+    xil_printf("\r\n[BIST] === RESULT BITMASK = 0x%08X ===\r\n", result);
+
+    if (result == MUROSYNC_SERDES_TEST_RESULT_PASS) {
+        xil_printf("[BIST]   ALL CHECKS PASSED\r\n");
+        return;
+    }
+
+    xil_printf("[BIST]   Failures detected:\r\n");
+    if (result & MUROSYNC_SERDES_TEST_RESULT_AXI_FAIL)
+        xil_printf("[BIST]     [bit 0]  AXI selftest failed\r\n");
+    if (result & MUROSYNC_SERDES_TEST_RESULT_BRINGUP_FAIL)
+        xil_printf("[BIST]     [bit 1]  GT bring-up failed\r\n");
+    if (result & MUROSYNC_SERDES_TEST_RESULT_BIST_NO_DATA)
+        xil_printf("[BIST]     [bit 2]  BIST link test produced no data (wrd_cnt = 0)\r\n");
+    if (result & MUROSYNC_SERDES_TEST_RESULT_BIST_GLOBAL_ERR)
+        xil_printf("[BIST]     [bit 3]  BIST link test had global errors (err_cnt > 0)\r\n");
+    if (result & MUROSYNC_SERDES_TEST_RESULT_BIST_PER_CH_ERR)
+        xil_printf("[BIST]     [bit 4]  BIST link test had per-channel errors\r\n");
+    if (result & MUROSYNC_SERDES_TEST_RESULT_BIST_NOT_LOCKED)
+        xil_printf("[BIST]     [bit 5]  BIST FSM never reached LOCKED\r\n");
+    if (result & MUROSYNC_SERDES_TEST_RESULT_BIST_AT_LOCK_VOID)
+        xil_printf("[BIST]     [bit 6]  BIST at_lock snapshot was not taken\r\n");
+
+    if (result & 0xFFFFFF80u) {
+        xil_printf("[BIST]     [reserved] Unknown failure bits set: 0x%08X\r\n",
+                   result & 0xFFFFFF80u);
+    }
+}
+
+/************************************************************************
+ * High-level bring-up with BIST validation.
+ *
+ * Sequence:
+ *   1. bring_up() with NEAR-END loopback (forces BIST-friendly path —
+ *      production should always BIST before external loopback)
+ *   2. Run BIST — confirms GT, AXI, link_test all functional
+ *   3. If BIST passed, switch to caller's requested final_loopback mode
+ *
+ * Returns XST_SUCCESS only if both bring-up and BIST succeeded.
+ ************************************************************************/
+int murosync_serdes_bring_up_with_bist(unsigned char final_loopback, int timeout_usec)
+{
+    unsigned int bist_result;
+
+    xil_printf("\r\n[BRINGUP+BIST] === ORCHESTRATOR START ===\r\n");
+    xil_printf("\tRequested final loopback: %u\r\n", (unsigned int)final_loopback);
+
+    /* Step 1: bring-up in NEAR-END loopback. Covers AXI selftest
+     * (TEST_CONST + TEST_SCRATCH) plus GT reset and link-up wait. */
+    if (murosync_serdes_bring_up(MUROSYNC_SERDES_LOOPBACK_NEAR, timeout_usec) != XST_SUCCESS) {
+        xil_printf("[BRINGUP+BIST][FATAL] bring_up() failed — skipping BIST\r\n");
+        /* Without finer-grained signal we lump AXI/GT into BRINGUP_FAIL bit;
+         * AXI_FAIL bit reserved for future explicit-AXI-only check. */
+        unsigned int fail_mask = MUROSYNC_SERDES_TEST_RESULT_BRINGUP_FAIL;
+        murosync_serdes_print_bist_result(fail_mask);
+        return XST_FAILURE;
+    }
+
+    /* Step 2: run BIST */
+    bist_result = murosync_serdes_bist();
+    /* bist() leaves AXI/BRINGUP bits set (they're outside its scope).
+     * We just proved both passed via bring_up(), so clear them. */
+    bist_result &= ~MUROSYNC_SERDES_TEST_RESULT_BRINGUP_FAIL;
+    bist_result &= ~MUROSYNC_SERDES_TEST_RESULT_AXI_FAIL;
+
+    murosync_serdes_print_bist_result(bist_result);
+
+    if (bist_result != MUROSYNC_SERDES_TEST_RESULT_PASS) {
+        xil_printf("[BRINGUP+BIST][FAIL] BIST detected failures — stopping\r\n");
+        return XST_FAILURE;
+    }
+
+    /* Step 3: switch to requested final loopback for production work */
+    if (final_loopback != MUROSYNC_SERDES_LOOPBACK_NEAR) {
+        xil_printf("[BRINGUP+BIST] BIST passed — switching to final loopback %u\r\n",
+                   (unsigned int)final_loopback);
+        if (murosync_serdes_set_loopback(final_loopback) != XST_SUCCESS) {
+            xil_printf("[BRINGUP+BIST][ERROR] Failed to set final loopback\r\n");
+            return XST_FAILURE;
+        }
+        usleep(50000);  /* brief settle */
+    } else {
+        xil_printf("[BRINGUP+BIST] BIST passed — remaining in NEAR-END loopback as requested\r\n");
+    }
+
+    xil_printf("[BRINGUP+BIST] === ORCHESTRATOR COMPLETE — ALL OK ===\r\n");
     return XST_SUCCESS;
 }
 
@@ -993,6 +1197,63 @@ int murosync_serdes_connectivity_test(void) {
         xil_printf("CH%d: %s\r\n", ch, (result == XST_SUCCESS) ? "CONNECTED" : "DISCONNECTED");
     }
     return XST_SUCCESS;
+}
+
+/************************************************************************
+ * All-channels smoke test — post-bring-up validation of external loopback.
+ *
+ * Runs a single 500ms link_test across all 4 channels with fixed pattern
+ * 0xAAAAAAAA. Calls print_diag() for full Tier 1/Tier 2 visibility into
+ * the data path AFTER the BIST-to-external loopback switch.
+ *
+ * Returns XST_SUCCESS only if run_link_test reports PASS (strengthened
+ * criterion: data flowing, no global err, no per-channel err, FSM reached
+ * LOCKED, at_lock snapshot taken).
+ ************************************************************************/
+int murosync_serdes_run_all_channels_smoke_test(void)
+{
+    int rc;
+
+    xil_printf("\r\n[MUROSYNC] === EXTERNAL LOOPBACK SMOKE TEST (all channels) ===\r\n");
+
+    rc = murosync_serdes_run_link_test(
+        MUROSYNC_LNK_TEST_MODE_FIXED,
+        0xF,
+        0x0, 0x0,
+        0xAAAAAAAA,
+        500);
+
+    murosync_serdes_link_test_print_diag();
+
+    return rc;
+}
+
+/************************************************************************
+ * Per-channel smoke test — debug helper, NOT called in production main.
+ *
+ * Runs 4 sequential 500ms link_tests, each isolating one channel via mask.
+ * Prints full diag for each. Useful for confirming per-channel signal
+ * integrity when channel-asymmetric issues are suspected.
+ *
+ * Invoke explicitly from main during board bring-up, hardware
+ * investigation, or via future UART command handler.
+ ************************************************************************/
+void murosync_serdes_run_per_channel_smoke_test(void)
+{
+    int ch;
+
+    xil_printf("\r\n[MUROSYNC] === PER-CHANNEL SMOKE TEST ===\r\n");
+
+    for (ch = 0; ch < 4; ch++) {
+        xil_printf("\r\n=== TEST: CH%d only ===\r\n", ch);
+        murosync_serdes_run_link_test(
+            MUROSYNC_LNK_TEST_MODE_FIXED,
+            1u << ch,
+            0x0, 0x0,
+            0xAAAAAAAA,
+            500);
+        murosync_serdes_link_test_print_diag();
+    }
 }
 
 /************************************************************************/

@@ -130,6 +130,11 @@ void murosync_serdes_link_test_print_diag(void);
 void murosync_serdes_link_test_print_full_diag(void);
 void murosync_serdes_link_test_run_diagnostics(void);
 int murosync_serdes_connectivity_test(void);
+
+/* Smoke tests — high-level validation wrappers around run_link_test.
+ * Used by main as post-bring-up sanity checks. */
+int  murosync_serdes_run_all_channels_smoke_test(void);
+void murosync_serdes_run_per_channel_smoke_test(void);
 /************************************************************************/
 
 /************************* GT DEBUG *************************************/
@@ -158,6 +163,90 @@ void murosync_serdes_test_comma_detection(void);
 /* Tier 2 GT sticky event counters (ch = 0..3, returns 16-bit value as unsigned int) */
 int murosync_serdes_get_rxbyterealign_cnt(unsigned char ch, unsigned int *cnt);
 int murosync_serdes_get_eyescandataerror_cnt(unsigned char ch, unsigned int *cnt);
+
+/* Print low-level GT Wizard signals (RXCOMMADET, RXBYTEISALIGNED, RXBYTEREALIGN)
+ * via the dedicated debug register (0x058). Bypasses RTL wrapping inside
+ * murosync_serdes_array and gives a clean per-channel view of GT state.
+ *
+ * Use cases:
+ *   - Post bring-up: confirm GT alignment (expect RXBYTEISALIGNED = 0xF after
+ *     TX comma burst, 0x0 before).
+ *   - Post smoke test: confirm alignment held during data traffic.
+ *   - Field debug: when channel-asymmetric issues are suspected.
+ *
+ * tag — caller-supplied label shown in the printed header. */
+void murosync_serdes_print_gt_ground_truth(const char *tag);
+/************************************************************************/
+
+/************************* BIST — Boot Self-Test *************************
+ *
+ * BIST validates the SERDES subsystem end-to-end inside the FPGA, using
+ * internal PCS NEAR-END loopback (no external cables/SFPs needed).
+ *
+ * Returns a 32-bit bitmask where each bit represents a specific failure
+ * mode. Convention: bit = failure, 0 = PASS, non-zero = at least one FAIL.
+ *
+ * Bit layout:
+ *   [0]      AXI selftest failed (TEST_CONST, TEST_SCRATCH)
+ *   [1]      GT bring-up failed (link_up never reached)
+ *   [2]      BIST link_test produced no data (wrd_cnt == 0)
+ *   [3]      BIST link_test had global errors (err_cnt > 0)
+ *   [4]      BIST link_test had per-channel errors
+ *   [5]      BIST link_test FSM never reached LOCKED
+ *   [6]      BIST link_test at_lock snapshot was not taken
+ *   [15:7]   reserved for future BIST extensions
+ *   [31:16]  reserved for future external-test results
+ *
+ * Usage:
+ *   unsigned int result = murosync_serdes_bist();
+ *   if (result == MUROSYNC_SERDES_TEST_RESULT_PASS) { all OK }
+ *   else { specific bits indicate which checks failed }
+ *
+ * BIST result is currently firmware-internal. AXI register exposure is
+ * deferred to the future TCP/IP control plane register map design.
+ *************************************************************************/
+
+#define MUROSYNC_SERDES_TEST_RESULT_AXI_FAIL           (1u << 0)
+#define MUROSYNC_SERDES_TEST_RESULT_BRINGUP_FAIL       (1u << 1)
+#define MUROSYNC_SERDES_TEST_RESULT_BIST_NO_DATA       (1u << 2)
+#define MUROSYNC_SERDES_TEST_RESULT_BIST_GLOBAL_ERR    (1u << 3)
+#define MUROSYNC_SERDES_TEST_RESULT_BIST_PER_CH_ERR    (1u << 4)
+#define MUROSYNC_SERDES_TEST_RESULT_BIST_NOT_LOCKED    (1u << 5)
+#define MUROSYNC_SERDES_TEST_RESULT_BIST_AT_LOCK_VOID  (1u << 6)
+/* [15:7]  reserved for BIST extensions */
+/* [31:16] reserved for external test results */
+
+#define MUROSYNC_SERDES_TEST_RESULT_PASS               (0u)
+
+/* ALL_FAIL_MASK — OR of all named failure bits.
+ * Used as initial value before BIST/bring-up checks clear individual bits.
+ * Bits NOT in this mask are 0 in init, and stay 0 — they never appear as
+ * "unknown failure" in print_bist_result(). Update this define when adding
+ * new TEST_RESULT_* bits (BIST extensions, external test results, etc.). */
+#define MUROSYNC_SERDES_TEST_RESULT_ALL_FAIL_MASK   ( \
+    MUROSYNC_SERDES_TEST_RESULT_AXI_FAIL           | \
+    MUROSYNC_SERDES_TEST_RESULT_BRINGUP_FAIL       | \
+    MUROSYNC_SERDES_TEST_RESULT_BIST_NO_DATA       | \
+    MUROSYNC_SERDES_TEST_RESULT_BIST_GLOBAL_ERR    | \
+    MUROSYNC_SERDES_TEST_RESULT_BIST_PER_CH_ERR    | \
+    MUROSYNC_SERDES_TEST_RESULT_BIST_NOT_LOCKED    | \
+    MUROSYNC_SERDES_TEST_RESULT_BIST_AT_LOCK_VOID  )
+/* = 0x0000007F  (7 defined bits) */
+
+/* BIST function — internal PCS NEAR-END loopback test.
+ * Returns bitmask: 0 = PASS, non-zero = failure (see TEST_RESULT_* defines above).
+ * Side effect: sets loopback to NEAR-END during execution; does NOT restore
+ * caller's choice — orchestrator (bring_up_with_bist) handles final loopback. */
+unsigned int murosync_serdes_bist(void);
+
+/* Decode a BIST result bitmask and print human-readable status to UART.
+ * Prints "PASS" if result == 0, otherwise enumerates failed bits. */
+void murosync_serdes_print_bist_result(unsigned int result);
+
+/* High-level bring-up orchestrator: runs bring_up() in NEAR-END loopback,
+ * executes BIST, then switches to the requested final loopback for production.
+ * Returns XST_SUCCESS only if both bring-up and BIST passed. */
+int murosync_serdes_bring_up_with_bist(unsigned char final_loopback, int timeout_usec);
 /************************************************************************/
 
 /******************************* TASK ***********************************/
