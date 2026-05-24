@@ -285,9 +285,21 @@ module murosync_serdes_link_test #(
     end
 
 // TXCHARISK — K-symbol control
+    //   IS_SLAVE: echo RXCHARISK back to TX so K-symbols (comma) are preserved
+    //             through fabric cascade loopback. Each rxcharisk[ch] bit is
+    //             duplicated to txctrl2_out[2*ch +: 2] because each 16-bit
+    //             channel slice carries 2 bytes, each with its own TXCHARISK bit.
+    //             Without this, MASTER would receive its own comma back as
+    //             D-symbols → checker mismatch → ~18M errors over 60s.
+    //   MASTER:   normal comma maintenance (send_comma drives all 8 bits high
+    //             during K28.5 burst, low otherwise).
     always @(posedge tx_clk or negedge core_rst_n)
     begin
         if (!core_rst_n)     txctrl2_out <= 8'h0;
+        else if (IS_SLAVE)   txctrl2_out <= {rxcharisk[3], rxcharisk[3],
+                                             rxcharisk[2], rxcharisk[2],
+                                             rxcharisk[1], rxcharisk[1],
+                                             rxcharisk[0], rxcharisk[0]};
         else if (send_comma) txctrl2_out <= 8'hFF;
         else                 txctrl2_out <= 8'h0;
     end
