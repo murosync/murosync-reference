@@ -36,8 +36,8 @@
 module murosync_serdes_array #(
     parameter string MODE = "MASTER", // "MASTER" / "SLAVE"
 
-    parameter bit IS_SLAVE  = (MODE == "SLAVE"),
-    parameter bit IS_MASTER = (MODE == "MASTER"),
+    //parameter bit IS_SLAVE  = (MODE == "SLAVE"),
+    //parameter bit IS_MASTER = (MODE == "MASTER"),
 
     parameter integer C_S00_AXI_DATA_WIDTH = 32,
 
@@ -141,6 +141,12 @@ module murosync_serdes_array #(
     output wire                         s00_axi_rvalid,
     input  wire                         s00_axi_rready
 );
+
+    // Derived from MODE — declared as localparam so IP Packager
+    // does not see them as user parameters (which would freeze them
+    // in component.xml). Re-evaluated at elaboration based on MODE.
+    localparam bit IS_SLAVE  = (MODE == "SLAVE");
+    localparam bit IS_MASTER = (MODE == "MASTER");
 
     // ============================================================
     // MODE select (compile-time)

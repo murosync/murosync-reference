@@ -11,15 +11,31 @@
 #   MASTER and SLAVE transceiver ports in the IP-XACT component.xml based
 #   on the $MODE parameter.
 #
-#   Also hides internal derived parameters (IS_SLAVE, IS_MASTER,
-#   C_S00_AXI_NUM_REGS, OPT_MEM_ADDR_BITS, ADDR_WIDTH_NEEDED,
-#   C_S00_AXI_DATA_WIDTH) from the Customization GUI while keeping them
-#   present in component.xml so that Block Design can read and update them.
+#   Also hides internal derived parameters (C_S00_AXI_NUM_REGS,
+#   OPT_MEM_ADDR_BITS, ADDR_WIDTH_NEEDED, C_S00_AXI_DATA_WIDTH) from the
+#   Customization GUI while keeping them present in component.xml so that
+#   Block Design can read and update them.
 #
-#   NOTE: Parameters are hidden with "visible false" — NOT removed.
-#   Removing parameters (ipgui::remove_param) causes Block Design to freeze
-#   their values at the time of removal, breaking automatic updates on
-#   repackage. Hiding with visible=false preserves the update chain.
+#   NOTE on IS_SLAVE / IS_MASTER (history):
+#     Earlier versions of this script also hid IS_SLAVE and IS_MASTER from
+#     the GUI. ipgui::remove_param froze their values in component.xml as
+#     compile-time constants (IS_SLAVE=false, IS_MASTER=true), so changing
+#     CONFIG.MODE in BD no longer re-evaluated them — the IP always ran as
+#     MASTER regardless of the selected MODE.
+#
+#     Fix: IS_SLAVE and IS_MASTER are now declared as `localparam` inside
+#     the RTL body of murosync_serdes_array.sv (not as module parameters).
+#     IP Packager does not see them at all, they are re-evaluated by the
+#     synthesizer at elaboration based on the current MODE value.
+#
+#     Consequence: this script must NOT try to hide them — they are not
+#     user parameters anymore.
+#
+#   NOTE on hiding strategy: parameters are hidden with "visible false"
+#   semantics (via ipgui::remove_param + value_resolve_type=dependent).
+#   The original comment claimed parameters were NOT removed; in fact
+#   ipgui::remove_param IS called, but the value_resolve_type=dependent
+#   prevents BD freezing for parameters that don't depend on MODE.
 #
 # Notes:
 #   - Source this script in the Vivado Tcl Console while the "Package IP"
@@ -62,13 +78,10 @@ if {$mode_param != ""} {
 # ----------------------------------------------------------------------------
 # 0b. Hide internal/derived parameters from Customization GUI.
 #
-#     Using ipgui::remove_param moves them to "Hidden Parameters".
-#     To prevent Block Design from freezing their values (so they still update
-#     based on expressions), we also set their value_resolve_type to "dependent".
+#     IS_SLAVE / IS_MASTER are NOT in this list — they are localparam in
+#     RTL now (see header comment). IP Packager does not see them.
 # ----------------------------------------------------------------------------
 set params_to_hide {
-    IS_SLAVE
-    IS_MASTER
     C_S00_AXI_DATA_WIDTH
     C_S00_AXI_NUM_REGS
     OPT_MEM_ADDR_BITS

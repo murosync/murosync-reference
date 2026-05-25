@@ -132,6 +132,16 @@ void murosync_serdes_link_test_print_full_diag(void);
 void murosync_serdes_link_test_run_diagnostics(void);
 int murosync_serdes_connectivity_test(void);
 
+/* Read sticky link_test diagnostics and print a MODE verdict (MASTER/SLAVE/AMBIGUOUS).
+ * Intended to be called AFTER a link_test run (e.g. immediately after
+ * murosync_serdes_bring_up_with_bist() succeeds). Counters are sticky until next
+ * test start, so values reflect what happened during the last test.
+ *
+ * SLAVE bitstream (IS_SLAVE=1): all link_test logic is gated off in RTL →
+ *   FSM never leaves IDLE, no comma TX, no TX counters, no wrd_cnt.
+ * MASTER bitstream (IS_SLAVE=0): full pattern generator + checker active. */
+void murosync_serdes_print_mode_verdict(const char *tag);
+
 /* Smoke tests — high-level validation wrappers around run_link_test.
  * Used by main as post-bring-up sanity checks. */
 int  murosync_serdes_run_all_channels_smoke_test(void);

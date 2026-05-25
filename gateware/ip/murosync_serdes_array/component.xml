@@ -247,7 +247,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>1052f245</spirit:value>
+            <spirit:value>bb2b73d2</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -266,7 +266,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>53adb5d8</spirit:value>
+            <spirit:value>edf5d5a3</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -295,7 +295,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>b028252e</spirit:value>
+            <spirit:value>612838ce</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -1519,16 +1519,6 @@
         <spirit:displayName>Mode</spirit:displayName>
         <spirit:value spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.MODE">MASTER</spirit:value>
       </spirit:modelParameter>
-      <spirit:modelParameter spirit:dataType="bit">
-        <spirit:name>IS_SLAVE</spirit:name>
-        <spirit:displayName>Is Slave</spirit:displayName>
-        <spirit:value spirit:format="bool" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.IS_SLAVE" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.MODE&apos;)) = &quot;SLAVE&quot;)">false</spirit:value>
-      </spirit:modelParameter>
-      <spirit:modelParameter spirit:dataType="bit">
-        <spirit:name>IS_MASTER</spirit:name>
-        <spirit:displayName>Is Master</spirit:displayName>
-        <spirit:value spirit:format="bool" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.IS_MASTER" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.MODE&apos;)) = &quot;MASTER&quot;)">true</spirit:value>
-      </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_S00_AXI_DATA_WIDTH</spirit:name>
         <spirit:displayName>C S00 Axi Data Width</spirit:displayName>
@@ -1614,7 +1604,7 @@
       <spirit:file>
         <spirit:name>src/murosync_serdes_array.sv</spirit:name>
         <spirit:fileType>systemVerilogSource</spirit:fileType>
-        <spirit:userFileType>CHECKSUM_325e87aa</spirit:userFileType>
+        <spirit:userFileType>CHECKSUM_0809db70</spirit:userFileType>
       </spirit:file>
     </spirit:fileSet>
     <spirit:fileSet>
@@ -1699,7 +1689,7 @@
       <spirit:file>
         <spirit:name>xgui/murosync_serdes_array_v1_0.tcl</spirit:name>
         <spirit:fileType>tclSource</spirit:fileType>
-        <spirit:userFileType>CHECKSUM_b028252e</spirit:userFileType>
+        <spirit:userFileType>CHECKSUM_612838ce</spirit:userFileType>
         <spirit:userFileType>XGUI_VERSION_2</spirit:userFileType>
       </spirit:file>
     </spirit:fileSet>
@@ -1710,16 +1700,6 @@
       <spirit:name>MODE</spirit:name>
       <spirit:displayName>Mode</spirit:displayName>
       <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.MODE" spirit:choiceRef="choice_list_9a11aafb">MASTER</spirit:value>
-    </spirit:parameter>
-    <spirit:parameter>
-      <spirit:name>IS_SLAVE</spirit:name>
-      <spirit:displayName>Is Slave</spirit:displayName>
-      <spirit:value spirit:format="bool" spirit:resolve="dependent" spirit:id="PARAM_VALUE.IS_SLAVE">false</spirit:value>
-    </spirit:parameter>
-    <spirit:parameter>
-      <spirit:name>IS_MASTER</spirit:name>
-      <spirit:displayName>Is Master</spirit:displayName>
-      <spirit:value spirit:format="bool" spirit:resolve="dependent" spirit:id="PARAM_VALUE.IS_MASTER">true</spirit:value>
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>C_S00_AXI_DATA_WIDTH</spirit:name>
@@ -1781,16 +1761,16 @@
       <xilinx:displayName>murosync_serdes_array_v1_0</xilinx:displayName>
       <xilinx:definitionSource>package_project</xilinx:definitionSource>
       <xilinx:coreRevision>2</xilinx:coreRevision>
-      <xilinx:coreCreationDateTime>2026-05-24T13:01:02Z</xilinx:coreCreationDateTime>
+      <xilinx:coreCreationDateTime>2026-05-25T18:08:59Z</xilinx:coreCreationDateTime>
     </xilinx:coreExtensions>
     <xilinx:packagingInfo>
       <xilinx:xilinxVersion>2022.2</xilinx:xilinxVersion>
       <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="9add38af"/>
       <xilinx:checksum xilinx:scope="memoryMaps" xilinx:value="4f19a26b"/>
-      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="60e7eaff"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="37edab0e"/>
       <xilinx:checksum xilinx:scope="ports" xilinx:value="be2bf923"/>
-      <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="783a0fb6"/>
-      <xilinx:checksum xilinx:scope="parameters" xilinx:value="5ac0f948"/>
+      <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="a1b4eb58"/>
+      <xilinx:checksum xilinx:scope="parameters" xilinx:value="4487d570"/>
     </xilinx:packagingInfo>
   </spirit:vendorExtensions>
 </spirit:component>

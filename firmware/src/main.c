@@ -71,6 +71,8 @@ int main(void)
         return XST_FAILURE;
     }
 
+    murosync_serdes_print_mode_verdict("post BIST");
+
     /* Step 2: GT ground-truth check after bring-up.
      * Expect RXBYTEISALIGNED = 0xF (BIST burst left GT aligned). */
     murosync_serdes_print_gt_ground_truth("post bring-up");

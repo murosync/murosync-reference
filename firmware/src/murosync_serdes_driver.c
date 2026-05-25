@@ -1158,6 +1158,37 @@ void murosync_serdes_link_test_print_full_diag(void)
     xil_printf("\t[RX] Expected    : 0x%08X%08X\r\n", exp_hi, exp_lo);
 }
 
+/* Read sticky link_test diagnostics and print a MODE verdict.
+ * Call AFTER a test run so the four sticky counters reflect actual behavior. */
+void murosync_serdes_print_mode_verdict(const char *tag)
+{
+    unsigned int diag2 = 0, txstat = 0;
+    unsigned int wrd = 0, tx_ctr_lo = 0;
+
+    murosync_serdes_reg_rd(MUROSYNC_LNK_DIAG_STATUS2_REG,    &diag2);
+    murosync_serdes_reg_rd(MUROSYNC_LNK_DIAG_TX_STATUS,      &txstat);
+    murosync_serdes_reg_rd(MUROSYNC_LNK_RX_WRD_CNT,          &wrd);
+    murosync_serdes_reg_rd(MUROSYNC_LNK_DIAG_TX_COUNTERS_LO, &tx_ctr_lo);
+
+    unsigned int ever        = (diag2  >> MUROSYNC_LNK_DIAG_EVER_LOCKED_OFS)    & 0x1;
+    unsigned int comma_count = (txstat >> MUROSYNC_LNK_DIAG_TX_COMMA_COUNT_OFS) & 0xFFF;
+
+    /* Four independent sticky indicators. All zero => SLAVE. All nonzero => MASTER. */
+    int slave_votes  = (ever == 0) + (wrd == 0) + (comma_count == 0) + (tx_ctr_lo == 0);
+    int master_votes = (ever == 1) + (wrd  > 0) + (comma_count  > 0) + (tx_ctr_lo  > 0);
+
+    const char *verdict;
+    if      (slave_votes  == 4) verdict = "SLAVE";
+    else if (master_votes == 4) verdict = "MASTER";
+    else                        verdict = "AMBIGUOUS";
+
+    xil_printf("\r\n[MODE-DETECT] %s\r\n", tag);
+    xil_printf("  ever_locked=%u  wrd_cnt=%u  comma_count=%u  tx_ctr_lo=0x%08X\r\n",
+               ever, wrd, comma_count, tx_ctr_lo);
+    xil_printf("  >>> IP behaves as: %s  (slave_votes=%d/4, master_votes=%d/4)\r\n",
+               verdict, slave_votes, master_votes);
+}
+
 static void murosync_serdes_link_test_run_one(
     const char   *label,
     unsigned char mode,
