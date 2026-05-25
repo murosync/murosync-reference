@@ -51,51 +51,128 @@ static void murosync_print_banner(void)
     xil_printf("\r\n");
 }
 
-int main(void)
+/* Identify the loaded IP: verify AXI alive, read IP_INFO, print identity.
+ * Does NOT touch GT — only register access on common AXI registers and IP_INFO.
+ * On success, populates *info with mode, version, num_channels. */
+static int murosync_app_identify(murosync_ip_info_t *info)
+{
+    /* AXI selftest — confirm register interface works before reading IP_INFO */
+    if (murosync_serdes_selftest_const() != XST_SUCCESS)
+    {
+        xil_printf("[MUROSYNC][FATAL] AXI selftest (TEST_CONST) FAILED\r\n");
+        return XST_FAILURE;
+    }
+    if (murosync_serdes_selftest_scratch() != XST_SUCCESS)
+    {
+        xil_printf("[MUROSYNC][FATAL] AXI selftest (TEST_SCRATCH) FAILED\r\n");
+        return XST_FAILURE;
+    }
+
+    /* Read IP identity */
+    if (murosync_serdes_get_ip_info(info) != XST_SUCCESS)
+    {
+        xil_printf("[MUROSYNC][FATAL] IP_INFO read FAILED\r\n");
+        return XST_FAILURE;
+    }
+    murosync_serdes_print_ip_info();
+    return XST_SUCCESS;
+}
+
+/* MASTER bring-up: orchestrated bring-up + BIST in NEAR-END loopback,
+ * then switch to NONE loopback (external/optical) and run smoke test. */
+static int murosync_app_bringup_master(void)
+{
+    xil_printf("\r\n[MUROSYNC] === MASTER FLOW ===\r\n");
+
+    /* bring_up_with_bist does: AXI selftest, GT reset, NEAR-END bring-up,
+     * BIST link test, switch to final loopback (NONE). */
+    if (murosync_serdes_bring_up_with_bist(MUROSYNC_SERDES_LOOPBACK_NONE, 5000000)
+        != XST_SUCCESS)
+    {
+        xil_printf("[MUROSYNC][FATAL] MASTER bring-up + BIST FAILED\r\n");
+        return XST_FAILURE;
+    }
+    murosync_serdes_print_gt_ground_truth("post bring-up");
+
+    /* External loopback smoke test (FMC loopback board or optical line) */
+    if (murosync_serdes_run_all_channels_smoke_test() != XST_SUCCESS)
+    {
+        xil_printf("[MUROSYNC][FATAL] Smoke test FAILED\r\n");
+        return XST_FAILURE;
+    }
+    murosync_serdes_print_gt_ground_truth("post smoke test");
+
+    return XST_SUCCESS;
+}
+
+/* SLAVE bring-up: passive only. No BIST — SLAVE has no TX pattern generator
+ * and no RX checker (both gated by IS_SLAVE in RTL). On FMC loopback the
+ * GT will still align (cascade echo), but no validation pattern flows.
+ * Real validation requires MASTER<->SLAVE optical link. */
+static int murosync_app_bringup_slave(void)
+{
+    xil_printf("\r\n[MUROSYNC] === SLAVE FLOW ===\r\n");
+
+    if (murosync_serdes_bring_up(MUROSYNC_SERDES_LOOPBACK_NONE, 5000000)
+        != XST_SUCCESS)
+    {
+        xil_printf("[MUROSYNC][FATAL] SLAVE bring-up FAILED\r\n");
+        return XST_FAILURE;
+    }
+    murosync_serdes_print_gt_ground_truth("post bring-up");
+
+    return XST_SUCCESS;
+}
+
+/* Production main loop: heartbeat + link monitor. Never returns. */
+static void murosync_app_main_loop(const murosync_ip_info_t *info)
 {
     unsigned int alive_cnt = 0;
+    const char *mode_tag = (info->mode == MUROSYNC_MODE_MASTER) ? "M" : "S";
 
+    for (;;)
+    {
+        xil_printf("[MUROSYNC] alive #%u (%s v%u.%u)\r\n",
+                   alive_cnt++,
+                   mode_tag,
+                   info->version_major, info->version_minor);
+        murosync_serdes_link_task();
+        usleep(1000000);
+    }
+}
+
+int main(void)
+{
     init_platform();
     usleep(1000000);
     murosync_print_banner();
 
-    xil_printf("\r\n[MUROSYNC] === FMC LOOPBACK BRING-UP ===\r\n");
-
-    /* Step 1: Bring-up with internal BIST validation.
-     * Runs AXI selftest, GT reset, NEAR-END loopback bring-up, BIST link test,
-     * then switches to requested final loopback (external = NONE = 0). */
-    if (murosync_serdes_bring_up_with_bist(MUROSYNC_SERDES_LOOPBACK_NONE, 5000000)
-        != XST_SUCCESS)
+    murosync_ip_info_t info;
+    if (murosync_app_identify(&info) != XST_SUCCESS)
     {
-        xil_printf("[MUROSYNC][FATAL] Bring-up FAILED\r\n");
         return XST_FAILURE;
     }
 
-    murosync_serdes_print_mode_verdict("post BIST");
-
-    /* Step 2: GT ground-truth check after bring-up.
-     * Expect RXBYTEISALIGNED = 0xF (BIST burst left GT aligned). */
-    murosync_serdes_print_gt_ground_truth("post bring-up");
-
-    /* Step 3: External loopback smoke test — confirm full data path works
-     * after BIST-to-external switch. */
-    if (murosync_serdes_run_all_channels_smoke_test() != XST_SUCCESS)
+    int rc;
+    switch (info.mode)
     {
-        xil_printf("[MUROSYNC][FATAL] External loopback smoke test FAILED\r\n");
+        case MUROSYNC_MODE_MASTER:
+            rc = murosync_app_bringup_master();
+            break;
+        case MUROSYNC_MODE_SLAVE:
+            rc = murosync_app_bringup_slave();
+            break;
+        default:
+            xil_printf("[MUROSYNC][FATAL] Unknown IP mode (raw=0x%08X)\r\n",
+                       info.raw);
+            return XST_FAILURE;
+    }
+    if (rc != XST_SUCCESS)
+    {
         return XST_FAILURE;
     }
 
-    /* Step 4: GT ground-truth check after smoke test.
-     * Confirm alignment held through data traffic. */
-    murosync_serdes_print_gt_ground_truth("post smoke test");
-
-    /* Production main loop — heartbeat + link monitor */
-    for (;;)
-    {
-        xil_printf("[MUROSYNC] alive #%u\r\n", alive_cnt++);
-        murosync_serdes_link_task();
-        usleep(1000000);
-    }
+    murosync_app_main_loop(&info);
 
     cleanup_platform();
     return 0;

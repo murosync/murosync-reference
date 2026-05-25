@@ -1189,6 +1189,68 @@ void murosync_serdes_print_mode_verdict(const char *tag)
                verdict, slave_votes, master_votes);
 }
 
+/* IP_INFO register decoder — read once and split into typed struct. */
+int murosync_serdes_get_ip_info(murosync_ip_info_t *info)
+{
+    if (info == NULL) return XST_FAILURE;
+
+    unsigned int raw = 0;
+    int rc = murosync_serdes_reg_rd(MUROSYNC_IP_INFO_REG, &raw);
+    if (rc != XST_SUCCESS) {
+        info->mode          = MUROSYNC_MODE_UNKNOWN;
+        info->version_major = 0;
+        info->version_minor = 0;
+        info->num_channels  = 0;
+        info->raw           = 0;
+        return XST_FAILURE;
+    }
+
+    unsigned int is_slave  = (raw & MUROSYNC_IP_INFO_IS_SLAVE_MSK)  >> MUROSYNC_IP_INFO_IS_SLAVE_OFS;
+    unsigned int is_master = (raw & MUROSYNC_IP_INFO_IS_MASTER_MSK) >> MUROSYNC_IP_INFO_IS_MASTER_OFS;
+
+    if      (is_slave  && !is_master) info->mode = MUROSYNC_MODE_SLAVE;
+    else if (is_master && !is_slave)  info->mode = MUROSYNC_MODE_MASTER;
+    else                              info->mode = MUROSYNC_MODE_UNKNOWN;
+
+    info->version_major = (raw & MUROSYNC_IP_INFO_VERSION_MAJOR_MSK) >> MUROSYNC_IP_INFO_VERSION_MAJOR_OFS;
+    info->version_minor = (raw & MUROSYNC_IP_INFO_VERSION_MINOR_MSK) >> MUROSYNC_IP_INFO_VERSION_MINOR_OFS;
+    info->num_channels  = (raw & MUROSYNC_IP_INFO_NUM_CHANNELS_MSK)  >> MUROSYNC_IP_INFO_NUM_CHANNELS_OFS;
+    info->raw           = raw;
+
+    return XST_SUCCESS;
+}
+
+murosync_mode_t murosync_serdes_get_mode(void)
+{
+    murosync_ip_info_t info;
+    if (murosync_serdes_get_ip_info(&info) != XST_SUCCESS) {
+        return MUROSYNC_MODE_UNKNOWN;
+    }
+    return info.mode;
+}
+
+void murosync_serdes_print_ip_info(void)
+{
+    murosync_ip_info_t info;
+    if (murosync_serdes_get_ip_info(&info) != XST_SUCCESS) {
+        xil_printf("[MUROSYNC] === IP INFO === (read FAILED)\r\n");
+        return;
+    }
+
+    const char *mode_str;
+    switch (info.mode) {
+        case MUROSYNC_MODE_MASTER:  mode_str = "MASTER";  break;
+        case MUROSYNC_MODE_SLAVE:   mode_str = "SLAVE";   break;
+        default:                    mode_str = "UNKNOWN"; break;
+    }
+
+    xil_printf("\r\n[MUROSYNC] === IP INFO ===\r\n");
+    xil_printf("        Raw          : 0x%08X\r\n",   info.raw);
+    xil_printf("        Mode         : %s\r\n",       mode_str);
+    xil_printf("        IP version   : v%u.%u\r\n",   info.version_major, info.version_minor);
+    xil_printf("        NUM_CHANNELS : %u\r\n",       info.num_channels);
+}
+
 static void murosync_serdes_link_test_run_one(
     const char   *label,
     unsigned char mode,

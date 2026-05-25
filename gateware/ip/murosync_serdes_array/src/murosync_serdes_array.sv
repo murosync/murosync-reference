@@ -39,12 +39,21 @@ module murosync_serdes_array #(
     //parameter bit IS_SLAVE  = (MODE == "SLAVE"),
     //parameter bit IS_MASTER = (MODE == "MASTER"),
 
+    // IP semantic version. Source of truth — RTL parameters.
+    //   MAJOR: bump manually on breaking changes (reset MINOR to 0 in same edit).
+    //   MINOR: auto-incremented by update_ip_ports.tcl on every re-package.
+    //          Synced to IP-XACT <spirit:version> by the same script.
+    parameter integer IP_VERSION_MAJOR = 1,
+    parameter integer IP_VERSION_MINOR = 1,
+
     parameter integer C_S00_AXI_DATA_WIDTH = 32,
 
     // CTRL, LOOPBACK, STATUS, DBG_LO, DBG_HI, TEST_CONST, TEST_SCRATCH
     // +14 Tier 2 diagnostic registers (0x80..0xB4, indices 32..45)
     // +2  Stage 5 LNK_EXP_DATA_AT_FIRST_ERR_LO/HI (0xB8/0xBC, indices 46..47)
-    parameter integer C_S00_AXI_NUM_REGS   = 48,
+    // +1  IP_INFO register at reserved slot 0x074 (index 29) — array must
+    //     be sized to the HIGHEST index + 1 = 48, so total = 49.
+    parameter integer C_S00_AXI_NUM_REGS   = 49,
 
     // Pattern copied from axis_wavecap_streamer.sv
     parameter integer OPT_MEM_ADDR_BITS    = $clog2(C_S00_AXI_NUM_REGS),
@@ -365,8 +374,10 @@ module murosync_serdes_array #(
     // ============================================================
     murosync_serdes_array_axi_ctrl #(
         .C_S00_AXI_DATA_WIDTH (C_S00_AXI_DATA_WIDTH),
-        .C_S00_AXI_NUM_REGS   (C_S00_AXI_NUM_REGS)
-    ) u_axi_ctrl 
+        .C_S00_AXI_NUM_REGS   (C_S00_AXI_NUM_REGS),
+        .IP_VERSION_MAJOR     (IP_VERSION_MAJOR),
+        .IP_VERSION_MINOR     (IP_VERSION_MINOR)
+    ) u_axi_ctrl
     (
         // AXI
         .s00_axi_aclk     (s00_axi_aclk),
@@ -472,7 +483,12 @@ module murosync_serdes_array #(
 
         // Snapshot valid bits — Tier 2
         .link_test_rx_data_at_lock_valid (link_test_diag_rx_data_at_lock_valid),
-        .link_test_first_err_valid       (link_test_diag_first_err_valid)
+        .link_test_first_err_valid       (link_test_diag_first_err_valid),
+
+        // IP_INFO build-time constants (driven from top-level localparams)
+        .ip_info_is_slave_in     (IS_SLAVE),
+        .ip_info_is_master_in    (IS_MASTER),
+        .ip_info_num_channels_in (4'd4)    // matches NCH=4 in u_gtw instantiation
     );
 
     // Wire declarations - must come BEFORE GT wrapper instantiation to avoid implicit 1-bit nets

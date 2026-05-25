@@ -65,6 +65,22 @@ typedef enum {
     MUROSYNC_SERDES_LOOPBACK_EXT   = 0x4
 } murosync_serdes_loopback_t;
 
+/* IP mode enum — populated by murosync_serdes_get_ip_info() from IP_INFO register */
+typedef enum {
+    MUROSYNC_MODE_UNKNOWN = 0,
+    MUROSYNC_MODE_MASTER  = 1,
+    MUROSYNC_MODE_SLAVE   = 2
+} murosync_mode_t;
+
+/* IP build identity decoded from IP_INFO register */
+typedef struct {
+    murosync_mode_t mode;
+    unsigned int    version_major;
+    unsigned int    version_minor;
+    unsigned int    num_channels;
+    unsigned int    raw;          /* full 32-bit register value for debug */
+} murosync_ip_info_t;
+
 /************************* Register access ******************************/
 int  murosync_serdes_reg_rd(unsigned int reg_ofs, unsigned int *data);
 int  murosync_serdes_reg_wr(unsigned int reg_ofs, unsigned int data);
@@ -141,6 +157,18 @@ int murosync_serdes_connectivity_test(void);
  *   FSM never leaves IDLE, no comma TX, no TX counters, no wrd_cnt.
  * MASTER bitstream (IS_SLAVE=0): full pattern generator + checker active. */
 void murosync_serdes_print_mode_verdict(const char *tag);
+
+/* Read IP_INFO register and decode all fields into info struct.
+ * Returns XST_SUCCESS on AXI read OK, XST_FAILURE otherwise.
+ * Safe to call after bring_up — IP_INFO is RO and always present. */
+int murosync_serdes_get_ip_info(murosync_ip_info_t *info);
+
+/* Shortcut: returns just the mode from IP_INFO. Returns MUROSYNC_MODE_UNKNOWN on read failure. */
+murosync_mode_t murosync_serdes_get_mode(void);
+
+/* Print IP_INFO contents to UART in human-readable form.
+ * Use after bring-up for traceability — log shows which bitstream is loaded. */
+void murosync_serdes_print_ip_info(void);
 
 /* Smoke tests — high-level validation wrappers around run_link_test.
  * Used by main as post-bring-up sanity checks. */

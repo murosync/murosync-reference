@@ -106,6 +106,9 @@
  *  Tier 1+2 Sticky Diagnostic:
  *  0x070     LNK_DIAG_STATUS2                  RO   ever_locked, last_fsm_state, snapshot valid bits
  *
+ *  Build Identity:
+ *  0x074     IP_INFO                           RO   IS_SLAVE/IS_MASTER, IP_VERSION, NUM_CHANNELS
+ *
  *  Tier 2 Snapshots & Timing:
  *  0x080     LNK_TIME_TO_LOCK                  RO   Cycles WAIT_ALIGN -> LOCKED (frozen)
  *  0x084     LNK_LOCKED_CYCLE_COUNT            RO   Total cycles in LOCKED
@@ -130,7 +133,7 @@
  *    [16]   rx_data_at_lock_valid
  *    [17]   first_err_valid  (covers RX_DATA_AT_FIRST_ERR and EXP_DATA_AT_FIRST_ERR)
  *
- *  Total registers used: 48 (0x000 - 0x0BC). Free slots: 0x074-0x07C (3 slots).
+ *  Total registers used: 49 (0x000 - 0x0BC). Free slots: 0x078-0x07C (2 slots).
  * ======================================================================== */
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -725,6 +728,52 @@
     #define MUROSYNC_GT_STICKY_CNT_CH_LO_MSK         (0xFFFFu << MUROSYNC_GT_STICKY_CNT_CH_LO_OFS)
     #define MUROSYNC_GT_STICKY_CNT_CH_HI_OFS         16
     #define MUROSYNC_GT_STICKY_CNT_CH_HI_MSK         (0xFFFFu << MUROSYNC_GT_STICKY_CNT_CH_HI_OFS)
+
+
+/* ========================================================================
+ * IP_INFO — Build identity register (offset 0x074)
+ *
+ * Read-only. Reflects build-time constants of the loaded bitstream:
+ *   - MODE (IS_SLAVE / IS_MASTER bits)
+ *   - IP_VERSION_MAJOR / IP_VERSION_MINOR (semantic + build counter)
+ *   - NUM_CHANNELS (fixed at 4 for current dev board)
+ *
+ * Layout:
+ *   [0]      IS_SLAVE             1 = SLAVE mode active in this bitstream
+ *   [1]      IS_MASTER            1 = MASTER mode active in this bitstream
+ *   [3:2]    reserved
+ *   [7:4]    IP_VERSION_MAJOR     (4 bits, max 15)
+ *   [23:8]   IP_VERSION_MINOR     (16 bits, max 65535)
+ *   [27:24]  NUM_CHANNELS         (4 bits, max 15)
+ *   [31:28]  reserved
+ *
+ * Versioning policy:
+ *   MAJOR — bumped manually in RTL on breaking changes.
+ *   MINOR — auto-incremented by update_ip_ports.tcl on every re-package.
+ *
+ * Traceability: version number in this register is in sync with
+ *   <spirit:version> in component.xml (under git). To reproduce sources
+ *   of a given bitstream, find the commit where component.xml has the
+ *   matching version.
+ *
+ * Slot 0x074 was previously reserved (see top-of-file register map summary).
+ * ======================================================================== */
+#define MUROSYNC_IP_INFO_REG                    (0x074)
+
+    #define MUROSYNC_IP_INFO_IS_SLAVE_OFS               0
+    #define MUROSYNC_IP_INFO_IS_SLAVE_MSK               (0x1u << MUROSYNC_IP_INFO_IS_SLAVE_OFS)
+
+    #define MUROSYNC_IP_INFO_IS_MASTER_OFS              1
+    #define MUROSYNC_IP_INFO_IS_MASTER_MSK              (0x1u << MUROSYNC_IP_INFO_IS_MASTER_OFS)
+
+    #define MUROSYNC_IP_INFO_VERSION_MAJOR_OFS          4
+    #define MUROSYNC_IP_INFO_VERSION_MAJOR_MSK          (0xFu << MUROSYNC_IP_INFO_VERSION_MAJOR_OFS)
+
+    #define MUROSYNC_IP_INFO_VERSION_MINOR_OFS          8
+    #define MUROSYNC_IP_INFO_VERSION_MINOR_MSK          (0xFFFFu << MUROSYNC_IP_INFO_VERSION_MINOR_OFS)
+
+    #define MUROSYNC_IP_INFO_NUM_CHANNELS_OFS           24
+    #define MUROSYNC_IP_INFO_NUM_CHANNELS_MSK           (0xFu << MUROSYNC_IP_INFO_NUM_CHANNELS_OFS)
 
 
 #endif // MUROSYNC_SERDES_ARRAY_REGS_H

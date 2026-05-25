@@ -7,14 +7,16 @@
 # Description:
 #   Vivado IP Packager automation script.
 #
-#   Automatically assigns Enablement Dependencies and Driver Values to
-#   MASTER and SLAVE transceiver ports in the IP-XACT component.xml based
-#   on the $MODE parameter.
-#
-#   Also hides internal derived parameters (C_S00_AXI_NUM_REGS,
-#   OPT_MEM_ADDR_BITS, ADDR_WIDTH_NEEDED, C_S00_AXI_DATA_WIDTH) from the
-#   Customization GUI while keeping them present in component.xml so that
-#   Block Design can read and update them.
+#   Responsibilities:
+#     1. Auto-increment IP_VERSION_MINOR in RTL (source of truth) and sync
+#        the resulting MAJOR.MINOR string to IP-XACT <spirit:version>. Also
+#        bump Vivado's internal core_revision so the IP cache invalidates.
+#     2. Assign Enablement Dependencies and Driver Values to MASTER/SLAVE
+#        transceiver ports in component.xml based on the $MODE parameter.
+#     3. Hide internal derived parameters (C_S00_AXI_NUM_REGS, OPT_MEM_ADDR_BITS,
+#        ADDR_WIDTH_NEEDED, C_S00_AXI_DATA_WIDTH, IP_VERSION_MAJOR,
+#        IP_VERSION_MINOR) from the Customization GUI while keeping them
+#        present in component.xml so Block Design can read and update them.
 #
 #   NOTE on IS_SLAVE / IS_MASTER (history):
 #     Earlier versions of this script also hid IS_SLAVE and IS_MASTER from
@@ -62,7 +64,71 @@ if {$core == ""} {
 }
  
 puts ">>> Starting automated port configuration..."
- 
+
+# ----------------------------------------------------------------------------
+# 0a. Sync IP version: read MAJOR/MINOR from RTL, increment MINOR, write back.
+#
+#     Source of truth: parameters in murosync_serdes_array.sv top IP file.
+#     This script:
+#       - Reads current MAJOR and MINOR from RTL
+#       - Increments MINOR by 1
+#       - Writes new MINOR back to the same RTL file (regsub)
+#       - Applies "MAJOR.MINOR" to IP-XACT <spirit:version> on the core
+#       - Bumps core_revision (Vivado-internal counter for cache invalidation)
+#
+#     MAJOR bump: change manually in RTL. Reset MINOR to 0 in the same edit.
+#                 Next script run will increment 0 -> 1.
+# ----------------------------------------------------------------------------
+set rtl_top "[file dirname [info script]]/src/murosync_serdes_array.sv"
+
+if {![file exists $rtl_top]} {
+    puts "ERROR: RTL top file not found at $rtl_top"
+    return -code error
+}
+
+set fp [open $rtl_top r]
+set rtl_content [read $fp]
+close $fp
+
+# Parse MAJOR
+if {![regexp {parameter\s+integer\s+IP_VERSION_MAJOR\s*=\s*(\d+)} $rtl_content -> cur_major]} {
+    puts "ERROR: Cannot find 'parameter integer IP_VERSION_MAJOR = N' in $rtl_top"
+    return -code error
+}
+
+# Parse MINOR
+if {![regexp {parameter\s+integer\s+IP_VERSION_MINOR\s*=\s*(\d+)} $rtl_content -> cur_minor]} {
+    puts "ERROR: Cannot find 'parameter integer IP_VERSION_MINOR = N' in $rtl_top"
+    return -code error
+}
+
+set new_minor [expr {$cur_minor + 1}]
+set new_version "${cur_major}.${new_minor}"
+
+puts "  Current IP version in RTL: ${cur_major}.${cur_minor}"
+puts "  Auto-incrementing MINOR:   ${cur_major}.${new_minor}"
+
+# Write new MINOR back to RTL (specific regex to avoid accidental matches)
+set rtl_new $rtl_content
+regsub {(parameter\s+integer\s+IP_VERSION_MINOR\s*=\s*)\d+} $rtl_new "\\1$new_minor" rtl_new
+
+if {$rtl_new eq $rtl_content} {
+    puts "ERROR: MINOR substitution did not change RTL content"
+    return -code error
+}
+
+set fp [open $rtl_top w]
+puts -nonewline $fp $rtl_new
+close $fp
+puts "  Updated RTL: $rtl_top"
+
+# Sync to IP-XACT
+set_property version $new_version $core
+set old_rev [get_property core_revision $core]
+set new_rev [expr {$old_rev + 1}]
+set_property core_revision $new_rev $core
+puts "  Synced to IP-XACT: version=$new_version, core_revision=${old_rev}->${new_rev}"
+
 # ----------------------------------------------------------------------------
 # 0. Configure MODE parameter as a drop-down list
 # ----------------------------------------------------------------------------
@@ -82,6 +148,8 @@ if {$mode_param != ""} {
 #     RTL now (see header comment). IP Packager does not see them.
 # ----------------------------------------------------------------------------
 set params_to_hide {
+    IP_VERSION_MAJOR
+    IP_VERSION_MINOR
     C_S00_AXI_DATA_WIDTH
     C_S00_AXI_NUM_REGS
     OPT_MEM_ADDR_BITS

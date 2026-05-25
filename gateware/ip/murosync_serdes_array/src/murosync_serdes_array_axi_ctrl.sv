@@ -36,6 +36,10 @@ module murosync_serdes_array_axi_ctrl #(
     parameter integer C_S00_AXI_DATA_WIDTH = 32,
     parameter integer C_S00_AXI_NUM_REGS   = 17,  // +5 diagnostic registers (0x030..0x040)
 
+    // IP semantic version — passed down from top. See murosync_serdes_array.sv header.
+    parameter integer IP_VERSION_MAJOR     = 1,
+    parameter integer IP_VERSION_MINOR     = 0,
+
     // Keep same address-width convention as top:
     parameter integer OPT_MEM_ADDR_BITS_P  = $clog2(C_S00_AXI_NUM_REGS),
     parameter integer ADDR_WIDTH_NEEDED    = OPT_MEM_ADDR_BITS_P + 3
@@ -148,7 +152,12 @@ module murosync_serdes_array_axi_ctrl #(
 
     // Snapshot valid bits (rx_clk domain — CDC below)
     input  wire                                link_test_rx_data_at_lock_valid,  // 1 = at_lock snapshot taken
-    input  wire                                link_test_first_err_valid          // 1 = at_first_err snapshot taken
+    input  wire                                link_test_first_err_valid,         // 1 = at_first_err snapshot taken
+
+    // IP_INFO build-time constants (driven from top — no CDC needed, static)
+    input  wire                                ip_info_is_slave_in,
+    input  wire                                ip_info_is_master_in,
+    input  wire [3:0]                          ip_info_num_channels_in
 );
 
     wire axi_clk   = s00_axi_aclk;
@@ -192,8 +201,11 @@ module murosync_serdes_array_axi_ctrl #(
     // Tier 1 sticky diagnostics register
     localparam int SERDES_LNK_DIAG_STATUS2     = 'h1C; // RO Offset 0x70
 
+    // IP_INFO register — build identity (MODE + IP version + NUM_CHANNELS)
+    localparam int IP_INFO                     = 'h1D; // RO Offset 0x74
+
     // === Tier 2: Link Test Snapshots and Per-Channel Counters (0x80 = 'h20 onwards) ===
-    // NOTE: offsets 'h1D..'h1F (0x74..0x7C) are reserved for future use.
+    // NOTE: offsets 'h1E..'h1F (0x78..0x7C) are reserved for future use.
     localparam int LNK_TIME_TO_LOCK            = 'h20; // RO 0x80  cycles WAIT_ALIGN -> LOCKED
     localparam int LNK_LOCKED_CYCLE_CNT        = 'h21; // RO 0x84  total cycles in LOCKED
     localparam int LNK_RX_DATA_AT_LOCK_LO      = 'h22; // RO 0x88  rx_data_at_lock[31:0]
@@ -792,6 +804,30 @@ module murosync_serdes_array_axi_ctrl #(
     // -- Tier 2 Stage 5: EXP data snapshot at first error --
     assign axi_reg_rd[LNK_EXP_DATA_AT_FIRST_ERR_LO] = diag_exp_data_at_first_err_axi[31:0];
     assign axi_reg_rd[LNK_EXP_DATA_AT_FIRST_ERR_HI] = diag_exp_data_at_first_err_axi[63:32];
+
+    // ------------------------------------------------------------
+    // IP_INFO — Read-only build identity register (offset 0x074)
+    // Layout:
+    //   [0]      IS_SLAVE
+    //   [1]      IS_MASTER
+    //   [3:2]    reserved
+    //   [7:4]    IP_VERSION_MAJOR  (max 15)
+    //   [23:8]   IP_VERSION_MINOR  (max 65535)
+    //   [27:24]  NUM_CHANNELS      (max 15)
+    //   [31:28]  reserved
+    // All fields are build-time constants driven from top — no CDC required.
+    // ------------------------------------------------------------
+    wire [31:0] ip_info_reg_value = {
+        4'h0,                              // [31:28] reserved
+        ip_info_num_channels_in,           // [27:24] NUM_CHANNELS
+        IP_VERSION_MINOR[15:0],            // [23:8]  IP_VERSION_MINOR (16-bit)
+        IP_VERSION_MAJOR[3:0],             // [7:4]   IP_VERSION_MAJOR (4-bit)
+        2'b00,                             // [3:2]   reserved
+        ip_info_is_master_in,              // [1]     IS_MASTER
+        ip_info_is_slave_in                // [0]     IS_SLAVE
+    };
+
+    assign axi_reg_rd[IP_INFO] = ip_info_reg_value;
 
 endmodule
 `default_nettype wire

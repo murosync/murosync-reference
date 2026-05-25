@@ -3,13 +3,7 @@ proc init_gui { IPINST } {
   ipgui::add_param $IPINST -name "Component_Name"
   #Adding Page
   set Page_0 [ipgui::add_page $IPINST -name "Page 0"]
-  ipgui::add_param $IPINST -name "ADDR_WIDTH_NEEDED" -parent ${Page_0}
-  ipgui::add_param $IPINST -name "C_S00_AXI_DATA_WIDTH" -parent ${Page_0}
-  ipgui::add_param $IPINST -name "C_S00_AXI_NUM_REGS" -parent ${Page_0}
-  ipgui::add_param $IPINST -name "IP_VERSION_MAJOR" -parent ${Page_0}
-  ipgui::add_param $IPINST -name "IP_VERSION_MINOR" -parent ${Page_0}
-  ipgui::add_param $IPINST -name "MODE" -parent ${Page_0}
-  ipgui::add_param $IPINST -name "OPT_MEM_ADDR_BITS" -parent ${Page_0}
+  ipgui::add_param $IPINST -name "MODE" -parent ${Page_0} -widget comboBox
 
 
 }
