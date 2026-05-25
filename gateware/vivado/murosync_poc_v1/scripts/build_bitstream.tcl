@@ -5,12 +5,20 @@
 # Author     : Mikhail Vasilev
 #
 # Description:
-#   Automated bitstream build for murosync_poc_v1 project.
+#   Vivado bitstream build automation for the murosync_poc_v1 project.
 #
-#   Switches the murosync_serdes_array IP between MASTER and SLAVE mode,
-#   reconnects external SFP-cage ports to the correct IP pins (because
-#   port set changes when MODE switches), runs synthesis + implementation +
-#   bitstream generation, and exports .bit + .xsa to bitstreams/.
+#   Switches the murosync_serdes_array IP between MASTER and SLAVE mode
+#   via the CONFIG.MODE parameter, reconnects external SFP-cage ports to
+#   the correct IP pins (because the IP exposes different port sets per
+#   mode through enablement_dependency in IP packaging), runs synthesis
+#   and implementation, and exports the resulting .bit + .xsa files to
+#   the bitstreams directory.
+#
+#   Channel mapping (no cross-swap):
+#       CH0 -> master_0  / slave
+#       CH1 -> master_1  / aux_0
+#       CH2 -> master_2  / aux_1
+#       CH3 -> master_3  / aux_2
 #
 # Usage:
 #   vivado -mode batch -source build_bitstream.tcl -tclargs MASTER
@@ -21,18 +29,23 @@
 #   C:/_vivado/murosync_poc_v1/bitstreams/murosync_<MODE>.xsa
 #
 # Notes:
-#   - This script handles current IP design where MASTER and SLAVE expose
-#     DIFFERENT port sets (enablement_dependency in IP packaging).
-#     When MODE changes, Vivado disables old ports + removes their nets
-#     automatically; this script reconnects external ports to the new pin
-#     names of the now-enabled port set.
-#   - Channel mapping (no cross-swap):
-#       CH0 → master_0  / slave
-#       CH1 → master_1  / aux_0
-#       CH2 → master_2  / aux_1
-#       CH3 → master_3  / aux_2
+#   - Must be run with Vivado closed (script opens the project itself).
+#   - When MODE changes, Vivado disables the old port set and removes the
+#     associated nets; this script reconnects external BD ports to the new
+#     pin names of the now-enabled port set.
 #
 # Copyright (c) 2026 Mikhail Vasilev / MuroSync
+#
+# License:
+# This file is currently released under a restricted research license.
+# Licensing terms may change in future revisions of the project.
+#
+# Commercial use, redistribution, or integration into commercial products
+# requires an explicit license agreement.
+#
+# For licensing inquiries, please contact:
+#     info@murosync.com
+#
 ###############################################################################
 
 # ============================================================================
@@ -98,32 +111,54 @@ proc reconnect_external_ports {mode ip_cell} {
         }
     }
 
+    # Helper: ensure a port is connected to a target pin.
+    # If the port already has a net, check whether it goes to the right pin.
+    # If yes, skip. If no, disconnect and reconnect.
+    # If port has no net, just connect.
+    proc ensure_connection {port_obj pin_obj} {
+        set existing_nets [get_bd_nets -quiet -of_objects $port_obj]
+
+        if {[llength $existing_nets] > 0} {
+            set existing_net [lindex $existing_nets 0]
+            set net_pins [get_bd_pins -quiet -of_objects $existing_net]
+
+            # Check if our target pin is already on this net
+            set already_connected 0
+            foreach p $net_pins {
+                if {[get_property NAME $p] eq [get_property NAME $pin_obj]} {
+                    if {[get_property PATH $p] eq [get_property PATH $pin_obj]} {
+                        set already_connected 1
+                        break
+                    }
+                }
+            }
+
+            if {$already_connected} {
+                return "skip (already connected)"
+            }
+
+            # Different connection — remove old net, create new
+            delete_bd_objs $existing_net
+        }
+
+        connect_bd_net $port_obj $pin_obj
+        return "connected"
+    }
+
     foreach entry $channel_map {
         set ch       [lindex $entry 0]
         set rx_base  [lindex $entry 1]
         set tx_base  [lindex $entry 2]
 
-        # RX_N
-        connect_bd_net \
-            [get_bd_ports GTH_IN_CH${ch}_RX_N] \
-            [get_bd_pins ${ip_cell}/${rx_base}_rxn_in]
-        # RX_P
-        connect_bd_net \
-            [get_bd_ports GTH_IN_CH${ch}_RX_P] \
-            [get_bd_pins ${ip_cell}/${rx_base}_rxp_in]
-        # TX_N
-        connect_bd_net \
-            [get_bd_ports GTH_OUT_CH${ch}_TX_N] \
-            [get_bd_pins ${ip_cell}/${tx_base}_txn_out]
-        # TX_P
-        connect_bd_net \
-            [get_bd_ports GTH_OUT_CH${ch}_TX_P] \
-            [get_bd_pins ${ip_cell}/${tx_base}_txp_out]
+        set rx_n_status [ensure_connection [get_bd_ports GTH_IN_CH${ch}_RX_N]  [get_bd_pins ${ip_cell}/${rx_base}_rxn_in]]
+        set rx_p_status [ensure_connection [get_bd_ports GTH_IN_CH${ch}_RX_P]  [get_bd_pins ${ip_cell}/${rx_base}_rxp_in]]
+        set tx_n_status [ensure_connection [get_bd_ports GTH_OUT_CH${ch}_TX_N] [get_bd_pins ${ip_cell}/${tx_base}_txn_out]]
+        set tx_p_status [ensure_connection [get_bd_ports GTH_OUT_CH${ch}_TX_P] [get_bd_pins ${ip_cell}/${tx_base}_txp_out]]
 
-        puts "  CH${ch}: external ports → ${rx_base}_rx{n,p}_in / ${tx_base}_tx{n,p}_out"
+        puts "  CH${ch}: RX_N=$rx_n_status, RX_P=$rx_p_status, TX_N=$tx_n_status, TX_P=$tx_p_status"
     }
 
-    puts "All 16 connections established for MODE=$mode."
+    puts "All 16 connections verified for MODE=$mode."
 }
 
 # ============================================================================
