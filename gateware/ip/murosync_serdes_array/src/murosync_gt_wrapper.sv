@@ -42,6 +42,7 @@ module murosync_gt_wrapper #(
     parameter int NCH = 4,
     parameter int TX_MASTER_CH = 0,
     parameter int RX_MASTER_CH = 0,
+    parameter bit IS_SLAVE = 1'b0,
 
     parameter int P_TX_FREQ_RATIO_SOURCE_TO_USRCLK  = 1,
     parameter int P_TX_FREQ_RATIO_USRCLK_TO_USRCLK2 = 1,
@@ -142,21 +143,36 @@ module murosync_gt_wrapper #(
     wire gtwiz_userclk_rx_usrclk;
     wire gtwiz_userclk_rx_usrclk2;
 
-    wire gtwiz_userclk_tx_reset_int =
-         gtwiz_reset_all_in |
-         gtwiz_reset_tx_pll_and_datapath_in |
-         gtwiz_reset_tx_datapath_in;
-
+    // RX userclk reset — same in both modes.
     wire gtwiz_userclk_rx_reset_int =
          gtwiz_reset_all_in |
          gtwiz_reset_rx_pll_and_datapath_in |
          gtwiz_reset_rx_datapath_in;
 
+    // TX userclk reset.
+    //   MASTER: gated by TX-datapath events (TX clock is local TXOUTCLK).
+    //   SLAVE (loop timing): TX user clock is sourced from the RX recovered
+    //     clock, so it must be reset by the SAME events as the RX userclk.
+    //     Otherwise the TX BUFG_GT could release CLR on a recovered clock that
+    //     has not locked yet (RX CDR is not ready until MASTER sends commas),
+    //     asserting tx_active on an unstable clock. Tie TX reset to RX on SLAVE.
+    wire gtwiz_userclk_tx_reset_int = IS_SLAVE ?
+         gtwiz_userclk_rx_reset_int :
+        (gtwiz_reset_all_in |
+         gtwiz_reset_tx_pll_and_datapath_in |
+         gtwiz_reset_tx_datapath_in);
+
     murosync_gt_userclk_tx #(
         .P_FREQ_RATIO_SOURCE_TO_USRCLK  (P_TX_FREQ_RATIO_SOURCE_TO_USRCLK),
         .P_FREQ_RATIO_USRCLK_TO_USRCLK2 (P_TX_FREQ_RATIO_USRCLK_TO_USRCLK2)
     ) u_userclk_tx (
-        .gtwiz_userclk_tx_srcclk_in   (txoutclk_int[TX_MASTER_CH]),
+        // Loop timing: SLAVE clocks its TX user domain from the RX recovered
+        // clock (RXOUTCLK of master RX channel) so tx_clk == rx_clk in fabric,
+        // making the link_test cascade (rx_data_r<=rx_data, txctrl2_out<=
+        // rxcharisk) safe same-clock registers. MASTER keeps its own TXOUTCLK.
+        // BUFG_GT passes either source transparently (helper is BUFG_GT).
+        .gtwiz_userclk_tx_srcclk_in   (IS_SLAVE ? rxoutclk_int[RX_MASTER_CH]
+                                                : txoutclk_int[TX_MASTER_CH]),
         .gtwiz_userclk_tx_reset_in    (gtwiz_userclk_tx_reset_int),
         .gtwiz_userclk_tx_usrclk_out  (gtwiz_userclk_tx_usrclk),
         .gtwiz_userclk_tx_usrclk2_out (gtwiz_userclk_tx_usrclk2),

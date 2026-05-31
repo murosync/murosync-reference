@@ -44,7 +44,7 @@ module murosync_serdes_array #(
     //   MINOR: auto-incremented by update_ip_ports.tcl on every re-package.
     //          Synced to IP-XACT <spirit:version> by the same script.
     parameter integer IP_VERSION_MAJOR = 1,
-    parameter integer IP_VERSION_MINOR = 3,
+    parameter integer IP_VERSION_MINOR = 5,
 
     parameter integer C_S00_AXI_DATA_WIDTH = 32,
 
@@ -555,8 +555,9 @@ module murosync_serdes_array #(
     murosync_gt_wrapper #(
         .NCH          (4),
         .TX_MASTER_CH (0),
-        .RX_MASTER_CH (0)
-    ) u_gtw 
+        .RX_MASTER_CH (0),
+        .IS_SLAVE     (IS_SLAVE)
+    ) u_gtw
     (
         .gthrxn_in  (gthrxn_int),
         .gthrxp_in  (gthrxp_int),
@@ -575,7 +576,10 @@ module murosync_serdes_array #(
         .gtwiz_reset_rx_pll_and_datapath_in (1'b0),
         .gtwiz_reset_rx_datapath_in         (1'b0),
 
-        .gtwiz_userdata_tx_in (link_test_ctrl_en_core ? link_test_tx_data : 64'h0),
+        // Bug #1 fix (2026-05-31): on SLAVE (IS_SLAVE=1) the cascade tx_data must
+        // always reach the serializer — link_test is never _start()'ed on SLAVE so
+        // ctrl_en_core stays 0. On MASTER, keep gating (TX silent until test start).
+        .gtwiz_userdata_tx_in ((IS_SLAVE | link_test_ctrl_en_core) ? link_test_tx_data : 64'h0),
         .gtwiz_userdata_rx_out(gtwiz_userdata_rx_int),
 
         // Feed the GT reference clock (raw from IBUFDS_GTE4)

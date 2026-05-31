@@ -91,7 +91,10 @@ static void phase1_test_one_pattern(unsigned int pattern, int trial_idx)
     usleep(5000);
 
     /* Configure */
-    (void)murosync_serdes_link_test_set_ch_mask(0x2);
+    /* CH0 — the only fiber-connected channel in this bench setup.
+     * Earlier probes used 0x2 (CH1) by mistake; CH1 has no fiber so
+     * checker was reading dark-channel noise. CH0 is the real link. */
+    (void)murosync_serdes_link_test_set_ch_mask(0x1);
     (void)murosync_serdes_link_test_set_mode(MUROSYNC_LNK_TEST_MODE_FIXED);
     (void)murosync_serdes_link_test_set_pol_mask(0x0, 0x0);
     (void)murosync_serdes_link_test_set_patt(pattern);
