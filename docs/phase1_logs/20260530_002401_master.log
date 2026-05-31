@@ -1,0 +1,4122 @@
+=~=~=~=~=~=~=~=~=~=~=~= PuTTY log 2026.05.30 00:24:01 =~=~=~=~=~=~=~=~=~=~=~=
+
+============================================================
+                    M U R O S Y N C
+      High-Precision Optical Timing & Synchronization
+============================================================
+ Platform : FPGA  XCAU15P
+ CPU      : MicroBlaze
+ Firmware : v1.97  (code 65633)
+ Build    : GT Bring-Up
+ Built at : 2026-05-29 22:28:15 UTC
+            (1780093695 UTC)
+============================================================
+
+	MUROSYNC SERDES | Checking RD-access over AXI
+		AXI OK: TEST_CONST = 0x4D55524F
+	MUROSYNC SERDES | Checking WR/RD-access over AXI
+		TEST_SCRATCH PAT1 pattern 0xA5A55A5A
+		TEST_SCRATCH PAT2 pattern 0x5AA5A55A
+		AXI OK: TEST_SCRATCH write/readback OK
+
+[MUROSYNC] === IP INFO ===
+        Raw          : 0x04000312
+        Mode         : MASTER
+        IP version   : v1.3
+        NUM_CHANNELS : 4
+
+[MUROSYNC] === MASTER FLOW ===
+[MUROSYNC] Phase 1: pattern sweep diagnostic
+
+AXI MUROSYNC SERDES BTING-UP
+	MUROSYNC SERDES | Checking RD-access over AXI
+		AXI OK: TEST_CONST = 0x4D55524F
+	MUROSYNC SERDES | Checking WR/RD-access over AXI
+		TEST_SCRATCH PAT1 pattern 0xA5A55A5A
+		TEST_SCRATCH PAT2 pattern 0x5AA5A55A
+		AXI OK: TEST_SCRATCH write/readback OK
+	MUROSYNC SERDES | Reset sequence
+		Pulse LINK_LATCH_RESET...
+		Pulse GT_RESET_ALL...
+	MUROSYNC SERDES | Set loopback = 4
+	MUROSYNC SERDES | Waiting link up...
+	MUROSYNC SERDES | Link is up, clear sticky latch again...
+	MUROSYNC SERDES | LINK UP! STATUS=0xFFFF0001
+	MUROSYNC SERDES | STATUS=0xFFFF0001
+		LINK_UP            : 1
+		LINK_DOWN_LATCHED  : 0
+		PLL_LOCK_VEC       : 0xF
+		GTPOWERGOOD_VEC    : 0xF
+		TXPMARESETDONE_VEC : 0xF
+		RXPMARESETDONE_VEC : 0xF
+	MUROSYNC SERDES | DBG=0x000000003E1FFFF2
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (post bring-up) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	RXBYTEREALIGN    : 0x0
+
+[PROBE] === trial 1: pattern = 0xAAAAAAAA ===
+
+[PROBE] trial 1 snapshot (running):
+	[DIAG] FSM         : 4 (LOCKED)
+	[DIAG] RX aligned  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	[DIAG] Aligned seen: 0xE [CH3=1 CH2=1 CH1=1 CH0=0]  (sticky)
+	[DIAG] RX charisk  : 0x8
+	[DIAG] Locked      : 1
+	[DIAG] Ever locked : 1  (1 = FSM reached LOCKED at least once)
+	[DIAG] Last state  : 4 (LOCKED)  (last active state before stop)
+	[DIAG] RX data     : 0x77D70004B7B79B9B
+	[DIAG] EXP data    : 0xAAAAAAAAAAAAAAAA
+	[DIAG] Time to lock      : 5068 cycles
+	[DIAG] Locked cycle cnt  : 239138544
+	[DIAG] At-lock data      : 0xD9D70200286A9B9B  (valid=1)
+	[DIAG] At-1st-err GOT    : 0x19D908040C179B9B  (valid=1)
+	[DIAG] At-1st-err EXP    : 0xAAAAAAAAAAAAAAAA
+	[DIAG] At-1st-err XOR    : 0xB373A2AEA6BD3131  (popcount = bit-flip count)
+	[DIAG] Per-CH errors     : CH0=0 CH1=19377 CH2=0 CH3=0
+	[DIAG] RX byte realign   : CH0=194 CH1=11337 CH2=12628 CH3=53555
+	[DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] trial 1 snapshot (after stop):
+	[DIAG] FSM         : 0 (IDLE)
+	[DIAG] RX aligned  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	[DIAG] Aligned seen: 0xE [CH3=1 CH2=1 CH1=1 CH0=0]  (sticky)
+	[DIAG] RX charisk  : 0xA
+	[DIAG] Locked      : 0
+	[DIAG] Ever locked : 1  (1 = FSM reached LOCKED at least once)
+	[DIAG] Last state  : 4 (LOCKED)  (last active state before stop)
+	[DIAG] RX data     : 0x3FF922886E8C9B9B
+	[DIAG] EXP data    : 0xAAAAAAAAAAAAAAAA
+	[DIAG] Time to lock      : 5068 cycles
+	[DIAG] Locked cycle cnt  : 401888043
+	[DIAG] At-lock data      : 0xD9D70200286A9B9B  (valid=1)
+	[DIAG] At-1st-err GOT    : 0x19D908040C179B9B  (valid=1)
+	[DIAG] At-1st-err EXP    : 0xAAAAAAAAAAAAAAAA
+	[DIAG] At-1st-err XOR    : 0xB373A2AEA6BD3131  (popcount = bit-flip count)
+	[DIAG] Per-CH errors     : CH0=0 CH1=37938 CH2=0 CH3=0
+	[DIAG] RX byte realign   : CH0=194 CH1=12511 CH2=46609 CH3=13527
+	[DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] === trial 2: pattern = 0x00000000 ===
+
+[PROBE] trial 2 snapshot (running):
+	[DIAG] FSM         : 4 (LOCKED)
+	[DIAG] RX aligned  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	[DIAG] Aligned seen: 0xE [CH3=1 CH2=1 CH1=1 CH0=0]  (sticky)
+	[DIAG] RX charisk  : 0x4
+	[DIAG] Locked      : 1
+	[DIAG] Ever locked : 1  (1 = FSM reached LOCKED at least once)
+	[DIAG] Last state  : 4 (LOCKED)  (last active state before stop)
+	[DIAG] RX data     : 0x7D3802010CB89B9B
+	[DIAG] EXP data    : 0x0000000000000000
+	[DIAG] Time to lock      : 786627 cycles
+	[DIAG] Locked cycle cnt  : 238356968
+	[DIAG] At-lock data      : 0x592102811D069B9B  (valid=1)
+	[DIAG] At-1st-err GOT    : 0x592102811D069B9B  (valid=1)
+	[DIAG] At-1st-err EXP    : 0x0000000000000000
+	[DIAG] At-1st-err XOR    : 0x592102811D069B9B  (popcount = bit-flip count)
+	[DIAG] Per-CH errors     : CH0=0 CH1=13095 CH2=0 CH3=0
+	[DIAG] RX byte realign   : CH0=194 CH1=14275 CH2=14480 CH3=37016
+	[DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] trial 2 snapshot (after stop):
+	[DIAG] FSM         : 0 (IDLE)
+	[DIAG] RX aligned  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	[DIAG] Aligned seen: 0xE [CH3=1 CH2=1 CH1=1 CH0=0]  (sticky)
+	[DIAG] RX charisk  : 0xC
+	[DIAG] Locked      : 0
+	[DIAG] Ever locked : 1  (1 = FSM reached LOCKED at least once)
+	[DIAG] Last state  : 4 (LOCKED)  (last active state before stop)
+	[DIAG] RX data     : 0x298800080C189B9B
+	[DIAG] EXP data    : 0x0000000000000000
+	[DIAG] Time to lock      : 786627 cycles
+	[DIAG] Locked cycle cnt  : 401757471
+	[DIAG] At-lock data      : 0x592102811D069B9B  (valid=1)
+	[DIAG] At-1st-err GOT    : 0x592102811D069B9B  (valid=1)
+	[DIAG] At-1st-err EXP    : 0x0000000000000000
+	[DIAG] At-1st-err XOR    : 0x592102811D069B9B  (popcount = bit-flip count)
+	[DIAG] Per-CH errors     : CH0=0 CH1=33574 CH2=0 CH3=0
+	[DIAG] RX byte realign   : CH0=194 CH1=15349 CH2=26075 CH3=36133
+	[DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] === trial 3: pattern = 0xFFFFFFFF ===
+
+[PROBE] trial 3 snapshot (running):
+	[DIAG] FSM         : 4 (LOCKED)
+	[DIAG] RX aligned  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	[DIAG] Aligned seen: 0xE [CH3=1 CH2=1 CH1=1 CH0=0]  (sticky)
+	[DIAG] RX charisk  : 0x2
+	[DIAG] Locked      : 1
+	[DIAG] Ever locked : 1  (1 = FSM reached LOCKED at least once)
+	[DIAG] Last state  : 4 (LOCKED)  (last active state before stop)
+	[DIAG] RX data     : 0x294148400A6E9B9B
+	[DIAG] EXP data    : 0xFFFFFFFFFFFFFFFF
+	[DIAG] Time to lock      : 4993493 cycles
+	[DIAG] Locked cycle cnt  : 234150127
+	[DIAG] At-lock data      : 0xC8095D20080E9B9B  (valid=1)
+	[DIAG] At-1st-err GOT    : 0xEC6D22800C0A9B9B  (valid=1)
+	[DIAG] At-1st-err EXP    : 0xFFFFFFFFFFFFFFFF
+	[DIAG] At-1st-err XOR    : 0x1392DD7FF3F56464  (popcount = bit-flip count)
+	[DIAG] Per-CH errors     : CH0=0 CH1=23922 CH2=0 CH3=0
+	[DIAG] RX byte realign   : CH0=194 CH1=16917 CH2=62002 CH3=763
+	[DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] trial 3 snapshot (after stop):
+	[DIAG] FSM         : 0 (IDLE)
+	[DIAG] RX aligned  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	[DIAG] Aligned seen: 0xE [CH3=1 CH2=1 CH1=1 CH0=0]  (sticky)
+	[DIAG] RX charisk  : 0x8
+	[DIAG] Locked      : 0
+	[DIAG] Ever locked : 1  (1 = FSM reached LOCKED at least once)
+	[DIAG] Last state  : 4 (LOCKED)  (last active state before stop)
+	[DIAG] RX data     : 0xA6CC060BA4A19B9B
+	[DIAG] EXP data    : 0xFFFFFFFFFFFFFFFF
+	[DIAG] Time to lock      : 4993493 cycles
+	[DIAG] Locked cycle cnt  : 397225121
+	[DIAG] At-lock data      : 0xC8095D20080E9B9B  (valid=1)
+	[DIAG] At-1st-err GOT    : 0xEC6D22800C0A9B9B  (valid=1)
+	[DIAG] At-1st-err EXP    : 0xFFFFFFFFFFFFFFFF
+	[DIAG] At-1st-err XOR    : 0x1392DD7FF3F56464  (popcount = bit-flip count)
+	[DIAG] Per-CH errors     : CH0=0 CH1=26636 CH2=0 CH3=0
+	[DIAG] RX byte realign   : CH0=194 CH1=17989 CH2=57205 CH3=42613
+	[DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] === trial 4: pattern = 0x55555555 ===
+
+[PROBE] trial 4 snapshot (running):
+	[DIAG] FSM         : 4 (LOCKED)
+	[DIAG] RX aligned  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	[DIAG] Aligned seen: 0xE [CH3=1 CH2=1 CH1=1 CH0=0]  (sticky)
+	[DIAG] RX charisk  : 0x0
+	[DIAG] Locked      : 1
+	[DIAG] Ever locked : 1  (1 = FSM reached LOCKED at least once)
+	[DIAG] Last state  : 4 (LOCKED)  (last active state before stop)
+	[DIAG] RX data     : 0x0CBC415E0C0C9B9B
+	[DIAG] EXP data    : 0x5555555555555555
+	[DIAG] Time to lock      : 70467601 cycles
+	[DIAG] Locked cycle cnt  : 168676019
+	[DIAG] At-lock data      : 0x3D98001885ED9B9B  (valid=1)
+	[DIAG] At-1st-err GOT    : 0x3D98001885ED9B9B  (valid=1)
+	[DIAG] At-1st-err EXP    : 0x5555555555555555
+	[DIAG] At-1st-err XOR    : 0x68CD554DD0B8CECE  (popcount = bit-flip count)
+	[DIAG] Per-CH errors     : CH0=0 CH1=19593 CH2=0 CH3=0
+	[DIAG] RX byte realign   : CH0=194 CH1=19086 CH2=57253 CH3=5969
+	[DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] trial 4 snapshot (after stop):
+	[DIAG] FSM         : 0 (IDLE)
+	[DIAG] RX aligned  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	[DIAG] Aligned seen: 0xE [CH3=1 CH2=1 CH1=1 CH0=0]  (sticky)
+	[DIAG] RX charisk  : 0x8
+	[DIAG] Locked      : 0
+	[DIAG] Ever locked : 1  (1 = FSM reached LOCKED at least once)
+	[DIAG] Last state  : 4 (LOCKED)  (last active state before stop)
+	[DIAG] RX data     : 0x78F90040B70C9B9B
+	[DIAG] EXP data    : 0x5555555555555555
+	[DIAG] Time to lock      : 70467601 cycles
+	[DIAG] Locked cycle cnt  : 332402010
+	[DIAG] At-lock data      : 0x3D98001885ED9B9B  (valid=1)
+	[DIAG] At-1st-err GOT    : 0x3D98001885ED9B9B  (valid=1)
+	[DIAG] At-1st-err EXP    : 0x5555555555555555
+	[DIAG] At-1st-err XOR    : 0x68CD554DD0B8CECE  (popcount = bit-flip count)
+	[DIAG] Per-CH errors     : CH0=0 CH1=38013 CH2=0 CH3=0
+	[DIAG] RX byte realign   : CH0=194 CH1=19857 CH2=35267 CH3=17698
+	[DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] === trial 5: pattern = 0x12121212 ===
+
+[PROBE] trial 5 snapshot (running):
+	[DIAG] FSM         : 4 (LOCKED)
+	[DIAG] RX aligned  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	[DIAG] Aligned seen: 0xE [CH3=1 CH2=1 CH1=1 CH0=0]  (sticky)
+	[DIAG] RX charisk  : 0xC
+	[DIAG] Locked      : 1
+	[DIAG] Ever locked : 1  (1 = FSM reached LOCKED at least once)
+	[DIAG] Last state  : 4 (LOCKED)  (last active state before stop)
+	[DIAG] RX data     : 0x603B00010C0A9B9B
+	[DIAG] EXP data    : 0x1212121212121212
+	[DIAG] Time to lock      : 12327990 cycles
+	[DIAG] Locked cycle cnt  : 226815632
+	[DIAG] At-lock data      : 0x0537122248AC9B9B  (valid=1)
+	[DIAG] At-1st-err GOT    : 0x907CC8820CB79B9B  (valid=1)
+	[DIAG] At-1st-err EXP    : 0x1212121212121212
+	[DIAG] At-1st-err XOR    : 0x826EDA901EA58989  (popcount = bit-flip count)
+	[DIAG] Per-CH errors     : CH0=0 CH1=20629 CH2=0 CH3=0
+	[DIAG] RX byte realign   : CH0=194 CH1=20765 CH2=21916 CH3=31689
+	[DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] trial 5 snapshot (after stop):
+	[DIAG] FSM         : 0 (IDLE)
+	[DIAG] RX aligned  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	[DIAG] Aligned seen: 0xE [CH3=1 CH2=1 CH1=1 CH0=0]  (sticky)
+	[DIAG] RX charisk  : 0x8
+	[DIAG] Locked      : 0
+	[DIAG] Ever locked : 1  (1 = FSM reached LOCKED at least once)
+	[DIAG] Last state  : 4 (LOCKED)  (last active state before stop)
+	[DIAG] RX data     : 0xA8DF8082080C9B9B
+	[DIAG] EXP data    : 0x1212121212121212
+	[DIAG] Time to lock      : 12327990 cycles
+	[DIAG] Locked cycle cnt  : 390867123
+	[DIAG] At-lock data      : 0x0537122248AC9B9B  (valid=1)
+	[DIAG] At-1st-err GOT    : 0x907CC8820CB79B9B  (valid=1)
+	[DIAG] At-1st-err EXP    : 0x1212121212121212
+	[DIAG] At-1st-err XOR    : 0x826EDA901EA58989  (popcount = bit-flip count)
+	[DIAG] Per-CH errors     : CH0=0 CH1=53439 CH2=0 CH3=0
+	[DIAG] RX byte realign   : CH0=194 CH1=21201 CH2=30271 CH3=32881
+	[DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] === trial 6: pattern = 0x12341234 ===
+
+[PROBE] trial 6 snapshot (running):
+	[DIAG] FSM         : 3 (SEARCH)
+	[DIAG] RX aligned  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	[DIAG] Aligned seen: 0xE [CH3=1 CH2=1 CH1=1 CH0=0]  (sticky)
+	[DIAG] RX charisk  : 0x8
+	[DIAG] Locked      : 0
+	[DIAG] Ever locked : 0  (1 = FSM reached LOCKED at least once)
+	[DIAG] Last state  : 3 (SEARCH)  (last active state before stop)
+	[DIAG] RX data     : 0x7FC44858610C9B9B
+	[DIAG] EXP data    : 0x1212121212121212
+	[DIAG] Time to lock      : 239143512 cycles
+	[DIAG] Locked cycle cnt  : 0
+	[DIAG] At-lock data      : N/A (snapshot not taken, valid=0)
+	[DIAG] At-1st-err data   : N/A (no errors observed, valid=0)
+	[DIAG] Per-CH errors     : CH0=0 CH1=0 CH2=0 CH3=0
+	[DIAG] RX byte realign   : CH0=194 CH1=22977 CH2=57090 CH3=47972
+	[DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] trial 6 snapshot (after stop):
+	[DIAG] FSM         : 0 (IDLE)
+	[DIAG] RX aligned  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	[DIAG] Aligned seen: 0xE [CH3=1 CH2=1 CH1=1 CH0=0]  (sticky)
+	[DIAG] RX charisk  : 0x4
+	[DIAG] Locked      : 0
+	[DIAG] Ever locked : 0  (1 = FSM reached LOCKED at least once)
+	[DIAG] Last state  : 3 (SEARCH)  (last active state before stop)
+	[DIAG] RX data     : 0xA69D80480C289B9B
+	[DIAG] EXP data    : 0x1212121212121212
+	[DIAG] Time to lock      : 510610082 cycles
+	[DIAG] Locked cycle cnt  : 0
+	[DIAG] At-lock data      : N/A (snapshot not taken, valid=0)
+	[DIAG] At-1st-err data   : N/A (no errors observed, valid=0)
+	[DIAG] Per-CH errors     : CH0=0 CH1=0 CH2=0 CH3=0
+	[DIAG] RX byte realign   : CH0=194 CH1=24001 CH2=24417 CH3=56794
+	[DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] === trial 7: pattern = 0x12345678 ===
+
+[PROBE] trial 7 snapshot (running):
+	[DIAG] FSM         : 3 (SEARCH)
+	[DIAG] RX aligned  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	[DIAG] Aligned seen: 0xE [CH3=1 CH2=1 CH1=1 CH0=0]  (sticky)
+	[DIAG] RX charisk  : 0xA
+	[DIAG] Locked      : 0
+	[DIAG] Ever locked : 0  (1 = FSM reached LOCKED at least once)
+	[DIAG] Last state  : 3 (SEARCH)  (last active state before stop)
+	[DIAG] RX data     : 0xC4EF01000CAC9B9B
+	[DIAG] EXP data    : 0x1212121212121212
+	[DIAG] Time to lock      : 239143529 cycles
+	[DIAG] Locked cycle cnt  : 0
+	[DIAG] At-lock data      : N/A (snapshot not taken, valid=0)
+	[DIAG] At-1st-err data   : N/A (no errors observed, valid=0)
+	[DIAG] Per-CH errors     : CH0=0 CH1=0 CH2=0 CH3=0
+	[DIAG] RX byte realign   : CH0=194 CH1=24975 CH2=5787 CH3=62365
+	[DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] trial 7 snapshot (after stop):
+	[DIAG] FSM         : 0 (IDLE)
+	[DIAG] RX aligned  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	[DIAG] Aligned seen: 0xE [CH3=1 CH2=1 CH1=1 CH0=0]  (sticky)
+	[DIAG] RX charisk  : 0xA
+	[DIAG] Locked      : 0
+	[DIAG] Ever locked : 0  (1 = FSM reached LOCKED at least once)
+	[DIAG] Last state  : 3 (SEARCH)  (last active state before stop)
+	[DIAG] RX data     : 0xDEDD00106E6E9B9B
+	[DIAG] EXP data    : 0x1212121212121212
+	[DIAG] Time to lock      : 510284596 cycles
+	[DIAG] Locked cycle cnt  : 0
+	[DIAG] At-lock data      : N/A (snapshot not taken, valid=0)
+	[DIAG] At-1st-err data   : N/A (no errors observed, valid=0)
+	[DIAG] Per-CH errors     : CH0=0 CH1=0 CH2=0 CH3=0
+	[DIAG] RX byte realign   : CH0=194 CH1=25855 CH2=50448 CH3=32314
+	[DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[MUROSYNC] === pattern sweep complete, entering main loop ===
+[MUROSYNC] alive #0 (M v1.3)
+[MUROSYNC] SERDES LINK UP
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #1 (M v1.3)
+[MUROSYNC] alive #2 (M v1.3)
+[MUROSYNC] alive #3 (M v1.3)
+[MUROSYNC] alive #4 (M v1.3)
+[MUROSYNC] alive #5 (M v1.3)
+[MUROSYNC] alive #6 (M v1.3)
+[MUROSYNC] alive #7 (M v1.3)
+[MUROSYNC] alive #8 (M v1.3)
+[MUROSYNC] alive #9 (M v1.3)
+[MUROSYNC] alive #10 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #11 (M v1.3)
+[MUROSYNC] alive #12 (M v1.3)
+[MUROSYNC] alive #13 (M v1.3)
+[MUROSYNC] alive #14 (M v1.3)
+[MUROSYNC] alive #15 (M v1.3)
+[MUROSYNC] alive #16 (M v1.3)
+[MUROSYNC] alive #17 (M v1.3)
+[MUROSYNC] alive #18 (M v1.3)
+[MUROSYNC] alive #19 (M v1.3)
+[MUROSYNC] alive #20 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #21 (M v1.3)
+[MUROSYNC] alive #22 (M v1.3)
+[MUROSYNC] alive #23 (M v1.3)
+[MUROSYNC] alive #24 (M v1.3)
+[MUROSYNC] alive #25 (M v1.3)
+[MUROSYNC] alive #26 (M v1.3)
+[MUROSYNC] alive #27 (M v1.3)
+[MUROSYNC] alive #28 (M v1.3)
+[MUROSYNC] alive #29 (M v1.3)
+[MUROSYNC] alive #30 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #31 (M v1.3)
+[MUROSYNC] alive #32 (M v1.3)
+[MUROSYNC] alive #33 (M v1.3)
+[MUROSYNC] alive #34 (M v1.3)
+[MUROSYNC] alive #35 (M v1.3)
+[MUROSYNC] alive #36 (M v1.3)
+[MUROSYNC] alive #37 (M v1.3)
+[MUROSYNC] alive #38 (M v1.3)
+[MUROSYNC] alive #39 (M v1.3)
+[MUROSYNC] alive #40 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #41 (M v1.3)
+[MUROSYNC] alive #42 (M v1.3)
+[MUROSYNC] alive #43 (M v1.3)
+[MUROSYNC] alive #44 (M v1.3)
+[MUROSYNC] alive #45 (M v1.3)
+[MUROSYNC] alive #46 (M v1.3)
+[MUROSYNC] alive #47 (M v1.3)
+[MUROSYNC] alive #48 (M v1.3)
+[MUROSYNC] alive #49 (M v1.3)
+[MUROSYNC] alive #50 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #51 (M v1.3)
+[MUROSYNC] alive #52 (M v1.3)
+[MUROSYNC] alive #53 (M v1.3)
+[MUROSYNC] alive #54 (M v1.3)
+[MUROSYNC] alive #55 (M v1.3)
+[MUROSYNC] alive #56 (M v1.3)
+[MUROSYNC] alive #57 (M v1.3)
+[MUROSYNC] alive #58 (M v1.3)
+[MUROSYNC] alive #59 (M v1.3)
+[MUROSYNC] alive #60 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #61 (M v1.3)
+[MUROSYNC] alive #62 (M v1.3)
+[MUROSYNC] alive #63 (M v1.3)
+[MUROSYNC] alive #64 (M v1.3)
+[MUROSYNC] alive #65 (M v1.3)
+[MUROSYNC] alive #66 (M v1.3)
+[MUROSYNC] alive #67 (M v1.3)
+[MUROSYNC] alive #68 (M v1.3)
+[MUROSYNC] alive #69 (M v1.3)
+[MUROSYNC] alive #70 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #71 (M v1.3)
+[MUROSYNC] alive #72 (M v1.3)
+[MUROSYNC] alive #73 (M v1.3)
+[MUROSYNC] alive #74 (M v1.3)
+[MUROSYNC] alive #75 (M v1.3)
+[MUROSYNC] alive #76 (M v1.3)
+[MUROSYNC] alive #77 (M v1.3)
+[MUROSYNC] alive #78 (M v1.3)
+[MUROSYNC] alive #79 (M v1.3)
+[MUROSYNC] alive #80 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #81 (M v1.3)
+[MUROSYNC] alive #82 (M v1.3)
+[MUROSYNC] alive #83 (M v1.3)
+[MUROSYNC] alive #84 (M v1.3)
+[MUROSYNC] alive #85 (M v1.3)
+[MUROSYNC] alive #86 (M v1.3)
+[MUROSYNC] alive #87 (M v1.3)
+[MUROSYNC] alive #88 (M v1.3)
+[MUROSYNC] alive #89 (M v1.3)
+[MUROSYNC] alive #90 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #91 (M v1.3)
+[MUROSYNC] alive #92 (M v1.3)
+[MUROSYNC] alive #93 (M v1.3)
+[MUROSYNC] alive #94 (M v1.3)
+[MUROSYNC] alive #95 (M v1.3)
+[MUROSYNC] alive #96 (M v1.3)
+[MUROSYNC] alive #97 (M v1.3)
+[MUROSYNC] alive #98 (M v1.3)
+[MUROSYNC] alive #99 (M v1.3)
+[MUROSYNC] alive #100 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #101 (M v1.3)
+[MUROSYNC] alive #102 (M v1.3)
+[MUROSYNC] alive #103 (M v1.3)
+[MUROSYNC] alive #104 (M v1.3)
+[MUROSYNC] alive #105 (M v1.3)
+[MUROSYNC] alive #106 (M v1.3)
+[MUROSYNC] alive #107 (M v1.3)
+[MUROSYNC] alive #108 (M v1.3)
+[MUROSYNC] alive #109 (M v1.3)
+[MUROSYNC] alive #110 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #111 (M v1.3)
+[MUROSYNC] alive #112 (M v1.3)
+[MUROSYNC] alive #113 (M v1.3)
+[MUROSYNC] alive #114 (M v1.3)
+[MUROSYNC] alive #115 (M v1.3)
+[MUROSYNC] alive #116 (M v1.3)
+[MUROSYNC] alive #117 (M v1.3)
+[MUROSYNC] alive #118 (M v1.3)
+[MUROSYNC] alive #119 (M v1.3)
+[MUROSYNC] alive #120 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #121 (M v1.3)
+[MUROSYNC] alive #122 (M v1.3)
+[MUROSYNC] alive #123 (M v1.3)
+[MUROSYNC] alive #124 (M v1.3)
+[MUROSYNC] alive #125 (M v1.3)
+[MUROSYNC] alive #126 (M v1.3)
+[MUROSYNC] alive #127 (M v1.3)
+[MUROSYNC] alive #128 (M v1.3)
+[MUROSYNC] alive #129 (M v1.3)
+[MUROSYNC] alive #130 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #131 (M v1.3)
+[MUROSYNC] alive #132 (M v1.3)
+[MUROSYNC] alive #133 (M v1.3)
+[MUROSYNC] alive #134 (M v1.3)
+[MUROSYNC] alive #135 (M v1.3)
+[MUROSYNC] alive #136 (M v1.3)
+[MUROSYNC] alive #137 (M v1.3)
+[MUROSYNC] alive #138 (M v1.3)
+[MUROSYNC] alive #139 (M v1.3)
+[MUROSYNC] alive #140 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #141 (M v1.3)
+[MUROSYNC] alive #142 (M v1.3)
+[MUROSYNC] alive #143 (M v1.3)
+[MUROSYNC] alive #144 (M v1.3)
+[MUROSYNC] alive #145 (M v1.3)
+[MUROSYNC] alive #146 (M v1.3)
+[MUROSYNC] alive #147 (M v1.3)
+[MUROSYNC] alive #148 (M v1.3)
+[MUROSYNC] alive #149 (M v1.3)
+[MUROSYNC] alive #150 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #151 (M v1.3)
+[MUROSYNC] alive #152 (M v1.3)
+[MUROSYNC] alive #153 (M v1.3)
+[MUROSYNC] alive #154 (M v1.3)
+[MUROSYNC] alive #155 (M v1.3)
+[MUROSYNC] alive #156 (M v1.3)
+[MUROSYNC] alive #157 (M v1.3)
+[MUROSYNC] alive #158 (M v1.3)
+[MUROSYNC] alive #159 (M v1.3)
+[MUROSYNC] alive #160 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #161 (M v1.3)
+[MUROSYNC] alive #162 (M v1.3)
+[MUROSYNC] alive #163 (M v1.3)
+[MUROSYNC] alive #164 (M v1.3)
+[MUROSYNC] alive #165 (M v1.3)
+[MUROSYNC] alive #166 (M v1.3)
+[MUROSYNC] alive #167 (M v1.3)
+[MUROSYNC] alive #168 (M v1.3)
+[MUROSYNC] alive #169 (M v1.3)
+[MUROSYNC] alive #170 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #171 (M v1.3)
+[MUROSYNC] alive #172 (M v1.3)
+[MUROSYNC] alive #173 (M v1.3)
+[MUROSYNC] alive #174 (M v1.3)
+[MUROSYNC] alive #175 (M v1.3)
+[MUROSYNC] alive #176 (M v1.3)
+[MUROSYNC] alive #177 (M v1.3)
+[MUROSYNC] alive #178 (M v1.3)
+[MUROSYNC] alive #179 (M v1.3)
+[MUROSYNC] alive #180 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #181 (M v1.3)
+[MUROSYNC] alive #182 (M v1.3)
+[MUROSYNC] alive #183 (M v1.3)
+[MUROSYNC] alive #184 (M v1.3)
+[MUROSYNC] alive #185 (M v1.3)
+[MUROSYNC] alive #186 (M v1.3)
+[MUROSYNC] alive #187 (M v1.3)
+[MUROSYNC] alive #188 (M v1.3)
+[MUROSYNC] alive #189 (M v1.3)
+[MUROSYNC] alive #190 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #191 (M v1.3)
+[MUROSYNC] alive #192 (M v1.3)
+[MUROSYNC] alive #193 (M v1.3)
+[MUROSYNC] alive #194 (M v1.3)
+[MUROSYNC] alive #195 (M v1.3)
+[MUROSYNC] alive #196 (M v1.3)
+[MUROSYNC] alive #197 (M v1.3)
+[MUROSYNC] alive #198 (M v1.3)
+[MUROSYNC] alive #199 (M v1.3)
+[MUROSYNC] alive #200 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #201 (M v1.3)
+[MUROSYNC] alive #202 (M v1.3)
+[MUROSYNC] alive #203 (M v1.3)
+[MUROSYNC] alive #204 (M v1.3)
+[MUROSYNC] alive #205 (M v1.3)
+[MUROSYNC] alive #206 (M v1.3)
+[MUROSYNC] alive #207 (M v1.3)
+[MUROSYNC] alive #208 (M v1.3)
+[MUROSYNC] alive #209 (M v1.3)
+[MUROSYNC] alive #210 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #211 (M v1.3)
+[MUROSYNC] alive #212 (M v1.3)
+[MUROSYNC] alive #213 (M v1.3)
+[MUROSYNC] alive #214 (M v1.3)
+[MUROSYNC] alive #215 (M v1.3)
+[MUROSYNC] alive #216 (M v1.3)
+[MUROSYNC] alive #217 (M v1.3)
+[MUROSYNC] alive #218 (M v1.3)
+[MUROSYNC] alive #219 (M v1.3)
+[MUROSYNC] alive #220 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #221 (M v1.3)
+[MUROSYNC] alive #222 (M v1.3)
+[MUROSYNC] alive #223 (M v1.3)
+[MUROSYNC] alive #224 (M v1.3)
+[MUROSYNC] alive #225 (M v1.3)
+[MUROSYNC] alive #226 (M v1.3)
+[MUROSYNC] alive #227 (M v1.3)
+[MUROSYNC] alive #228 (M v1.3)
+[MUROSYNC] alive #229 (M v1.3)
+[MUROSYNC] alive #230 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #231 (M v1.3)
+[MUROSYNC] alive #232 (M v1.3)
+[MUROSYNC] alive #233 (M v1.3)
+[MUROSYNC] alive #234 (M v1.3)
+[MUROSYNC] alive #235 (M v1.3)
+[MUROSYNC] alive #236 (M v1.3)
+[MUROSYNC] alive #237 (M v1.3)
+[MUROSYNC] alive #238 (M v1.3)
+[MUROSYNC] alive #239 (M v1.3)
+[MUROSYNC] alive #240 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #241 (M v1.3)
+[MUROSYNC] alive #242 (M v1.3)
+[MUROSYNC] alive #243 (M v1.3)
+[MUROSYNC] alive #244 (M v1.3)
+[MUROSYNC] alive #245 (M v1.3)
+[MUROSYNC] alive #246 (M v1.3)
+[MUROSYNC] alive #247 (M v1.3)
+[MUROSYNC] alive #248 (M v1.3)
+[MUROSYNC] alive #249 (M v1.3)
+[MUROSYNC] alive #250 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #251 (M v1.3)
+[MUROSYNC] alive #252 (M v1.3)
+[MUROSYNC] alive #253 (M v1.3)
+[MUROSYNC] alive #254 (M v1.3)
+[MUROSYNC] alive #255 (M v1.3)
+[MUROSYNC] alive #256 (M v1.3)
+[MUROSYNC] alive #257 (M v1.3)
+[MUROSYNC] alive #258 (M v1.3)
+[MUROSYNC] alive #259 (M v1.3)
+[MUROSYNC] alive #260 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #261 (M v1.3)
+[MUROSYNC] alive #262 (M v1.3)
+[MUROSYNC] alive #263 (M v1.3)
+[MUROSYNC] alive #264 (M v1.3)
+[MUROSYNC] alive #265 (M v1.3)
+[MUROSYNC] alive #266 (M v1.3)
+[MUROSYNC] alive #267 (M v1.3)
+[MUROSYNC] alive #268 (M v1.3)
+[MUROSYNC] alive #269 (M v1.3)
+[MUROSYNC] alive #270 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #271 (M v1.3)
+[MUROSYNC] alive #272 (M v1.3)
+[MUROSYNC] alive #273 (M v1.3)
+[MUROSYNC] alive #274 (M v1.3)
+[MUROSYNC] alive #275 (M v1.3)
+[MUROSYNC] alive #276 (M v1.3)
+[MUROSYNC] alive #277 (M v1.3)
+[MUROSYNC] alive #278 (M v1.3)
+[MUROSYNC] alive #279 (M v1.3)
+[MUROSYNC] alive #280 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #281 (M v1.3)
+[MUROSYNC] alive #282 (M v1.3)
+[MUROSYNC] alive #283 (M v1.3)
+[MUROSYNC] alive #284 (M v1.3)
+[MUROSYNC] alive #285 (M v1.3)
+[MUROSYNC] alive #286 (M v1.3)
+[MUROSYNC] alive #287 (M v1.3)
+[MUROSYNC] alive #288 (M v1.3)
+[MUROSYNC] alive #289 (M v1.3)
+[MUROSYNC] alive #290 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #291 (M v1.3)
+[MUROSYNC] alive #292 (M v1.3)
+[MUROSYNC] alive #293 (M v1.3)
+[MUROSYNC] alive #294 (M v1.3)
+[MUROSYNC] alive #295 (M v1.3)
+[MUROSYNC] alive #296 (M v1.3)
+[MUROSYNC] alive #297 (M v1.3)
+[MUROSYNC] alive #298 (M v1.3)
+[MUROSYNC] alive #299 (M v1.3)
+[MUROSYNC] alive #300 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #301 (M v1.3)
+[MUROSYNC] alive #302 (M v1.3)
+[MUROSYNC] alive #303 (M v1.3)
+[MUROSYNC] alive #304 (M v1.3)
+[MUROSYNC] alive #305 (M v1.3)
+[MUROSYNC] alive #306 (M v1.3)
+[MUROSYNC] alive #307 (M v1.3)
+[MUROSYNC] alive #308 (M v1.3)
+[MUROSYNC] alive #309 (M v1.3)
+[MUROSYNC] alive #310 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #311 (M v1.3)
+[MUROSYNC] alive #312 (M v1.3)
+[MUROSYNC] alive #313 (M v1.3)
+[MUROSYNC] alive #314 (M v1.3)
+[MUROSYNC] alive #315 (M v1.3)
+[MUROSYNC] alive #316 (M v1.3)
+[MUROSYNC] alive #317 (M v1.3)
+[MUROSYNC] alive #318 (M v1.3)
+[MUROSYNC] alive #319 (M v1.3)
+[MUROSYNC] alive #320 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #321 (M v1.3)
+[MUROSYNC] alive #322 (M v1.3)
+[MUROSYNC] alive #323 (M v1.3)
+[MUROSYNC] alive #324 (M v1.3)
+[MUROSYNC] alive #325 (M v1.3)
+[MUROSYNC] alive #326 (M v1.3)
+[MUROSYNC] alive #327 (M v1.3)
+[MUROSYNC] alive #328 (M v1.3)
+[MUROSYNC] alive #329 (M v1.3)
+[MUROSYNC] alive #330 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #331 (M v1.3)
+[MUROSYNC] alive #332 (M v1.3)
+[MUROSYNC] alive #333 (M v1.3)
+[MUROSYNC] alive #334 (M v1.3)
+[MUROSYNC] alive #335 (M v1.3)
+[MUROSYNC] alive #336 (M v1.3)
+[MUROSYNC] alive #337 (M v1.3)
+[MUROSYNC] alive #338 (M v1.3)
+[MUROSYNC] alive #339 (M v1.3)
+[MUROSYNC] alive #340 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #341 (M v1.3)
+[MUROSYNC] alive #342 (M v1.3)
+[MUROSYNC] alive #343 (M v1.3)
+[MUROSYNC] alive #344 (M v1.3)
+[MUROSYNC] alive #345 (M v1.3)
+[MUROSYNC] alive #346 (M v1.3)
+[MUROSYNC] alive #347 (M v1.3)
+[MUROSYNC] alive #348 (M v1.3)
+[MUROSYNC] alive #349 (M v1.3)
+[MUROSYNC] alive #350 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #351 (M v1.3)
+[MUROSYNC] alive #352 (M v1.3)
+[MUROSYNC] alive #353 (M v1.3)
+[MUROSYNC] alive #354 (M v1.3)
+[MUROSYNC] alive #355 (M v1.3)
+[MUROSYNC] alive #356 (M v1.3)
+[MUROSYNC] alive #357 (M v1.3)
+[MUROSYNC] alive #358 (M v1.3)
+[MUROSYNC] alive #359 (M v1.3)
+[MUROSYNC] alive #360 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #361 (M v1.3)
+[MUROSYNC] alive #362 (M v1.3)
+[MUROSYNC] alive #363 (M v1.3)
+[MUROSYNC] alive #364 (M v1.3)
+[MUROSYNC] alive #365 (M v1.3)
+[MUROSYNC] alive #366 (M v1.3)
+[MUROSYNC] alive #367 (M v1.3)
+[MUROSYNC] alive #368 (M v1.3)
+[MUROSYNC] alive #369 (M v1.3)
+[MUROSYNC] alive #370 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #371 (M v1.3)
+[MUROSYNC] alive #372 (M v1.3)
+[MUROSYNC] alive #373 (M v1.3)
+[MUROSYNC] alive #374 (M v1.3)
+[MUROSYNC] alive #375 (M v1.3)
+[MUROSYNC] alive #376 (M v1.3)
+[MUROSYNC] alive #377 (M v1.3)
+[MUROSYNC] alive #378 (M v1.3)
+[MUROSYNC] alive #379 (M v1.3)
+[MUROSYNC] alive #380 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #381 (M v1.3)
+[MUROSYNC] alive #382 (M v1.3)
+[MUROSYNC] alive #383 (M v1.3)
+[MUROSYNC] alive #384 (M v1.3)
+[MUROSYNC] alive #385 (M v1.3)
+[MUROSYNC] alive #386 (M v1.3)
+[MUROSYNC] alive #387 (M v1.3)
+[MUROSYNC] alive #388 (M v1.3)
+[MUROSYNC] alive #389 (M v1.3)
+[MUROSYNC] alive #390 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #391 (M v1.3)
+[MUROSYNC] alive #392 (M v1.3)
+[MUROSYNC] alive #393 (M v1.3)
+[MUROSYNC] alive #394 (M v1.3)
+[MUROSYNC] alive #395 (M v1.3)
+[MUROSYNC] alive #396 (M v1.3)
+[MUROSYNC] alive #397 (M v1.3)
+[MUROSYNC] alive #398 (M v1.3)
+[MUROSYNC] alive #399 (M v1.3)
+[MUROSYNC] alive #400 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #401 (M v1.3)
+[MUROSYNC] alive #402 (M v1.3)
+[MUROSYNC] alive #403 (M v1.3)
+[MUROSYNC] alive #404 (M v1.3)
+[MUROSYNC] alive #405 (M v1.3)
+[MUROSYNC] alive #406 (M v1.3)
+[MUROSYNC] alive #407 (M v1.3)
+[MUROSYNC] alive #408 (M v1.3)
+[MUROSYNC] alive #409 (M v1.3)
+[MUROSYNC] alive #410 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #411 (M v1.3)
+[MUROSYNC] alive #412 (M v1.3)
+[MUROSYNC] alive #413 (M v1.3)
+[MUROSYNC] alive #414 (M v1.3)
+[MUROSYNC] alive #415 (M v1.3)
+[MUROSYNC] alive #416 (M v1.3)
+[MUROSYNC] alive #417 (M v1.3)
+[MUROSYNC] alive #418 (M v1.3)
+[MUROSYNC] alive #419 (M v1.3)
+[MUROSYNC] alive #420 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #421 (M v1.3)
+[MUROSYNC] alive #422 (M v1.3)
+[MUROSYNC] alive #423 (M v1.3)
+[MUROSYNC] alive #424 (M v1.3)
+[MUROSYNC] alive #425 (M v1.3)
+[MUROSYNC] alive #426 (M v1.3)
+[MUROSYNC] alive #427 (M v1.3)
+[MUROSYNC] alive #428 (M v1.3)
+[MUROSYNC] alive #429 (M v1.3)
+[MUROSYNC] alive #430 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #431 (M v1.3)
+[MUROSYNC] alive #432 (M v1.3)
+[MUROSYNC] alive #433 (M v1.3)
+[MUROSYNC] alive #434 (M v1.3)
+[MUROSYNC] alive #435 (M v1.3)
+[MUROSYNC] alive #436 (M v1.3)
+[MUROSYNC] alive #437 (M v1.3)
+[MUROSYNC] alive #438 (M v1.3)
+[MUROSYNC] alive #439 (M v1.3)
+[MUROSYNC] alive #440 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #441 (M v1.3)
+[MUROSYNC] alive #442 (M v1.3)
+[MUROSYNC] alive #443 (M v1.3)
+[MUROSYNC] alive #444 (M v1.3)
+[MUROSYNC] alive #445 (M v1.3)
+[MUROSYNC] alive #446 (M v1.3)
+[MUROSYNC] alive #447 (M v1.3)
+[MUROSYNC] alive #448 (M v1.3)
+[MUROSYNC] alive #449 (M v1.3)
+[MUROSYNC] alive #450 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #451 (M v1.3)
+[MUROSYNC] alive #452 (M v1.3)
+[MUROSYNC] alive #453 (M v1.3)
+[MUROSYNC] alive #454 (M v1.3)
+[MUROSYNC] alive #455 (M v1.3)
+[MUROSYNC] alive #456 (M v1.3)
+[MUROSYNC] alive #457 (M v1.3)
+[MUROSYNC] alive #458 (M v1.3)
+[MUROSYNC] alive #459 (M v1.3)
+[MUROSYNC] alive #460 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x8 [CH3=1 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x8
+[MUROSYNC] alive #461 (M v1.3)
+[MUROSYNC] alive #462 (M v1.3)
+[MUROSYNC] alive #463 (M v1.3)
+[MUROSYNC] alive #464 (M v1.3)
+[MUROSYNC] alive #465 (M v1.3)
+[MUROSYNC] alive #466 (M v1.3)
+[MUROSYNC] alive #467 (M v1.3)
+[MUROSYNC] alive #468 (M v1.3)
+[MUROSYNC] alive #469 (M v1.3)
+[MUROSYNC] alive #470 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #471 (M v1.3)
+[MUROSYNC] alive #472 (M v1.3)
+[MUROSYNC] alive #473 (M v1.3)
+[MUROSYNC] alive #474 (M v1.3)
+[MUROSYNC] alive #475 (M v1.3)
+[MUROSYNC] alive #476 (M v1.3)
+[MUROSYNC] alive #477 (M v1.3)
+[MUROSYNC] alive #478 (M v1.3)
+[MUROSYNC] alive #479 (M v1.3)
+[MUROSYNC] alive #480 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #481 (M v1.3)
+[MUROSYNC] alive #482 (M v1.3)
+[MUROSYNC] alive #483 (M v1.3)
+[MUROSYNC] alive #484 (M v1.3)
+[MUROSYNC] alive #485 (M v1.3)
+[MUROSYNC] alive #486 (M v1.3)
+[MUROSYNC] alive #487 (M v1.3)
+[MUROSYNC] alive #488 (M v1.3)
+[MUROSYNC] alive #489 (M v1.3)
+[MUROSYNC] alive #490 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #491 (M v1.3)
+[MUROSYNC] alive #492 (M v1.3)
+[MUROSYNC] alive #493 (M v1.3)
+[MUROSYNC] alive #494 (M v1.3)
+[MUROSYNC] alive #495 (M v1.3)
+[MUROSYNC] alive #496 (M v1.3)
+[MUROSYNC] alive #497 (M v1.3)
+[MUROSYNC] alive #498 (M v1.3)
+[MUROSYNC] alive #499 (M v1.3)
+[MUROSYNC] alive #500 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #501 (M v1.3)
+[MUROSYNC] alive #502 (M v1.3)
+[MUROSYNC] alive #503 (M v1.3)
+[MUROSYNC] alive #504 (M v1.3)
+[MUROSYNC] alive #505 (M v1.3)
+[MUROSYNC] alive #506 (M v1.3)
+[MUROSYNC] alive #507 (M v1.3)
+[MUROSYNC] alive #508 (M v1.3)
+[MUROSYNC] alive #509 (M v1.3)
+[MUROSYNC] alive #510 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #511 (M v1.3)
+[MUROSYNC] alive #512 (M v1.3)
+[MUROSYNC] alive #513 (M v1.3)
+[MUROSYNC] alive #514 (M v1.3)
+[MUROSYNC] alive #515 (M v1.3)
+[MUROSYNC] alive #516 (M v1.3)
+[MUROSYNC] alive #517 (M v1.3)
+[MUROSYNC] alive #518 (M v1.3)
+[MUROSYNC] alive #519 (M v1.3)
+[MUROSYNC] alive #520 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #521 (M v1.3)
+[MUROSYNC] alive #522 (M v1.3)
+[MUROSYNC] alive #523 (M v1.3)
+[MUROSYNC] alive #524 (M v1.3)
+[MUROSYNC] alive #525 (M v1.3)
+[MUROSYNC] alive #526 (M v1.3)
+[MUROSYNC] alive #527 (M v1.3)
+[MUROSYNC] alive #528 (M v1.3)
+[MUROSYNC] alive #529 (M v1.3)
+[MUROSYNC] alive #530 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #531 (M v1.3)
+[MUROSYNC] alive #532 (M v1.3)
+[MUROSYNC] alive #533 (M v1.3)
+[MUROSYNC] alive #534 (M v1.3)
+[MUROSYNC] alive #535 (M v1.3)
+[MUROSYNC] alive #536 (M v1.3)
+[MUROSYNC] alive #537 (M v1.3)
+[MUROSYNC] alive #538 (M v1.3)
+[MUROSYNC] alive #539 (M v1.3)
+[MUROSYNC] alive #540 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #541 (M v1.3)
+[MUROSYNC] alive #542 (M v1.3)
+[MUROSYNC] alive #543 (M v1.3)
+[MUROSYNC] alive #544 (M v1.3)
+[MUROSYNC] alive #545 (M v1.3)
+[MUROSYNC] alive #546 (M v1.3)
+[MUROSYNC] alive #547 (M v1.3)
+[MUROSYNC] alive #548 (M v1.3)
+[MUROSYNC] alive #549 (M v1.3)
+[MUROSYNC] alive #550 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #551 (M v1.3)
+[MUROSYNC] alive #552 (M v1.3)
+[MUROSYNC] alive #553 (M v1.3)
+[MUROSYNC] alive #554 (M v1.3)
+[MUROSYNC] alive #555 (M v1.3)
+[MUROSYNC] alive #556 (M v1.3)
+[MUROSYNC] alive #557 (M v1.3)
+[MUROSYNC] alive #558 (M v1.3)
+[MUROSYNC] alive #559 (M v1.3)
+[MUROSYNC] alive #560 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #561 (M v1.3)
+[MUROSYNC] alive #562 (M v1.3)
+[MUROSYNC] alive #563 (M v1.3)
+[MUROSYNC] alive #564 (M v1.3)
+[MUROSYNC] alive #565 (M v1.3)
+[MUROSYNC] alive #566 (M v1.3)
+[MUROSYNC] alive #567 (M v1.3)
+[MUROSYNC] alive #568 (M v1.3)
+[MUROSYNC] alive #569 (M v1.3)
+[MUROSYNC] alive #570 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #571 (M v1.3)
+[MUROSYNC] alive #572 (M v1.3)
+[MUROSYNC] alive #573 (M v1.3)
+[MUROSYNC] alive #574 (M v1.3)
+[MUROSYNC] alive #575 (M v1.3)
+[MUROSYNC] alive #576 (M v1.3)
+[MUROSYNC] alive #577 (M v1.3)
+[MUROSYNC] alive #578 (M v1.3)
+[MUROSYNC] alive #579 (M v1.3)
+[MUROSYNC] alive #580 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #581 (M v1.3)
+[MUROSYNC] alive #582 (M v1.3)
+[MUROSYNC] alive #583 (M v1.3)
+[MUROSYNC] alive #584 (M v1.3)
+[MUROSYNC] alive #585 (M v1.3)
+[MUROSYNC] alive #586 (M v1.3)
+[MUROSYNC] alive #587 (M v1.3)
+[MUROSYNC] alive #588 (M v1.3)
+[MUROSYNC] alive #589 (M v1.3)
+[MUROSYNC] alive #590 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #591 (M v1.3)
+[MUROSYNC] alive #592 (M v1.3)
+[MUROSYNC] alive #593 (M v1.3)
+[MUROSYNC] alive #594 (M v1.3)
+[MUROSYNC] alive #595 (M v1.3)
+[MUROSYNC] alive #596 (M v1.3)
+[MUROSYNC] alive #597 (M v1.3)
+[MUROSYNC] alive #598 (M v1.3)
+[MUROSYNC] alive #599 (M v1.3)
+[MUROSYNC] alive #600 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #601 (M v1.3)
+[MUROSYNC] alive #602 (M v1.3)
+[MUROSYNC] alive #603 (M v1.3)
+[MUROSYNC] alive #604 (M v1.3)
+[MUROSYNC] alive #605 (M v1.3)
+[MUROSYNC] alive #606 (M v1.3)
+[MUROSYNC] alive #607 (M v1.3)
+[MUROSYNC] alive #608 (M v1.3)
+[MUROSYNC] alive #609 (M v1.3)
+[MUROSYNC] alive #610 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #611 (M v1.3)
+[MUROSYNC] alive #612 (M v1.3)
+[MUROSYNC] alive #613 (M v1.3)
+[MUROSYNC] alive #614 (M v1.3)
+[MUROSYNC] alive #615 (M v1.3)
+[MUROSYNC] alive #616 (M v1.3)
+[MUROSYNC] alive #617 (M v1.3)
+[MUROSYNC] alive #618 (M v1.3)
+[MUROSYNC] alive #619 (M v1.3)
+[MUROSYNC] alive #620 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #621 (M v1.3)
+[MUROSYNC] alive #622 (M v1.3)
+[MUROSYNC] alive #623 (M v1.3)
+[MUROSYNC] alive #624 (M v1.3)
+[MUROSYNC] alive #625 (M v1.3)
+[MUROSYNC] alive #626 (M v1.3)
+[MUROSYNC] alive #627 (M v1.3)
+[MUROSYNC] alive #628 (M v1.3)
+[MUROSYNC] alive #629 (M v1.3)
+[MUROSYNC] alive #630 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #631 (M v1.3)
+[MUROSYNC] alive #632 (M v1.3)
+[MUROSYNC] alive #633 (M v1.3)
+[MUROSYNC] alive #634 (M v1.3)
+[MUROSYNC] alive #635 (M v1.3)
+[MUROSYNC] alive #636 (M v1.3)
+[MUROSYNC] alive #637 (M v1.3)
+[MUROSYNC] alive #638 (M v1.3)
+[MUROSYNC] alive #639 (M v1.3)
+[MUROSYNC] alive #640 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #641 (M v1.3)
+[MUROSYNC] alive #642 (M v1.3)
+[MUROSYNC] alive #643 (M v1.3)
+[MUROSYNC] alive #644 (M v1.3)
+[MUROSYNC] alive #645 (M v1.3)
+[MUROSYNC] alive #646 (M v1.3)
+[MUROSYNC] alive #647 (M v1.3)
+[MUROSYNC] alive #648 (M v1.3)
+[MUROSYNC] alive #649 (M v1.3)
+[MUROSYNC] alive #650 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #651 (M v1.3)
+[MUROSYNC] alive #652 (M v1.3)
+[MUROSYNC] alive #653 (M v1.3)
+[MUROSYNC] alive #654 (M v1.3)
+[MUROSYNC] alive #655 (M v1.3)
+[MUROSYNC] alive #656 (M v1.3)
+[MUROSYNC] alive #657 (M v1.3)
+[MUROSYNC] alive #658 (M v1.3)
+[MUROSYNC] alive #659 (M v1.3)
+[MUROSYNC] alive #660 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #661 (M v1.3)
+[MUROSYNC] alive #662 (M v1.3)
+[MUROSYNC] alive #663 (M v1.3)
+[MUROSYNC] alive #664 (M v1.3)
+[MUROSYNC] alive #665 (M v1.3)
+[MUROSYNC] alive #666 (M v1.3)
+[MUROSYNC] alive #667 (M v1.3)
+[MUROSYNC] alive #668 (M v1.3)
+[MUROSYNC] alive #669 (M v1.3)
+[MUROSYNC] alive #670 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #671 (M v1.3)
+[MUROSYNC] alive #672 (M v1.3)
+[MUROSYNC] alive #673 (M v1.3)
+[MUROSYNC] alive #674 (M v1.3)
+[MUROSYNC] alive #675 (M v1.3)
+[MUROSYNC] alive #676 (M v1.3)
+[MUROSYNC] alive #677 (M v1.3)
+[MUROSYNC] alive #678 (M v1.3)
+[MUROSYNC] alive #679 (M v1.3)
+[MUROSYNC] alive #680 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #681 (M v1.3)
+[MUROSYNC] alive #682 (M v1.3)
+[MUROSYNC] alive #683 (M v1.3)
+[MUROSYNC] alive #684 (M v1.3)
+[MUROSYNC] alive #685 (M v1.3)
+[MUROSYNC] alive #686 (M v1.3)
+[MUROSYNC] alive #687 (M v1.3)
+[MUROSYNC] alive #688 (M v1.3)
+[MUROSYNC] alive #689 (M v1.3)
+[MUROSYNC] alive #690 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #691 (M v1.3)
+[MUROSYNC] alive #692 (M v1.3)
+[MUROSYNC] alive #693 (M v1.3)
+[MUROSYNC] alive #694 (M v1.3)
+[MUROSYNC] alive #695 (M v1.3)
+[MUROSYNC] alive #696 (M v1.3)
+[MUROSYNC] alive #697 (M v1.3)
+[MUROSYNC] alive #698 (M v1.3)
+[MUROSYNC] alive #699 (M v1.3)
+[MUROSYNC] alive #700 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #701 (M v1.3)
+[MUROSYNC] alive #702 (M v1.3)
+[MUROSYNC] alive #703 (M v1.3)
+[MUROSYNC] alive #704 (M v1.3)
+[MUROSYNC] alive #705 (M v1.3)
+[MUROSYNC] alive #706 (M v1.3)
+[MUROSYNC] alive #707 (M v1.3)
+[MUROSYNC] alive #708 (M v1.3)
+[MUROSYNC] alive #709 (M v1.3)
+[MUROSYNC] alive #710 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #711 (M v1.3)
+[MUROSYNC] alive #712 (M v1.3)
+[MUROSYNC] alive #713 (M v1.3)
+[MUROSYNC] alive #714 (M v1.3)
+[MUROSYNC] alive #715 (M v1.3)
+[MUROSYNC] alive #716 (M v1.3)
+[MUROSYNC] alive #717 (M v1.3)
+[MUROSYNC] alive #718 (M v1.3)
+[MUROSYNC] alive #719 (M v1.3)
+[MUROSYNC] alive #720 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #721 (M v1.3)
+[MUROSYNC] alive #722 (M v1.3)
+[MUROSYNC] alive #723 (M v1.3)
+[MUROSYNC] alive #724 (M v1.3)
+[MUROSYNC] alive #725 (M v1.3)
+[MUROSYNC] alive #726 (M v1.3)
+[MUROSYNC] alive #727 (M v1.3)
+[MUROSYNC] alive #728 (M v1.3)
+[MUROSYNC] alive #729 (M v1.3)
+[MUROSYNC] alive #730 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #731 (M v1.3)
+[MUROSYNC] alive #732 (M v1.3)
+[MUROSYNC] alive #733 (M v1.3)
+[MUROSYNC] alive #734 (M v1.3)
+[MUROSYNC] alive #735 (M v1.3)
+[MUROSYNC] alive #736 (M v1.3)
+[MUROSYNC] alive #737 (M v1.3)
+[MUROSYNC] alive #738 (M v1.3)
+[MUROSYNC] alive #739 (M v1.3)
+[MUROSYNC] alive #740 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #741 (M v1.3)
+[MUROSYNC] alive #742 (M v1.3)
+[MUROSYNC] alive #743 (M v1.3)
+[MUROSYNC] alive #744 (M v1.3)
+[MUROSYNC] alive #745 (M v1.3)
+[MUROSYNC] alive #746 (M v1.3)
+[MUROSYNC] alive #747 (M v1.3)
+[MUROSYNC] alive #748 (M v1.3)
+[MUROSYNC] alive #749 (M v1.3)
+[MUROSYNC] alive #750 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #751 (M v1.3)
+[MUROSYNC] alive #752 (M v1.3)
+[MUROSYNC] alive #753 (M v1.3)
+[MUROSYNC] alive #754 (M v1.3)
+[MUROSYNC] alive #755 (M v1.3)
+[MUROSYNC] alive #756 (M v1.3)
+[MUROSYNC] alive #757 (M v1.3)
+[MUROSYNC] alive #758 (M v1.3)
+[MUROSYNC] alive #759 (M v1.3)
+[MUROSYNC] alive #760 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #761 (M v1.3)
+[MUROSYNC] alive #762 (M v1.3)
+[MUROSYNC] alive #763 (M v1.3)
+[MUROSYNC] alive #764 (M v1.3)
+[MUROSYNC] alive #765 (M v1.3)
+[MUROSYNC] alive #766 (M v1.3)
+[MUROSYNC] alive #767 (M v1.3)
+[MUROSYNC] alive #768 (M v1.3)
+[MUROSYNC] alive #769 (M v1.3)
+[MUROSYNC] alive #770 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #771 (M v1.3)
+[MUROSYNC] alive #772 (M v1.3)
+[MUROSYNC] alive #773 (M v1.3)
+[MUROSYNC] alive #774 (M v1.3)
+[MUROSYNC] alive #775 (M v1.3)
+[MUROSYNC] alive #776 (M v1.3)
+[MUROSYNC] alive #777 (M v1.3)
+[MUROSYNC] alive #778 (M v1.3)
+[MUROSYNC] alive #779 (M v1.3)
+[MUROSYNC] alive #780 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #781 (M v1.3)
+[MUROSYNC] alive #782 (M v1.3)
+[MUROSYNC] alive #783 (M v1.3)
+[MUROSYNC] alive #784 (M v1.3)
+[MUROSYNC] alive #785 (M v1.3)
+[MUROSYNC] alive #786 (M v1.3)
+[MUROSYNC] alive #787 (M v1.3)
+[MUROSYNC] alive #788 (M v1.3)
+[MUROSYNC] alive #789 (M v1.3)
+[MUROSYNC] alive #790 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #791 (M v1.3)
+[MUROSYNC] alive #792 (M v1.3)
+[MUROSYNC] alive #793 (M v1.3)
+[MUROSYNC] alive #794 (M v1.3)
+[MUROSYNC] alive #795 (M v1.3)
+[MUROSYNC] alive #796 (M v1.3)
+[MUROSYNC] alive #797 (M v1.3)
+[MUROSYNC] alive #798 (M v1.3)
+[MUROSYNC] alive #799 (M v1.3)
+[MUROSYNC] alive #800 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #801 (M v1.3)
+[MUROSYNC] alive #802 (M v1.3)
+[MUROSYNC] alive #803 (M v1.3)
+[MUROSYNC] alive #804 (M v1.3)
+[MUROSYNC] alive #805 (M v1.3)
+[MUROSYNC] alive #806 (M v1.3)
+[MUROSYNC] alive #807 (M v1.3)
+[MUROSYNC] alive #808 (M v1.3)
+[MUROSYNC] alive #809 (M v1.3)
+[MUROSYNC] alive #810 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #811 (M v1.3)
+[MUROSYNC] alive #812 (M v1.3)
+[MUROSYNC] alive #813 (M v1.3)
+[MUROSYNC] alive #814 (M v1.3)
+[MUROSYNC] alive #815 (M v1.3)
+[MUROSYNC] alive #816 (M v1.3)
+[MUROSYNC] alive #817 (M v1.3)
+[MUROSYNC] alive #818 (M v1.3)
+[MUROSYNC] alive #819 (M v1.3)
+[MUROSYNC] alive #820 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #821 (M v1.3)
+[MUROSYNC] alive #822 (M v1.3)
+[MUROSYNC] alive #823 (M v1.3)
+[MUROSYNC] alive #824 (M v1.3)
+[MUROSYNC] alive #825 (M v1.3)
+[MUROSYNC] alive #826 (M v1.3)
+[MUROSYNC] alive #827 (M v1.3)
+[MUROSYNC] alive #828 (M v1.3)
+[MUROSYNC] alive #829 (M v1.3)
+[MUROSYNC] alive #830 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #831 (M v1.3)
+[MUROSYNC] alive #832 (M v1.3)
+[MUROSYNC] alive #833 (M v1.3)
+[MUROSYNC] alive #834 (M v1.3)
+[MUROSYNC] alive #835 (M v1.3)
+[MUROSYNC] alive #836 (M v1.3)
+[MUROSYNC] alive #837 (M v1.3)
+[MUROSYNC] alive #838 (M v1.3)
+[MUROSYNC] alive #839 (M v1.3)
+[MUROSYNC] alive #840 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #841 (M v1.3)
+[MUROSYNC] alive #842 (M v1.3)
+[MUROSYNC] alive #843 (M v1.3)
+[MUROSYNC] alive #844 (M v1.3)
+[MUROSYNC] alive #845 (M v1.3)
+[MUROSYNC] alive #846 (M v1.3)
+[MUROSYNC] alive #847 (M v1.3)
+[MUROSYNC] alive #848 (M v1.3)
+[MUROSYNC] alive #849 (M v1.3)
+[MUROSYNC] alive #850 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #851 (M v1.3)
+[MUROSYNC] alive #852 (M v1.3)
+[MUROSYNC] alive #853 (M v1.3)
+[MUROSYNC] alive #854 (M v1.3)
+[MUROSYNC] alive #855 (M v1.3)
+[MUROSYNC] alive #856 (M v1.3)
+[MUROSYNC] alive #857 (M v1.3)
+[MUROSYNC] alive #858 (M v1.3)
+[MUROSYNC] alive #859 (M v1.3)
+[MUROSYNC] alive #860 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #861 (M v1.3)
+[MUROSYNC] alive #862 (M v1.3)
+[MUROSYNC] alive #863 (M v1.3)
+[MUROSYNC] alive #864 (M v1.3)
+[MUROSYNC] alive #865 (M v1.3)
+[MUROSYNC] alive #866 (M v1.3)
+[MUROSYNC] alive #867 (M v1.3)
+[MUROSYNC] alive #868 (M v1.3)
+[MUROSYNC] alive #869 (M v1.3)
+[MUROSYNC] alive #870 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #871 (M v1.3)
+[MUROSYNC] alive #872 (M v1.3)
+[MUROSYNC] alive #873 (M v1.3)
+[MUROSYNC] alive #874 (M v1.3)
+[MUROSYNC] alive #875 (M v1.3)
+[MUROSYNC] alive #876 (M v1.3)
+[MUROSYNC] alive #877 (M v1.3)
+[MUROSYNC] alive #878 (M v1.3)
+[MUROSYNC] alive #879 (M v1.3)
+[MUROSYNC] alive #880 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #881 (M v1.3)
+[MUROSYNC] alive #882 (M v1.3)
+[MUROSYNC] alive #883 (M v1.3)
+[MUROSYNC] alive #884 (M v1.3)
+[MUROSYNC] alive #885 (M v1.3)
+[MUROSYNC] alive #886 (M v1.3)
+[MUROSYNC] alive #887 (M v1.3)
+[MUROSYNC] alive #888 (M v1.3)
+[MUROSYNC] alive #889 (M v1.3)
+[MUROSYNC] alive #890 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #891 (M v1.3)
+[MUROSYNC] alive #892 (M v1.3)
+[MUROSYNC] alive #893 (M v1.3)
+[MUROSYNC] alive #894 (M v1.3)
+[MUROSYNC] alive #895 (M v1.3)
+[MUROSYNC] alive #896 (M v1.3)
+[MUROSYNC] alive #897 (M v1.3)
+[MUROSYNC] alive #898 (M v1.3)
+[MUROSYNC] alive #899 (M v1.3)
+[MUROSYNC] alive #900 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #901 (M v1.3)
+[MUROSYNC] alive #902 (M v1.3)
+[MUROSYNC] alive #903 (M v1.3)
+[MUROSYNC] alive #904 (M v1.3)
+[MUROSYNC] alive #905 (M v1.3)
+[MUROSYNC] alive #906 (M v1.3)
+[MUROSYNC] alive #907 (M v1.3)
+[MUROSYNC] alive #908 (M v1.3)
+[MUROSYNC] alive #909 (M v1.3)
+[MUROSYNC] alive #910 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #911 (M v1.3)
+[MUROSYNC] alive #912 (M v1.3)
+[MUROSYNC] alive #913 (M v1.3)
+[MUROSYNC] alive #914 (M v1.3)
+[MUROSYNC] alive #915 (M v1.3)
+[MUROSYNC] alive #916 (M v1.3)
+[MUROSYNC] alive #917 (M v1.3)
+[MUROSYNC] alive #918 (M v1.3)
+[MUROSYNC] alive #919 (M v1.3)
+[MUROSYNC] alive #920 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #921 (M v1.3)
+[MUROSYNC] alive #922 (M v1.3)
+[MUROSYNC] alive #923 (M v1.3)
+[MUROSYNC] alive #924 (M v1.3)
+[MUROSYNC] alive #925 (M v1.3)
+[MUROSYNC] alive #926 (M v1.3)
+[MUROSYNC] alive #927 (M v1.3)
+[MUROSYNC] alive #928 (M v1.3)
+[MUROSYNC] alive #929 (M v1.3)
+[MUROSYNC] alive #930 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #931 (M v1.3)
+[MUROSYNC] alive #932 (M v1.3)
+[MUROSYNC] alive #933 (M v1.3)
+[MUROSYNC] alive #934 (M v1.3)
+[MUROSYNC] alive #935 (M v1.3)
+[MUROSYNC] alive #936 (M v1.3)
+[MUROSYNC] alive #937 (M v1.3)
+[MUROSYNC] alive #938 (M v1.3)
+[MUROSYNC] alive #939 (M v1.3)
+[MUROSYNC] alive #940 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #941 (M v1.3)
+[MUROSYNC] alive #942 (M v1.3)
+[MUROSYNC] alive #943 (M v1.3)
+[MUROSYNC] alive #944 (M v1.3)
+[MUROSYNC] alive #945 (M v1.3)
+[MUROSYNC] alive #946 (M v1.3)
+[MUROSYNC] alive #947 (M v1.3)
+[MUROSYNC] alive #948 (M v1.3)
+[MUROSYNC] alive #949 (M v1.3)
+[MUROSYNC] alive #950 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #951 (M v1.3)
+[MUROSYNC] alive #952 (M v1.3)
+[MUROSYNC] alive #953 (M v1.3)
+[MUROSYNC] alive #954 (M v1.3)
+[MUROSYNC] alive #955 (M v1.3)
+[MUROSYNC] alive #956 (M v1.3)
+[MUROSYNC] alive #957 (M v1.3)
+[MUROSYNC] alive #958 (M v1.3)
+[MUROSYNC] alive #959 (M v1.3)
+[MUROSYNC] alive #960 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #961 (M v1.3)
+[MUROSYNC] alive #962 (M v1.3)
+[MUROSYNC] alive #963 (M v1.3)
+[MUROSYNC] alive #964 (M v1.3)
+[MUROSYNC] alive #965 (M v1.3)
+[MUROSYNC] alive #966 (M v1.3)
+[MUROSYNC] alive #967 (M v1.3)
+[MUROSYNC] alive #968 (M v1.3)
+[MUROSYNC] alive #969 (M v1.3)
+[MUROSYNC] alive #970 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #971 (M v1.3)
+[MUROSYNC] alive #972 (M v1.3)
+[MUROSYNC] alive #973 (M v1.3)
+[MUROSYNC] alive #974 (M v1.3)
+[MUROSYNC] alive #975 (M v1.3)
+[MUROSYNC] alive #976 (M v1.3)
+[MUROSYNC] alive #977 (M v1.3)
+[MUROSYNC] alive #978 (M v1.3)
+[MUROSYNC] alive #979 (M v1.3)
+[MUROSYNC] alive #980 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #981 (M v1.3)
+[MUROSYNC] alive #982 (M v1.3)
+[MUROSYNC] alive #983 (M v1.3)
+[MUROSYNC] alive #984 (M v1.3)
+[MUROSYNC] alive #985 (M v1.3)
+[MUROSYNC] alive #986 (M v1.3)
+[MUROSYNC] alive #987 (M v1.3)
+[MUROSYNC] alive #988 (M v1.3)
+[MUROSYNC] alive #989 (M v1.3)
+[MUROSYNC] alive #990 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #991 (M v1.3)
+[MUROSYNC] alive #992 (M v1.3)
+[MUROSYNC] alive #993 (M v1.3)
+[MUROSYNC] alive #994 (M v1.3)
+[MUROSYNC] alive #995 (M v1.3)
+[MUROSYNC] alive #996 (M v1.3)
+[MUROSYNC] alive #997 (M v1.3)
+[MUROSYNC] alive #998 (M v1.3)
+[MUROSYNC] alive #999 (M v1.3)
+[MUROSYNC] alive #1000 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x8 [CH3=1 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #1001 (M v1.3)
+[MUROSYNC] alive #1002 (M v1.3)
+[MUROSYNC] alive #1003 (M v1.3)
+[MUROSYNC] alive #1004 (M v1.3)
+[MUROSYNC] alive #1005 (M v1.3)
+[MUROSYNC] alive #1006 (M v1.3)
+[MUROSYNC] alive #1007 (M v1.3)
+[MUROSYNC] alive #1008 (M v1.3)
+[MUROSYNC] alive #1009 (M v1.3)
+[MUROSYNC] alive #1010 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #1011 (M v1.3)
+[MUROSYNC] alive #1012 (M v1.3)
+[MUROSYNC] alive #1013 (M v1.3)
+[MUROSYNC] alive #1014 (M v1.3)
+[MUROSYNC] alive #1015 (M v1.3)
+[MUROSYNC] alive #1016 (M v1.3)
+[MUROSYNC] alive #1017 (M v1.3)
+[MUROSYNC] alive #1018 (M v1.3)
+[MUROSYNC] alive #1019 (M v1.3)
+[MUROSYNC] alive #1020 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #1021 (M v1.3)
+[MUROSYNC] alive #1022 (M v1.3)
+[MUROSYNC] alive #1023 (M v1.3)
+[MUROSYNC] alive #1024 (M v1.3)
+[MUROSYNC] alive #1025 (M v1.3)
+[MUROSYNC] alive #1026 (M v1.3)
+[MUROSYNC] alive #1027 (M v1.3)
+[MUROSYNC] alive #1028 (M v1.3)
+[MUROSYNC] alive #1029 (M v1.3)
+[MUROSYNC] alive #1030 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #1031 (M v1.3)
+[MUROSYNC] alive #1032 (M v1.3)
+[MUROSYNC] alive #1033 (M v1.3)
+[MUROSYNC] alive #1034 (M v1.3)
+[MUROSYNC] alive #1035 (M v1.3)
+[MUROSYNC] alive #1036 (M v1.3)
+[MUROSYNC] alive #1037 (M v1.3)
+[MUROSYNC] alive #1038 (M v1.3)
+[MUROSYNC] alive #1039 (M v1.3)
+[MUROSYNC] alive #1040 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #1041 (M v1.3)
+[MUROSYNC] alive #1042 (M v1.3)
+[MUROSYNC] alive #1043 (M v1.3)
+[MUROSYNC] alive #1044 (M v1.3)
+[MUROSYNC] alive #1045 (M v1.3)
+[MUROSYNC] alive #1046 (M v1.3)
+[MUROSYNC] alive #1047 (M v1.3)
+[MUROSYNC] alive #1048 (M v1.3)
+[MUROSYNC] alive #1049 (M v1.3)
+[MUROSYNC] alive #1050 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #1051 (M v1.3)
+[MUROSYNC] alive #1052 (M v1.3)
+[MUROSYNC] alive #1053 (M v1.3)
+[MUROSYNC] alive #1054 (M v1.3)
+[MUROSYNC] alive #1055 (M v1.3)
+[MUROSYNC] alive #1056 (M v1.3)
+[MUROSYNC] alive #1057 (M v1.3)
+[MUROSYNC] alive #1058 (M v1.3)
+[MUROSYNC] alive #1059 (M v1.3)
+[MUROSYNC] alive #1060 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #1061 (M v1.3)
+[MUROSYNC] alive #1062 (M v1.3)
+[MUROSYNC] alive #1063 (M v1.3)
+[MUROSYNC] alive #1064 (M v1.3)
+[MUROSYNC] alive #1065 (M v1.3)
+[MUROSYNC] alive #1066 (M v1.3)
+[MUROSYNC] alive #1067 (M v1.3)
+[MUROSYNC] alive #1068 (M v1.3)
+[MUROSYNC] alive #1069 (M v1.3)
+[MUROSYNC] alive #1070 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #1071 (M v1.3)
+[MUROSYNC] alive #1072 (M v1.3)
+[MUROSYNC] alive #1073 (M v1.3)
+[MUROSYNC] alive #1074 (M v1.3)
+[MUROSYNC] alive #1075 (M v1.3)
+[MUROSYNC] alive #1076 (M v1.3)
+[MUROSYNC] alive #1077 (M v1.3)
+[MUROSYNC] alive #1078 (M v1.3)
+[MUROSYNC] alive #1079 (M v1.3)
+[MUROSYNC] alive #1080 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #1081 (M v1.3)
+[MUROSYNC] alive #1082 (M v1.3)
+[MUROSYNC] alive #1083 (M v1.3)
+[MUROSYNC] alive #1084 (M v1.3)
+[MUROSYNC] alive #1085 (M v1.3)
+[MUROSYNC] alive #1086 (M v1.3)
+[MUROSYNC] alive #1087 (M v1.3)
+[MUROSYNC] alive #1088 (M v1.3)
+[MUROSYNC] alive #1089 (M v1.3)
+[MUROSYNC] alive #1090 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #1091 (M v1.3)
+[MUROSYNC] alive #1092 (M v1.3)
+[MUROSYNC] alive #1093 (M v1.3)
+[MUROSYNC] alive #1094 (M v1.3)
+[MUROSYNC] alive #1095 (M v1.3)
+[MUROSYNC] alive #1096 (M v1.3)
+[MUROSYNC] alive #1097 (M v1.3)
+[MUROSYNC] alive #1098 (M v1.3)
+[MUROSYNC] alive #1099 (M v1.3)
+[MUROSYNC] alive #1100 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #1101 (M v1.3)
+[MUROSYNC] alive #1102 (M v1.3)
+[MUROSYNC] alive #1103 (M v1.3)
+[MUROSYNC] alive #1104 (M v1.3)
+[MUROSYNC] alive #1105 (M v1.3)
+[MUROSYNC] alive #1106 (M v1.3)
+[MUROSYNC] alive #1107 (M v1.3)
+[MUROSYNC] alive #1108 (M v1.3)
+[MUROSYNC] alive #1109 (M v1.3)
+[MUROSYNC] alive #1110 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #1111 (M v1.3)
+[MUROSYNC] alive #1112 (M v1.3)
+[MUROSYNC] alive #1113 (M v1.3)
+[MUROSYNC] alive #1114 (M v1.3)
+[MUROSYNC] alive #1115 (M v1.3)
+[MUROSYNC] alive #1116 (M v1.3)
+[MUROSYNC] alive #1117 (M v1.3)
+[MUROSYNC] alive #1118 (M v1.3)
+[MUROSYNC] alive #1119 (M v1.3)
+[MUROSYNC] alive #1120 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #1121 (M v1.3)
+[MUROSYNC] alive #1122 (M v1.3)
+[MUROSYNC] alive #1123 (M v1.3)
+[MUROSYNC] alive #1124 (M v1.3)
+[MUROSYNC] alive #1125 (M v1.3)
+[MUROSYNC] alive #1126 (M v1.3)
+[MUROSYNC] alive #1127 (M v1.3)
+[MUROSYNC] alive #1128 (M v1.3)
+[MUROSYNC] alive #1129 (M v1.3)
+[MUROSYNC] alive #1130 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #1131 (M v1.3)
+[MUROSYNC] alive #1132 (M v1.3)
+[MUROSYNC] alive #1133 (M v1.3)
+[MUROSYNC] alive #1134 (M v1.3)
+[MUROSYNC] alive #1135 (M v1.3)
+[MUROSYNC] alive #1136 (M v1.3)
+[MUROSYNC] alive #1137 (M v1.3)
+[MUROSYNC] alive #1138 (M v1.3)
+[MUROSYNC] alive #1139 (M v1.3)
+[MUROSYNC] alive #1140 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #1141 (M v1.3)
+[MUROSYNC] alive #1142 (M v1.3)
+[MUROSYNC] alive #1143 (M v1.3)
+[MUROSYNC] alive #1144 (M v1.3)
+[MUROSYNC] alive #1145 (M v1.3)
+[MUROSYNC] alive #1146 (M v1.3)
+[MUROSYNC] alive #1147 (M v1.3)
+[MUROSYNC] alive #1148 (M v1.3)
+[MUROSYNC] alive #1149 (M v1.3)
+[MUROSYNC] alive #1150 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #1151 (M v1.3)
+[MUROSYNC] alive #1152 (M v1.3)
+[MUROSYNC] alive #1153 (M v1.3)
+[MUROSYNC] alive #1154 (M v1.3)
+[MUROSYNC] alive #1155 (M v1.3)
+[MUROSYNC] alive #1156 (M v1.3)
+[MUROSYNC] alive #1157 (M v1.3)
+[MUROSYNC] alive #1158 (M v1.3)
+[MUROSYNC] alive #1159 (M v1.3)
+[MUROSYNC] alive #1160 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #1161 (M v1.3)
+[MUROSYNC] alive #1162 (M v1.3)
+[MUROSYNC] alive #1163 (M v1.3)
+[MUROSYNC] alive #1164 (M v1.3)
+[MUROSYNC] alive #1165 (M v1.3)
+[MUROSYNC] alive #1166 (M v1.3)
+[MUROSYNC] alive #1167 (M v1.3)
+[MUROSYNC] alive #1168 (M v1.3)
+[MUROSYNC] alive #1169 (M v1.3)
+[MUROSYNC] alive #1170 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #1171 (M v1.3)
+[MUROSYNC] alive #1172 (M v1.3)
+[MUROSYNC] alive #1173 (M v1.3)
+[MUROSYNC] alive #1174 (M v1.3)
+[MUROSYNC] alive #1175 (M v1.3)
+[MUROSYNC] alive #1176 (M v1.3)
+[MUROSYNC] alive #1177 (M v1.3)
+[MUROSYNC] alive #1178 (M v1.3)
+[MUROSYNC] alive #1179 (M v1.3)
+[MUROSYNC] alive #1180 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #1181 (M v1.3)
+[MUROSYNC] alive #1182 (M v1.3)
+[MUROSYNC] alive #1183 (M v1.3)
+[MUROSYNC] alive #1184 (M v1.3)
+[MUROSYNC] alive #1185 (M v1.3)
+[MUROSYNC] alive #1186 (M v1.3)
+[MUROSYNC] alive #1187 (M v1.3)
+[MUROSYNC] alive #1188 (M v1.3)
+[MUROSYNC] alive #1189 (M v1.3)
+[MUROSYNC] alive #1190 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #1191 (M v1.3)
+[MUROSYNC] alive #1192 (M v1.3)
+[MUROSYNC] alive #1193 (M v1.3)
+[MUROSYNC] alive #1194 (M v1.3)
+[MUROSYNC] alive #1195 (M v1.3)
+[MUROSYNC] alive #1196 (M v1.3)
+[MUROSYNC] alive #1197 (M v1.3)
+[MUROSYNC] alive #1198 (M v1.3)
+[MUROSYNC] alive #1199 (M v1.3)
+[MUROSYNC] alive #1200 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #1201 (M v1.3)
+[MUROSYNC] alive #1202 (M v1.3)
+[MUROSYNC] alive #1203 (M v1.3)
+[MUROSYNC] alive #1204 (M v1.3)
+[MUROSYNC] alive #1205 (M v1.3)
+[MUROSYNC] alive #1206 (M v1.3)
+[MUROSYNC] alive #1207 (M v1.3)
+[MUROSYNC] alive #1208 (M v1.3)
+[MUROSYNC] alive #1209 (M v1.3)
+[MUROSYNC] alive #1210 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #1211 (M v1.3)
+[MUROSYNC] alive #1212 (M v1.3)
+[MUROSYNC] alive #1213 (M v1.3)
+[MUROSYNC] alive #1214 (M v1.3)
+[MUROSYNC] alive #1215 (M v1.3)
+[MUROSYNC] alive #1216 (M v1.3)
+[MUROSYNC] alive #1217 (M v1.3)
+[MUROSYNC] alive #1218 (M v1.3)
+[MUROSYNC] alive #1219 (M v1.3)
+[MUROSYNC] alive #1220 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x8 [CH3=1 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x8
+[MUROSYNC] alive #1221 (M v1.3)
+[MUROSYNC] alive #1222 (M v1.3)
+[MUROSYNC] alive #1223 (M v1.3)
+[MUROSYNC] alive #1224 (M v1.3)
+[MUROSYNC] alive #1225 (M v1.3)
+[MUROSYNC] alive #1226 (M v1.3)
+[MUROSYNC] alive #1227 (M v1.3)
+[MUROSYNC] alive #1228 (M v1.3)
+[MUROSYNC] alive #1229 (M v1.3)
+[MUROSYNC] alive #1230 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #1231 (M v1.3)
+[MUROSYNC] alive #1232 (M v1.3)
+[MUROSYNC] alive #1233 (M v1.3)
+[MUROSYNC] alive #1234 (M v1.3)
+[MUROSYNC] alive #1235 (M v1.3)
+[MUROSYNC] alive #1236 (M v1.3)
+[MUROSYNC] alive #1237 (M v1.3)
+[MUROSYNC] alive #1238 (M v1.3)
+[MUROSYNC] alive #1239 (M v1.3)
+[MUROSYNC] alive #1240 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #1241 (M v1.3)
+[MUROSYNC] alive #1242 (M v1.3)
+[MUROSYNC] alive #1243 (M v1.3)
+[MUROSYNC] alive #1244 (M v1.3)
+[MUROSYNC] alive #1245 (M v1.3)
+[MUROSYNC] alive #1246 (M v1.3)
+[MUROSYNC] alive #1247 (M v1.3)
+[MUROSYNC] alive #1248 (M v1.3)
+[MUROSYNC] alive #1249 (M v1.3)
+[MUROSYNC] alive #1250 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #1251 (M v1.3)
+[MUROSYNC] alive #1252 (M v1.3)
+[MUROSYNC] alive #1253 (M v1.3)
+[MUROSYNC] alive #1254 (M v1.3)
+[MUROSYNC] alive #1255 (M v1.3)
+[MUROSYNC] alive #1256 (M v1.3)
+[MUROSYNC] alive #1257 (M v1.3)
+[MUROSYNC] alive #1258 (M v1.3)
+[MUROSYNC] alive #1259 (M v1.3)
+[MUROSYNC] alive #1260 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #1261 (M v1.3)
+[MUROSYNC] alive #1262 (M v1.3)
+[MUROSYNC] alive #1263 (M v1.3)
+[MUROSYNC] alive #1264 (M v1.3)
+[MUROSYNC] alive #1265 (M v1.3)
+[MUROSYNC] alive #1266 (M v1.3)
+[MUROSYNC] alive #1267 (M v1.3)
+[MUROSYNC] alive #1268 (M v1.3)
+[MUROSYNC] alive #1269 (M v1.3)
+[MUROSYNC] alive #1270 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #1271 (M v1.3)
+[MUROSYNC] alive #1272 (M v1.3)
+[MUROSYNC] alive #1273 (M v1.3)
+[MUROSYNC] alive #1274 (M v1.3)
+[MUROSYNC] alive #1275 (M v1.3)
+[MUROSYNC] alive #1276 (M v1.3)
+[MUROSYNC] alive #1277 (M v1.3)
+[MUROSYNC] alive #1278 (M v1.3)
+[MUROSYNC] alive #1279 (M v1.3)
+[MUROSYNC] alive #1280 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #1281 (M v1.3)
+[MUROSYNC] alive #1282 (M v1.3)
+[MUROSYNC] alive #1283 (M v1.3)
+[MUROSYNC] alive #1284 (M v1.3)
+[MUROSYNC] alive #1285 (M v1.3)
+[MUROSYNC] alive #1286 (M v1.3)
+[MUROSYNC] alive #1287 (M v1.3)
+[MUROSYNC] alive #1288 (M v1.3)
+[MUROSYNC] alive #1289 (M v1.3)
+[MUROSYNC] alive #1290 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #1291 (M v1.3)
+[MUROSYNC] alive #1292 (M v1.3)
+[MUROSYNC] alive #1293 (M v1.3)
+[MUROSYNC] alive #1294 (M v1.3)
+[MUROSYNC] alive #1295 (M v1.3)
+[MUROSYNC] alive #1296 (M v1.3)
+[MUROSYNC] alive #1297 (M v1.3)
+[MUROSYNC] alive #1298 (M v1.3)
+[MUROSYNC] alive #1299 (M v1.3)
+[MUROSYNC] alive #1300 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #1301 (M v1.3)
+[MUROSYNC] alive #1302 (M v1.3)
+[MUROSYNC] alive #1303 (M v1.3)
+[MUROSYNC] alive #1304 (M v1.3)
+[MUROSYNC] alive #1305 (M v1.3)
+[MUROSYNC] alive #1306 (M v1.3)
+[MUROSYNC] alive #1307 (M v1.3)
+[MUROSYNC] alive #1308 (M v1.3)
+[MUROSYNC] alive #1309 (M v1.3)
+[MUROSYNC] alive #1310 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #1311 (M v1.3)
+[MUROSYNC] alive #1312 (M v1.3)
+[MUROSYNC] alive #1313 (M v1.3)
+[MUROSYNC] alive #1314 (M v1.3)
+[MUROSYNC] alive #1315 (M v1.3)
+[MUROSYNC] alive #1316 (M v1.3)
+[MUROSYNC] alive #1317 (M v1.3)
+[MUROSYNC] alive #1318 (M v1.3)
+[MUROSYNC] alive #1319 (M v1.3)
+[MUROSYNC] alive #1320 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #1321 (M v1.3)
+[MUROSYNC] alive #1322 (M v1.3)
+[MUROSYNC] alive #1323 (M v1.3)
+[MUROSYNC] alive #1324 (M v1.3)
+[MUROSYNC] alive #1325 (M v1.3)
+[MUROSYNC] alive #1326 (M v1.3)
+[MUROSYNC] alive #1327 (M v1.3)
+[MUROSYNC] alive #1328 (M v1.3)
+[MUROSYNC] alive #1329 (M v1.3)
+[MUROSYNC] alive #1330 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #1331 (M v1.3)
+[MUROSYNC] alive #1332 (M v1.3)
+[MUROSYNC] alive #1333 (M v1.3)
+[MUROSYNC] alive #1334 (M v1.3)
+[MUROSYNC] alive #1335 (M v1.3)
+[MUROSYNC] alive #1336 (M v1.3)
+[MUROSYNC] alive #1337 (M v1.3)
+[MUROSYNC] alive #1338 (M v1.3)
+[MUROSYNC] alive #1339 (M v1.3)
+[MUROSYNC] alive #1340 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #1341 (M v1.3)
+[MUROSYNC] alive #1342 (M v1.3)
+[MUROSYNC] alive #1343 (M v1.3)
+[MUROSYNC] alive #1344 (M v1.3)
+[MUROSYNC] alive #1345 (M v1.3)
+[MUROSYNC] alive #1346 (M v1.3)
+
+============================================================
+                    M U R O S Y N C
+      High-Precision Optical Timing & Synchronization
+============================================================
+ Platform : FPGA  XCAU15P
+ CPU      : MicroBlaze
+ Firmware : v1.99  (code 65635)
+ Build    : GT Bring-Up
+ Built at : 2026-05-29 22:53:06 UTC
+            (1780095186 UTC)
+============================================================
+
+	MUROSYNC SERDES | Checking RD-access over AXI
+		AXI OK: TEST_CONST = 0x4D55524F
+	MUROSYNC SERDES | Checking WR/RD-access over AXI
+		TEST_SCRATCH PAT1 pattern 0xA5A55A5A
+		TEST_SCRATCH PAT2 pattern 0x5AA5A55A
+		AXI OK: TEST_SCRATCH write/readback OK
+
+[MUROSYNC] === IP INFO ===
+        Raw          : 0x04000312
+        Mode         : MASTER
+        IP version   : v1.3
+        NUM_CHANNELS : 4
+
+[MUROSYNC] === MASTER FLOW ===
+[MUROSYNC] Phase 1: pattern sweep diagnostic
+
+AXI MUROSYNC SERDES BTING-UP
+	MUROSYNC SERDES | Checking RD-access over AXI
+		AXI OK: TEST_CONST = 0x4D55524F
+	MUROSYNC SERDES | Checking WR/RD-access over AXI
+		TEST_SCRATCH PAT1 pattern 0xA5A55A5A
+		TEST_SCRATCH PAT2 pattern 0x5AA5A55A
+		AXI OK: TEST_SCRATCH write/readback OK
+	MUROSYNC SERDES | Reset sequence
+		Pulse LINK_LATCH_RESET...
+		Pulse GT_RESET_ALL...
+	MUROSYNC SERDES | Set loopback = 0
+	MUROSYNC SERDES | Waiting link up...
+	MUROSYNC SERDES | Link is up, clear sticky latch again...
+	MUROSYNC SERDES | LINK UP! STATUS=0xFFFF0001
+	MUROSYNC SERDES | STATUS=0xFFFF0001
+		LINK_UP            : 1
+		LINK_DOWN_LATCHED  : 0
+		PLL_LOCK_VEC       : 0xF
+		GTPOWERGOOD_VEC    : 0xF
+		TXPMARESETDONE_VEC : 0xF
+		RXPMARESETDONE_VEC : 0xF
+	MUROSYNC SERDES | DBG=0x000000003E1FFFF2
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (post bring-up) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	RXBYTEREALIGN    : 0x0
+
+[PROBE] === trial 1: pattern = 0xAAAAAAAA ===
+
+[PROBE] trial 1 snapshot (running):
+	[DIAG] FSM         : 4 (LOCKED)
+	[DIAG] RX aligned  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	[DIAG] Aligned seen: 0xE [CH3=1 CH2=1 CH1=1 CH0=0]  (sticky)
+	[DIAG] RX charisk  : 0x8
+	[DIAG] Locked      : 1
+	[DIAG] Ever locked : 1  (1 = FSM reached LOCKED at least once)
+	[DIAG] Last state  : 4 (LOCKED)  (last active state before stop)
+	[DIAG] RX data     : 0x52C3BBA626663C3C
+	[DIAG] EXP data    : 0xAAAAAAAAAAAAAAAA
+	[DIAG] Time to lock      : 28625 cycles
+	[DIAG] Locked cycle cnt  : 239114963
+	[DIAG] At-lock data      : 0xD3BB30886E0A3C3C  (valid=1)
+	[DIAG] At-1st-err GOT    : 0x75F630E06A0A3C3C  (valid=1)
+	[DIAG] At-1st-err EXP    : 0xAAAAAAAAAAAAAAAA
+	[DIAG] At-1st-err XOR    : 0xDF5C9A4AC0A09696  (popcount = bit-flip count)
+	[DIAG] Per-CH errors     : CH0=0 CH1=48189 CH2=0 CH3=0
+	[DIAG] RX byte realign   : CH0=0 CH1=9914 CH2=64612 CH3=27350
+	[DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] trial 1 snapshot (after stop):
+	[DIAG] FSM         : 0 (IDLE)
+	[DIAG] RX aligned  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	[DIAG] Aligned seen: 0xE [CH3=1 CH2=1 CH1=1 CH0=0]  (sticky)
+	[DIAG] RX charisk  : 0x4
+	[DIAG] Locked      : 0
+	[DIAG] Ever locked : 1  (1 = FSM reached LOCKED at least once)
+	[DIAG] Last state  : 4 (LOCKED)  (last active state before stop)
+	[DIAG] RX data     : 0x0FDCF6CE1BDB3C3C
+	[DIAG] EXP data    : 0xAAAAAAAAAAAAAAAA
+	[DIAG] Time to lock      : 28625 cycles
+	[DIAG] Locked cycle cnt  : 401213441
+	[DIAG] At-lock data      : 0xD3BB30886E0A3C3C  (valid=1)
+	[DIAG] At-1st-err GOT    : 0x75F630E06A0A3C3C  (valid=1)
+	[DIAG] At-1st-err EXP    : 0xAAAAAAAAAAAAAAAA
+	[DIAG] At-1st-err XOR    : 0xDF5C9A4AC0A09696  (popcount = bit-flip count)
+	[DIAG] Per-CH errors     : CH0=0 CH1=48630 CH2=0 CH3=0
+	[DIAG] RX byte realign   : CH0=0 CH1=13041 CH2=19862 CH3=690
+	[DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] === trial 2: pattern = 0x00000000 ===
+
+[PROBE] trial 2 snapshot (running):
+	[DIAG] FSM         : 4 (LOCKED)
+	[DIAG] RX aligned  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	[DIAG] Aligned seen: 0xE [CH3=1 CH2=1 CH1=1 CH0=0]  (sticky)
+	[DIAG] RX charisk  : 0x0
+	[DIAG] Locked      : 1
+	[DIAG] Ever locked : 1  (1 = FSM reached LOCKED at least once)
+	[DIAG] Last state  : 4 (LOCKED)  (last active state before stop)
+	[DIAG] RX data     : 0x79900091C4C33C3C
+	[DIAG] EXP data    : 0x0000000000000000
+	[DIAG] Time to lock      : 322876 cycles
+	[DIAG] Locked cycle cnt  : 238820703
+	[DIAG] At-lock data      : 0x763D2C650F063C3C  (valid=1)
+	[DIAG] At-1st-err GOT    : 0x763D2C650F063C3C  (valid=1)
+	[DIAG] At-1st-err EXP    : 0x0000000000000000
+	[DIAG] At-1st-err XOR    : 0x763D2C650F063C3C  (popcount = bit-flip count)
+	[DIAG] Per-CH errors     : CH0=0 CH1=40132 CH2=0 CH3=0
+	[DIAG] RX byte realign   : CH0=0 CH1=21375 CH2=15450 CH3=17377
+	[DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] trial 2 snapshot (after stop):
+	[DIAG] FSM         : 0 (IDLE)
+	[DIAG] RX aligned  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	[DIAG] Aligned seen: 0xE [CH3=1 CH2=1 CH1=1 CH0=0]  (sticky)
+	[DIAG] RX charisk  : 0x2
+	[DIAG] Locked      : 0
+	[DIAG] Ever locked : 1  (1 = FSM reached LOCKED at least once)
+	[DIAG] Last state  : 4 (LOCKED)  (last active state before stop)
+	[DIAG] RX data     : 0xDE76603CAD0C3C3C
+	[DIAG] EXP data    : 0x0000000000000000
+	[DIAG] Time to lock      : 322876 cycles
+	[DIAG] Locked cycle cnt  : 401570177
+	[DIAG] At-lock data      : 0x763D2C650F063C3C  (valid=1)
+	[DIAG] At-1st-err GOT    : 0x763D2C650F063C3C  (valid=1)
+	[DIAG] At-1st-err EXP    : 0x0000000000000000
+	[DIAG] At-1st-err XOR    : 0x763D2C650F063C3C  (popcount = bit-flip count)
+	[DIAG] Per-CH errors     : CH0=0 CH1=37984 CH2=0 CH3=0
+	[DIAG] RX byte realign   : CH0=0 CH1=26306 CH2=25311 CH3=32446
+	[DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] === trial 3: pattern = 0xFFFFFFFF ===
+
+[PROBE] trial 3 snapshot (running):
+	[DIAG] FSM         : 4 (LOCKED)
+	[DIAG] RX aligned  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	[DIAG] Aligned seen: 0xE [CH3=1 CH2=1 CH1=1 CH0=0]  (sticky)
+	[DIAG] RX charisk  : 0xE
+	[DIAG] Locked      : 1
+	[DIAG] Ever locked : 1  (1 = FSM reached LOCKED at least once)
+	[DIAG] Last state  : 4 (LOCKED)  (last active state before stop)
+	[DIAG] RX data     : 0x207362200A1F3C3C
+	[DIAG] EXP data    : 0xFFFFFFFFFFFFFFFF
+	[DIAG] Time to lock      : 182688 cycles
+	[DIAG] Locked cycle cnt  : 238960887
+	[DIAG] At-lock data      : 0xF5FF9C12FBFB3C3C  (valid=1)
+	[DIAG] At-1st-err GOT    : 0xF5FF9C12FBFB3C3C  (valid=1)
+	[DIAG] At-1st-err EXP    : 0xFFFFFFFFFFFFFFFF
+	[DIAG] At-1st-err XOR    : 0x0A0063ED0404C3C3  (popcount = bit-flip count)
+	[DIAG] Per-CH errors     : CH0=0 CH1=2228 CH2=0 CH3=0
+	[DIAG] RX byte realign   : CH0=0 CH1=31636 CH2=23155 CH3=48441
+	[DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] trial 3 snapshot (after stop):
+	[DIAG] FSM         : 0 (IDLE)
+	[DIAG] RX aligned  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	[DIAG] Aligned seen: 0xE [CH3=1 CH2=1 CH1=1 CH0=0]  (sticky)
+	[DIAG] RX charisk  : 0xE
+	[DIAG] Locked      : 0
+	[DIAG] Ever locked : 1  (1 = FSM reached LOCKED at least once)
+	[DIAG] Last state  : 4 (LOCKED)  (last active state before stop)
+	[DIAG] RX data     : 0xF767BCFCAC6F3C3C
+	[DIAG] EXP data    : 0xFFFFFFFFFFFFFFFF
+	[DIAG] Time to lock      : 182688 cycles
+	[DIAG] Locked cycle cnt  : 401384842
+	[DIAG] At-lock data      : 0xF5FF9C12FBFB3C3C  (valid=1)
+	[DIAG] At-1st-err GOT    : 0xF5FF9C12FBFB3C3C  (valid=1)
+	[DIAG] At-1st-err EXP    : 0xFFFFFFFFFFFFFFFF
+	[DIAG] At-1st-err XOR    : 0x0A0063ED0404C3C3  (popcount = bit-flip count)
+	[DIAG] Per-CH errors     : CH0=0 CH1=54526 CH2=0 CH3=0
+	[DIAG] RX byte realign   : CH0=0 CH1=36297 CH2=64581 CH3=35777
+	[DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] === trial 4: pattern = 0x55555555 ===
+
+[PROBE] trial 4 snapshot (running):
+	[DIAG] FSM         : 4 (LOCKED)
+	[DIAG] RX aligned  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	[DIAG] Aligned seen: 0xE [CH3=1 CH2=1 CH1=1 CH0=0]  (sticky)
+	[DIAG] RX charisk  : 0x8
+	[DIAG] Locked      : 1
+	[DIAG] Ever locked : 1  (1 = FSM reached LOCKED at least once)
+	[DIAG] Last state  : 4 (LOCKED)  (last active state before stop)
+	[DIAG] RX data     : 0xD0096C6C52123C3C
+	[DIAG] EXP data    : 0x5555555555555555
+	[DIAG] Time to lock      : 1759610 cycles
+	[DIAG] Locked cycle cnt  : 237383965
+	[DIAG] At-lock data      : 0xEDAF90C895953C3C  (valid=1)
+	[DIAG] At-1st-err GOT    : 0xEDAF90C895953C3C  (valid=1)
+	[DIAG] At-1st-err EXP    : 0x5555555555555555
+	[DIAG] At-1st-err XOR    : 0xB8FAC59DC0C06969  (popcount = bit-flip count)
+	[DIAG] Per-CH errors     : CH0=0 CH1=34947 CH2=0 CH3=0
+	[DIAG] RX byte realign   : CH0=0 CH1=43032 CH2=63479 CH3=32072
+	[DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] trial 4 snapshot (after stop):
+	[DIAG] FSM         : 0 (IDLE)
+	[DIAG] RX aligned  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	[DIAG] Aligned seen: 0xE [CH3=1 CH2=1 CH1=1 CH0=0]  (sticky)
+	[DIAG] RX charisk  : 0x6
+	[DIAG] Locked      : 0
+	[DIAG] Ever locked : 1  (1 = FSM reached LOCKED at least once)
+	[DIAG] Last state  : 4 (LOCKED)  (last active state before stop)
+	[DIAG] RX data     : 0x73DF18046D223C3C
+	[DIAG] EXP data    : 0x5555555555555555
+	[DIAG] Time to lock      : 1759610 cycles
+	[DIAG] Locked cycle cnt  : 400458922
+	[DIAG] At-lock data      : 0xEDAF90C895953C3C  (valid=1)
+	[DIAG] At-1st-err GOT    : 0xEDAF90C895953C3C  (valid=1)
+	[DIAG] At-1st-err EXP    : 0x5555555555555555
+	[DIAG] At-1st-err XOR    : 0xB8FAC59DC0C06969  (popcount = bit-flip count)
+	[DIAG] Per-CH errors     : CH0=0 CH1=13779 CH2=0 CH3=0
+	[DIAG] RX byte realign   : CH0=0 CH1=48888 CH2=47286 CH3=15450
+	[DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] === trial 5: pattern = 0x12121212 ===
+
+[PROBE] trial 5 snapshot (running):
+	[DIAG] FSM         : 4 (LOCKED)
+	[DIAG] RX aligned  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	[DIAG] Aligned seen: 0xE [CH3=1 CH2=1 CH1=1 CH0=0]  (sticky)
+	[DIAG] RX charisk  : 0x0
+	[DIAG] Locked      : 1
+	[DIAG] Ever locked : 1  (1 = FSM reached LOCKED at least once)
+	[DIAG] Last state  : 4 (LOCKED)  (last active state before stop)
+	[DIAG] RX data     : 0xC5BB11680C6E3C3C
+	[DIAG] EXP data    : 0x1212121212121212
+	[DIAG] Time to lock      : 26408188 cycles
+	[DIAG] Locked cycle cnt  : 212735397
+	[DIAG] At-lock data      : 0xDE7CA4F306063C3C  (valid=1)
+	[DIAG] At-1st-err GOT    : 0xDE7CA4F306063C3C  (valid=1)
+	[DIAG] At-1st-err EXP    : 0x1212121212121212
+	[DIAG] At-1st-err XOR    : 0xCC6EB6E114142E2E  (popcount = bit-flip count)
+	[DIAG] Per-CH errors     : CH0=0 CH1=63320 CH2=0 CH3=0
+	[DIAG] RX byte realign   : CH0=0 CH1=61246 CH2=42915 CH3=65457
+	[DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] trial 5 snapshot (after stop):
+	[DIAG] FSM         : 0 (IDLE)
+	[DIAG] RX aligned  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	[DIAG] Aligned seen: 0xE [CH3=1 CH2=1 CH1=1 CH0=0]  (sticky)
+	[DIAG] RX charisk  : 0x4
+	[DIAG] Locked      : 0
+	[DIAG] Ever locked : 1  (1 = FSM reached LOCKED at least once)
+	[DIAG] Last state  : 4 (LOCKED)  (last active state before stop)
+	[DIAG] RX data     : 0xDB7E379020003C3C
+	[DIAG] EXP data    : 0x1212121212121212
+	[DIAG] Time to lock      : 26408188 cycles
+	[DIAG] Locked cycle cnt  : 376135863
+	[DIAG] At-lock data      : 0xDE7CA4F306063C3C  (valid=1)
+	[DIAG] At-1st-err GOT    : 0xDE7CA4F306063C3C  (valid=1)
+	[DIAG] At-1st-err EXP    : 0x1212121212121212
+	[DIAG] At-1st-err XOR    : 0xCC6EB6E114142E2E  (popcount = bit-flip count)
+	[DIAG] Per-CH errors     : CH0=0 CH1=29007 CH2=0 CH3=0
+	[DIAG] RX byte realign   : CH0=0 CH1=3525 CH2=44764 CH3=6626
+	[DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] === trial 6: pattern = 0x12341234 ===
+
+[PROBE] trial 6 snapshot (running):
+	[DIAG] FSM         : 4 (LOCKED)
+	[DIAG] RX aligned  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	[DIAG] Aligned seen: 0xE [CH3=1 CH2=1 CH1=1 CH0=0]  (sticky)
+	[DIAG] RX charisk  : 0xA
+	[DIAG] Locked      : 1
+	[DIAG] Ever locked : 1  (1 = FSM reached LOCKED at least once)
+	[DIAG] Last state  : 4 (LOCKED)  (last active state before stop)
+	[DIAG] RX data     : 0xED1113040A0C3C3C
+	[DIAG] EXP data    : 0x1234123412341234
+	[DIAG] Time to lock      : 41456789 cycles
+	[DIAG] Locked cycle cnt  : 197686781
+	[DIAG] At-lock data      : 0x8CCE0C2476063C3C  (valid=1)
+	[DIAG] At-1st-err GOT    : 0xAE6F860814163C3C  (valid=1)
+	[DIAG] At-1st-err EXP    : 0x1234123412341234
+	[DIAG] At-1st-err XOR    : 0xBC5B943C06222E08  (popcount = bit-flip count)
+	[DIAG] Per-CH errors     : CH0=0 CH1=21018 CH2=0 CH3=0
+	[DIAG] RX byte realign   : CH0=0 CH1=12619 CH2=32903 CH3=30956
+	[DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] trial 6 snapshot (after stop):
+	[DIAG] FSM         : 0 (IDLE)
+	[DIAG] RX aligned  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	[DIAG] Aligned seen: 0xE [CH3=1 CH2=1 CH1=1 CH0=0]  (sticky)
+	[DIAG] RX charisk  : 0x8
+	[DIAG] Locked      : 0
+	[DIAG] Ever locked : 1  (1 = FSM reached LOCKED at least once)
+	[DIAG] Last state  : 4 (LOCKED)  (last active state before stop)
+	[DIAG] RX data     : 0xEF3F0142DD993C3C
+	[DIAG] EXP data    : 0x1234123412341234
+	[DIAG] Time to lock      : 41456789 cycles
+	[DIAG] Locked cycle cnt  : 361087254
+	[DIAG] At-lock data      : 0x8CCE0C2476063C3C  (valid=1)
+	[DIAG] At-1st-err GOT    : 0xAE6F860814163C3C  (valid=1)
+	[DIAG] At-1st-err EXP    : 0x1234123412341234
+	[DIAG] At-1st-err XOR    : 0xBC5B943C06222E08  (popcount = bit-flip count)
+	[DIAG] Per-CH errors     : CH0=0 CH1=20725 CH2=0 CH3=0
+	[DIAG] RX byte realign   : CH0=0 CH1=18023 CH2=51852 CH3=17340
+	[DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] === trial 7: pattern = 0x12345678 ===
+
+[PROBE] trial 7 snapshot (running):
+	[DIAG] FSM         : 3 (SEARCH)
+	[DIAG] RX aligned  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	[DIAG] Aligned seen: 0xE [CH3=1 CH2=1 CH1=1 CH0=0]  (sticky)
+	[DIAG] RX charisk  : 0xA
+	[DIAG] Locked      : 0
+	[DIAG] Ever locked : 0  (1 = FSM reached LOCKED at least once)
+	[DIAG] Last state  : 3 (SEARCH)  (last active state before stop)
+	[DIAG] RX data     : 0xA7F3C20E6D893C3C
+	[DIAG] EXP data    : 0x1234123412341234
+	[DIAG] Time to lock      : 239143495 cycles
+	[DIAG] Locked cycle cnt  : 0
+	[DIAG] At-lock data      : N/A (snapshot not taken, valid=0)
+	[DIAG] At-1st-err data   : N/A (no errors observed, valid=0)
+	[DIAG] Per-CH errors     : CH0=0 CH1=0 CH2=0 CH3=0
+	[DIAG] RX byte realign   : CH0=0 CH1=24556 CH2=63726 CH3=26219
+	[DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] trial 7 snapshot (after stop):
+	[DIAG] FSM         : 0 (IDLE)
+	[DIAG] RX aligned  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	[DIAG] Aligned seen: 0xE [CH3=1 CH2=1 CH1=1 CH0=0]  (sticky)
+	[DIAG] RX charisk  : 0x0
+	[DIAG] Locked      : 0
+	[DIAG] Ever locked : 1  (1 = FSM reached LOCKED at least once)
+	[DIAG] Last state  : 4 (LOCKED)  (last active state before stop)
+	[DIAG] RX data     : 0x6FFB243E6C6C3C3C
+	[DIAG] EXP data    : 0x1234567812345678
+	[DIAG] Time to lock      : 316821760 cycles
+	[DIAG] Locked cycle cnt  : 44058364
+	[DIAG] At-lock data      : 0x7C5776DB06763C3C  (valid=1)
+	[DIAG] At-1st-err GOT    : 0xF55FE37916063C3C  (valid=1)
+	[DIAG] At-1st-err EXP    : 0x1234567812345678
+	[DIAG] At-1st-err XOR    : 0xE76BB50104326A44  (popcount = bit-flip count)
+	[DIAG] Per-CH errors     : CH0=0 CH1=144 CH2=0 CH3=0
+	[DIAG] RX byte realign   : CH0=0 CH1=27387 CH2=18605 CH3=21447
+	[DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[MUROSYNC] === pattern sweep complete, entering main loop ===
+[MUROSYNC] alive #0 (M v1.3)
+[MUROSYNC] SERDES LINK UP
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #1 (M v1.3)
+[MUROSYNC] alive #2 (M v1.3)
+[MUROSYNC] alive #3 (M v1.3)
+[MUROSYNC] alive #4 (M v1.3)
+[MUROSYNC] alive #5 (M v1.3)
+[MUROSYNC] alive #6 (M v1.3)
+[MUROSYNC] alive #7 (M v1.3)
+[MUROSYNC] alive #8 (M v1.3)
+[MUROSYNC] alive #9 (M v1.3)
+[MUROSYNC] alive #10 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #11 (M v1.3)
+[MUROSYNC] alive #12 (M v1.3)
+[MUROSYNC] alive #13 (M v1.3)
+[MUROSYNC] alive #14 (M v1.3)
+[MUROSYNC] alive #15 (M v1.3)
+[MUROSYNC] alive #16 (M v1.3)
+[MUROSYNC] alive #17 (M v1.3)
+[MUROSYNC] alive #18 (M v1.3)
+[MUROSYNC] alive #19 (M v1.3)
+[MUROSYNC] alive #20 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #21 (M v1.3)
+[MUROSYNC] alive #22 (M v1.3)
+[MUROSYNC] alive #23 (M v1.3)
+[MUROSYNC] alive #24 (M v1.3)
+[MUROSYNC] alive #25 (M v1.3)
+[MUROSYNC] alive #26 (M v1.3)
+[MUROSYNC] alive #27 (M v1.3)
+[MUROSYNC] alive #28 (M v1.3)
+[MUROSYNC] alive #29 (M v1.3)
+[MUROSYNC] alive #30 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #31 (M v1.3)
+[MUROSYNC] alive #32 (M v1.3)
+[MUROSYNC] alive #33 (M v1.3)
+[MUROSYNC] alive #34 (M v1.3)
+[MUROSYNC] alive #35 (M v1.3)
+[MUROSYNC] alive #36 (M v1.3)
+[MUROSYNC] alive #37 (M v1.3)
+[MUROSYNC] alive #38 (M v1.3)
+[MUROSYNC] alive #39 (M v1.3)
+[MUROSYNC] alive #40 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #41 (M v1.3)
+[MUROSYNC] alive #42 (M v1.3)
+[MUROSYNC] alive #43 (M v1.3)
+[MUROSYNC] alive #44 (M v1.3)
+[MUROSYNC] alive #45 (M v1.3)
+[MUROSYNC] alive #46 (M v1.3)
+[MUROSYNC] alive #47 (M v1.3)
+[MUROSYNC] alive #48 (M v1.3)
+[MUROSYNC] alive #49 (M v1.3)
+[MUROSYNC] alive #50 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #51 (M v1.3)
+[MUROSYNC] alive #52 (M v1.3)
+[MUROSYNC] alive #53 (M v1.3)
+[MUROSYNC] alive #54 (M v1.3)
+[MUROSYNC] alive #55 (M v1.3)
+[MUROSYNC] alive #56 (M v1.3)
+[MUROSYNC] alive #57 (M v1.3)
+[MUROSYNC] alive #58 (M v1.3)
+[MUROSYNC] alive #59 (M v1.3)
+[MUROSYNC] alive #60 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #61 (M v1.3)
+[MUROSYNC] alive #62 (M v1.3)
+[MUROSYNC] alive #63 (M v1.3)
+[MUROSYNC] alive #64 (M v1.3)
+[MUROSYNC] alive #65 (M v1.3)
+[MUROSYNC] alive #66 (M v1.3)
+[MUROSYNC] alive #67 (M v1.3)
+[MUROSYNC] alive #68 (M v1.3)
+[MUROSYNC] alive #69 (M v1.3)
+[MUROSYNC] alive #70 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #71 (M v1.3)
+[MUROSYNC] alive #72 (M v1.3)
+[MUROSYNC] alive #73 (M v1.3)
+[MUROSYNC] alive #74 (M v1.3)
+[MUROSYNC] alive #75 (M v1.3)
+[MUROSYNC] alive #76 (M v1.3)
+[MUROSYNC] alive #77 (M v1.3)
+[MUROSYNC] alive #78 (M v1.3)
+[MUROSYNC] alive #79 (M v1.3)
+[MUROSYNC] alive #80 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #81 (M v1.3)
+[MUROSYNC] alive #82 (M v1.3)
+[MUROSYNC] alive #83 (M v1.3)
+[MUROSYNC] alive #84 (M v1.3)
+[MUROSYNC] alive #85 (M v1.3)
+[MUROSYNC] alive #86 (M v1.3)
+[MUROSYNC] alive #87 (M v1.3)
+[MUROSYNC] alive #88 (M v1.3)
+[MUROSYNC] alive #89 (M v1.3)
+[MUROSYNC] alive #90 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #91 (M v1.3)
+[MUROSYNC] alive #92 (M v1.3)
+[MUROSYNC] alive #93 (M v1.3)
+[MUROSYNC] alive #94 (M v1.3)
+[MUROSYNC] alive #95 (M v1.3)
+[MUROSYNC] alive #96 (M v1.3)
+[MUROSYNC] alive #97 (M v1.3)
+[MUROSYNC] alive #98 (M v1.3)
+[MUROSYNC] alive #99 (M v1.3)
+[MUROSYNC] alive #100 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #101 (M v1.3)
+[MUROSYNC] alive #102 (M v1.3)
+[MUROSYNC] alive #103 (M v1.3)
+[MUROSYNC] alive #104 (M v1.3)
+[MUROSYNC] alive #105 (M v1.3)
+[MUROSYNC] alive #106 (M v1.3)
+[MUROSYNC] alive #107 (M v1.3)
+[MUROSYNC] alive #108 (M v1.3)
+[MUROSYNC] alive #109 (M v1.3)
+[MUROSYNC] alive #110 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #111 (M v1.3)
+[MUROSYNC] alive #112 (M v1.3)
+[MUROSYNC] alive #113 (M v1.3)
+[MUROSYNC] alive #114 (M v1.3)
+[MUROSYNC] alive #115 (M v1.3)
+[MUROSYNC] alive #116 (M v1.3)
+[MUROSYNC] alive #117 (M v1.3)
+[MUROSYNC] alive #118 (M v1.3)
+[MUROSYNC] alive #119 (M v1.3)
+[MUROSYNC] alive #120 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #121 (M v1.3)
+[MUROSYNC] alive #122 (M v1.3)
+[MUROSYNC] alive #123 (M v1.3)
+[MUROSYNC] alive #124 (M v1.3)
+[MUROSYNC] alive #125 (M v1.3)
+[MUROSYNC] alive #126 (M v1.3)
+[MUROSYNC] alive #127 (M v1.3)
+[MUROSYNC] alive #128 (M v1.3)
+[MUROSYNC] alive #129 (M v1.3)
+[MUROSYNC] alive #130 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #131 (M v1.3)
+[MUROSYNC] alive #132 (M v1.3)
+[MUROSYNC] alive #133 (M v1.3)
+[MUROSYNC] alive #134 (M v1.3)
+[MUROSYNC] alive #135 (M v1.3)
+[MUROSYNC] alive #136 (M v1.3)
+[MUROSYNC] alive #137 (M v1.3)
+[MUROSYNC] alive #138 (M v1.3)
+[MUROSYNC] alive #139 (M v1.3)
+[MUROSYNC] alive #140 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #141 (M v1.3)
+[MUROSYNC] alive #142 (M v1.3)
+[MUROSYNC] alive #143 (M v1.3)
+[MUROSYNC] alive #144 (M v1.3)
+[MUROSYNC] alive #145 (M v1.3)
+[MUROSYNC] alive #146 (M v1.3)
+[MUROSYNC] alive #147 (M v1.3)
+[MUROSYNC] alive #148 (M v1.3)
+[MUROSYNC] alive #149 (M v1.3)
+[MUROSYNC] alive #150 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #151 (M v1.3)
+[MUROSYNC] alive #152 (M v1.3)
+[MUROSYNC] alive #153 (M v1.3)
+[MUROSYNC] alive #154 (M v1.3)
+[MUROSYNC] alive #155 (M v1.3)
+[MUROSYNC] alive #156 (M v1.3)
+[MUROSYNC] alive #157 (M v1.3)
+[MUROSYNC] alive #158 (M v1.3)
+[MUROSYNC] alive #159 (M v1.3)
+[MUROSYNC] alive #160 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #161 (M v1.3)
+[MUROSYNC] alive #162 (M v1.3)
+[MUROSYNC] alive #163 (M v1.3)
+[MUROSYNC] alive #164 (M v1.3)
+[MUROSYNC] alive #165 (M v1.3)
+[MUROSYNC] alive #166 (M v1.3)
+[MUROSYNC] alive #167 (M v1.3)
+[MUROSYNC] alive #168 (M v1.3)
+[MUROSYNC] alive #169 (M v1.3)
+[MUROSYNC] alive #170 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #171 (M v1.3)
+[MUROSYNC] alive #172 (M v1.3)
+[MUROSYNC] alive #173 (M v1.3)
+[MUROSYNC] alive #174 (M v1.3)
+[MUROSYNC] alive #175 (M v1.3)
+[MUROSYNC] alive #176 (M v1.3)
+[MUROSYNC] alive #177 (M v1.3)
+[MUROSYNC] alive #178 (M v1.3)
+[MUROSYNC] alive #179 (M v1.3)
+[MUROSYNC] alive #180 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #181 (M v1.3)
+[MUROSYNC] alive #182 (M v1.3)
+[MUROSYNC] alive #183 (M v1.3)
+[MUROSYNC] alive #184 (M v1.3)
+[MUROSYNC] alive #185 (M v1.3)
+[MUROSYNC] alive #186 (M v1.3)
+[MUROSYNC] alive #187 (M v1.3)
+[MUROSYNC] alive #188 (M v1.3)
+[MUROSYNC] alive #189 (M v1.3)
+[MUROSYNC] alive #190 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #191 (M v1.3)
+[MUROSYNC] alive #192 (M v1.3)
+[MUROSYNC] alive #193 (M v1.3)
+[MUROSYNC] alive #194 (M v1.3)
+[MUROSYNC] alive #195 (M v1.3)
+[MUROSYNC] alive #196 (M v1.3)
+[MUROSYNC] alive #197 (M v1.3)
+[MUROSYNC] alive #198 (M v1.3)
+[MUROSYNC] alive #199 (M v1.3)
+[MUROSYNC] alive #200 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #201 (M v1.3)
+[MUROSYNC] alive #202 (M v1.3)
+[MUROSYNC] alive #203 (M v1.3)
+[MUROSYNC] alive #204 (M v1.3)
+[MUROSYNC] alive #205 (M v1.3)
+[MUROSYNC] alive #206 (M v1.3)
+[MUROSYNC] alive #207 (M v1.3)
+[MUROSYNC] alive #208 (M v1.3)
+[MUROSYNC] alive #209 (M v1.3)
+[MUROSYNC] alive #210 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #211 (M v1.3)
+[MUROSYNC] alive #212 (M v1.3)
+[MUROSYNC] alive #213 (M v1.3)
+[MUROSYNC] alive #214 (M v1.3)
+[MUROSYNC] alive #215 (M v1.3)
+[MUROSYNC] alive #216 (M v1.3)
+[MUROSYNC] alive #217 (M v1.3)
+[MUROSYNC] alive #218 (M v1.3)
+[MUROSYNC] alive #219 (M v1.3)
+[MUROSYNC] alive #220 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #221 (M v1.3)
+
+============================================================
+                    M U R O S Y N C
+      High-Precision Optical Timing & Synchronization
+============================================================
+ Platform : FPGA  XCAU15P
+ CPU      : MicroBlaze
+ Firmware : v1.101  (code 65637)
+ Build    : GT Bring-Up
+ Built at : 2026-05-29 22:57:26 UTC
+            (1780095445 UTC)
+============================================================
+
+	MUROSYNC SERDES | Checking RD-access over AXI
+		AXI OK: TEST_CONST = 0x4D55524F
+	MUROSYNC SERDES | Checking WR/RD-access over AXI
+		TEST_SCRATCH PAT1 pattern 0xA5A55A5A
+		TEST_SCRATCH PAT2 pattern 0x5AA5A55A
+		AXI OK: TEST_SCRATCH write/readback OK
+
+[MUROSYNC] === IP INFO ===
+        Raw          : 0x04000312
+        Mode         : MASTER
+        IP version   : v1.3
+        NUM_CHANNELS : 4
+
+[MUROSYNC] === MASTER FLOW ===
+[MUROSYNC] Phase 1: pattern sweep diagnostic
+
+AXI MUROSYNC SERDES BTING-UP
+	MUROSYNC SERDES | Checking RD-access over AXI
+		AXI OK: TEST_CONST = 0x4D55524F
+	MUROSYNC SERDES | Checking WR/RD-access over AXI
+		TEST_SCRATCH PAT1 pattern 0xA5A55A5A
+		TEST_SCRATCH PAT2 pattern 0x5AA5A55A
+		AXI OK: TEST_SCRATCH write/readback OK
+	MUROSYNC SERDES | Reset sequence
+		Pulse LINK_LATCH_RESET...
+		Pulse GT_RESET_ALL...
+	MUROSYNC SERDES | Set loopback = 1
+	MUROSYNC SERDES | Waiting link up...
+	MUROSYNC SERDES | Link is up, clear sticky latch again...
+	MUROSYNC SERDES | LINK UP! STATUS=0xFFFF0001
+	MUROSYNC SERDES | STATUS=0xFFFF0001
+		LINK_UP            : 1
+		LINK_DOWN_LATCHED  : 0
+		PLL_LOCK_VEC       : 0xF
+		GTPOWERGOOD_VEC    : 0xF
+		TXPMARESETDONE_VEC : 0xF
+		RXPMARESETDONE_VEC : 0xF
+	MUROSYNC SERDES | DBG=0x000000003E1FFFF2
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (post bring-up) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+	RXBYTEREALIGN    : 0x0
+
+[PROBE] === trial 1: pattern = 0xAAAAAAAA ===
+
+[PROBE] trial 1 snapshot (running):
+	[DIAG] FSM         : 4 (LOCKED)
+	[DIAG] RX aligned  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	[DIAG] Aligned seen: 0xF [CH3=1 CH2=1 CH1=1 CH0=1]  (sticky)
+	[DIAG] RX charisk  : 0x0
+	[DIAG] Locked      : 1
+	[DIAG] Ever locked : 1  (1 = FSM reached LOCKED at least once)
+	[DIAG] Last state  : 4 (LOCKED)  (last active state before stop)
+	[DIAG] RX data     : 0xAAAAAAAAAAAAAAAA
+	[DIAG] EXP data    : 0xAAAAAAAAAAAAAAAA
+	[DIAG] Time to lock      : 4119 cycles
+	[DIAG] Locked cycle cnt  : 239139460
+	[DIAG] At-lock data      : 0xBCBCBCBCAAAAAAAA  (valid=1)
+	[DIAG] At-1st-err GOT    : 0xAAAAAAAAA8AAAAAA  (valid=1)
+	[DIAG] At-1st-err EXP    : 0xAAAAAAAAAAAAAAAA
+	[DIAG] At-1st-err XOR    : 0x0000000002000000  (popcount = bit-flip count)
+	[DIAG] Per-CH errors     : CH0=0 CH1=337 CH2=0 CH3=0
+	[DIAG] RX byte realign   : CH0=152 CH1=1380 CH2=34645 CH3=59162
+	[DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] trial 1 snapshot (after stop):
+	[DIAG] FSM         : 0 (IDLE)
+	[DIAG] RX aligned  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	[DIAG] Aligned seen: 0xF [CH3=1 CH2=1 CH1=1 CH0=1]  (sticky)
+	[DIAG] RX charisk  : 0x0
+	[DIAG] Locked      : 0
+	[DIAG] Ever locked : 1  (1 = FSM reached LOCKED at least once)
+	[DIAG] Last state  : 4 (LOCKED)  (last active state before stop)
+	[DIAG] RX data     : 0x0000000000000000
+	[DIAG] EXP data    : 0xAAAAAAAAAAAAAAAA
+	[DIAG] Time to lock      : 4119 cycles
+	[DIAG] Locked cycle cnt  : 400912436
+	[DIAG] At-lock data      : 0xBCBCBCBCAAAAAAAA  (valid=1)
+	[DIAG] At-1st-err GOT    : 0xAAAAAAAAA8AAAAAA  (valid=1)
+	[DIAG] At-1st-err EXP    : 0xAAAAAAAAAAAAAAAA
+	[DIAG] At-1st-err XOR    : 0x0000000002000000  (popcount = bit-flip count)
+	[DIAG] Per-CH errors     : CH0=0 CH1=378 CH2=0 CH3=0
+	[DIAG] RX byte realign   : CH0=152 CH1=1380 CH2=34645 CH3=59162
+	[DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] === trial 2: pattern = 0x00000000 ===
+
+[PROBE] trial 2 snapshot (running):
+	[DIAG] FSM         : 4 (LOCKED)
+	[DIAG] RX aligned  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	[DIAG] Aligned seen: 0xF [CH3=1 CH2=1 CH1=1 CH0=1]  (sticky)
+	[DIAG] RX charisk  : 0x0
+	[DIAG] Locked      : 1
+	[DIAG] Ever locked : 1  (1 = FSM reached LOCKED at least once)
+	[DIAG] Last state  : 4 (LOCKED)  (last active state before stop)
+	[DIAG] RX data     : 0x0000000000000000
+	[DIAG] EXP data    : 0x0000000000000000
+	[DIAG] Time to lock      : 2 cycles
+	[DIAG] Locked cycle cnt  : 239143549
+	[DIAG] At-lock data      : 0x0000000000000000  (valid=1)
+	[DIAG] At-1st-err GOT    : 0x00000000AAAAAAAA  (valid=1)
+	[DIAG] At-1st-err EXP    : 0x0000000000000000
+	[DIAG] At-1st-err XOR    : 0x00000000AAAAAAAA  (popcount = bit-flip count)
+	[DIAG] Per-CH errors     : CH0=0 CH1=346 CH2=0 CH3=0
+	[DIAG] RX byte realign   : CH0=152 CH1=1380 CH2=34645 CH3=59162
+	[DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] trial 2 snapshot (after stop):
+	[DIAG] FSM         : 0 (IDLE)
+	[DIAG] RX aligned  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	[DIAG] Aligned seen: 0xF [CH3=1 CH2=1 CH1=1 CH0=1]  (sticky)
+	[DIAG] RX charisk  : 0x0
+	[DIAG] Locked      : 0
+	[DIAG] Ever locked : 1  (1 = FSM reached LOCKED at least once)
+	[DIAG] Last state  : 4 (LOCKED)  (last active state before stop)
+	[DIAG] RX data     : 0x0000000000000000
+	[DIAG] EXP data    : 0x0000000000000000
+	[DIAG] Time to lock      : 2 cycles
+	[DIAG] Locked cycle cnt  : 399940037
+	[DIAG] At-lock data      : 0x0000000000000000  (valid=1)
+	[DIAG] At-1st-err GOT    : 0x00000000AAAAAAAA  (valid=1)
+	[DIAG] At-1st-err EXP    : 0x0000000000000000
+	[DIAG] At-1st-err XOR    : 0x00000000AAAAAAAA  (popcount = bit-flip count)
+	[DIAG] Per-CH errors     : CH0=0 CH1=433 CH2=0 CH3=0
+	[DIAG] RX byte realign   : CH0=152 CH1=1380 CH2=34645 CH3=59162
+	[DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] === trial 3: pattern = 0xFFFFFFFF ===
+
+[PROBE] trial 3 snapshot (running):
+	[DIAG] FSM         : 4 (LOCKED)
+	[DIAG] RX aligned  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	[DIAG] Aligned seen: 0xF [CH3=1 CH2=1 CH1=1 CH0=1]  (sticky)
+	[DIAG] RX charisk  : 0x0
+	[DIAG] Locked      : 1
+	[DIAG] Ever locked : 1  (1 = FSM reached LOCKED at least once)
+	[DIAG] Last state  : 4 (LOCKED)  (last active state before stop)
+	[DIAG] RX data     : 0xFFFFFFFFFFFFFFFF
+	[DIAG] EXP data    : 0xFFFFFFFFFFFFFFFF
+	[DIAG] Time to lock      : 4127 cycles
+	[DIAG] Locked cycle cnt  : 239139426
+	[DIAG] At-lock data      : 0xBCBCBCBCFFFFFFFF  (valid=1)
+	[DIAG] At-1st-err GOT    : 0xFFFFFFFFFFFEFFFF  (valid=1)
+	[DIAG] At-1st-err EXP    : 0xFFFFFFFFFFFFFFFF
+	[DIAG] At-1st-err XOR    : 0x0000000000010000  (popcount = bit-flip count)
+	[DIAG] Per-CH errors     : CH0=0 CH1=414 CH2=0 CH3=0
+	[DIAG] RX byte realign   : CH0=152 CH1=1380 CH2=34645 CH3=59162
+	[DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] trial 3 snapshot (after stop):
+	[DIAG] FSM         : 0 (IDLE)
+	[DIAG] RX aligned  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	[DIAG] Aligned seen: 0xF [CH3=1 CH2=1 CH1=1 CH0=1]  (sticky)
+	[DIAG] RX charisk  : 0x0
+	[DIAG] Locked      : 0
+	[DIAG] Ever locked : 1  (1 = FSM reached LOCKED at least once)
+	[DIAG] Last state  : 4 (LOCKED)  (last active state before stop)
+	[DIAG] RX data     : 0x0000000000000000
+	[DIAG] EXP data    : 0xFFFFFFFFFFFFFFFF
+	[DIAG] Time to lock      : 4127 cycles
+	[DIAG] Locked cycle cnt  : 400912411
+	[DIAG] At-lock data      : 0xBCBCBCBCFFFFFFFF  (valid=1)
+	[DIAG] At-1st-err GOT    : 0xFFFFFFFFFFFEFFFF  (valid=1)
+	[DIAG] At-1st-err EXP    : 0xFFFFFFFFFFFFFFFF
+	[DIAG] At-1st-err XOR    : 0x0000000000010000  (popcount = bit-flip count)
+	[DIAG] Per-CH errors     : CH0=0 CH1=465 CH2=0 CH3=0
+	[DIAG] RX byte realign   : CH0=152 CH1=1380 CH2=34645 CH3=59162
+	[DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] === trial 4: pattern = 0x55555555 ===
+
+[PROBE] trial 4 snapshot (running):
+	[DIAG] FSM         : 4 (LOCKED)
+	[DIAG] RX aligned  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	[DIAG] Aligned seen: 0xF [CH3=1 CH2=1 CH1=1 CH0=1]  (sticky)
+	[DIAG] RX charisk  : 0x0
+	[DIAG] Locked      : 1
+	[DIAG] Ever locked : 1  (1 = FSM reached LOCKED at least once)
+	[DIAG] Last state  : 4 (LOCKED)  (last active state before stop)
+	[DIAG] RX data     : 0x5555555555555555
+	[DIAG] EXP data    : 0x5555555555555555
+	[DIAG] Time to lock      : 4135 cycles
+	[DIAG] Locked cycle cnt  : 239139444
+	[DIAG] At-lock data      : 0xBCBC555555555555  (valid=1)
+	[DIAG] At-1st-err GOT    : 0x5555555555545555  (valid=1)
+	[DIAG] At-1st-err EXP    : 0x5555555555555555
+	[DIAG] At-1st-err XOR    : 0x0000000000010000  (popcount = bit-flip count)
+	[DIAG] Per-CH errors     : CH0=0 CH1=406 CH2=0 CH3=0
+	[DIAG] RX byte realign   : CH0=152 CH1=1380 CH2=34645 CH3=59162
+	[DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] trial 4 snapshot (after stop):
+	[DIAG] FSM         : 0 (IDLE)
+	[DIAG] RX aligned  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	[DIAG] Aligned seen: 0xF [CH3=1 CH2=1 CH1=1 CH0=1]  (sticky)
+	[DIAG] RX charisk  : 0x0
+	[DIAG] Locked      : 0
+	[DIAG] Ever locked : 1  (1 = FSM reached LOCKED at least once)
+	[DIAG] Last state  : 4 (LOCKED)  (last active state before stop)
+	[DIAG] RX data     : 0x0000000000000000
+	[DIAG] EXP data    : 0x5555555555555555
+	[DIAG] Time to lock      : 4135 cycles
+	[DIAG] Locked cycle cnt  : 400912408
+	[DIAG] At-lock data      : 0xBCBC555555555555  (valid=1)
+	[DIAG] At-1st-err GOT    : 0x5555555555545555  (valid=1)
+	[DIAG] At-1st-err EXP    : 0x5555555555555555
+	[DIAG] At-1st-err XOR    : 0x0000000000010000  (popcount = bit-flip count)
+	[DIAG] Per-CH errors     : CH0=0 CH1=447 CH2=0 CH3=0
+	[DIAG] RX byte realign   : CH0=152 CH1=1380 CH2=34645 CH3=59162
+	[DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] === trial 5: pattern = 0x12121212 ===
+
+[PROBE] trial 5 snapshot (running):
+	[DIAG] FSM         : 4 (LOCKED)
+	[DIAG] RX aligned  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	[DIAG] Aligned seen: 0xF [CH3=1 CH2=1 CH1=1 CH0=1]  (sticky)
+	[DIAG] RX charisk  : 0x0
+	[DIAG] Locked      : 1
+	[DIAG] Ever locked : 1  (1 = FSM reached LOCKED at least once)
+	[DIAG] Last state  : 4 (LOCKED)  (last active state before stop)
+	[DIAG] RX data     : 0x1212121212121212
+	[DIAG] EXP data    : 0x1212121212121212
+	[DIAG] Time to lock      : 4136 cycles
+	[DIAG] Locked cycle cnt  : 239139445
+	[DIAG] At-lock data      : 0x1212121212121212  (valid=1)
+	[DIAG] At-1st-err GOT    : 0x1212121210121212  (valid=1)
+	[DIAG] At-1st-err EXP    : 0x1212121212121212
+	[DIAG] At-1st-err XOR    : 0x0000000002000000  (popcount = bit-flip count)
+	[DIAG] Per-CH errors     : CH0=0 CH1=461 CH2=0 CH3=0
+	[DIAG] RX byte realign   : CH0=152 CH1=1380 CH2=34645 CH3=59162
+	[DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] trial 5 snapshot (after stop):
+	[DIAG] FSM         : 0 (IDLE)
+	[DIAG] RX aligned  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	[DIAG] Aligned seen: 0xF [CH3=1 CH2=1 CH1=1 CH0=1]  (sticky)
+	[DIAG] RX charisk  : 0x0
+	[DIAG] Locked      : 0
+	[DIAG] Ever locked : 1  (1 = FSM reached LOCKED at least once)
+	[DIAG] Last state  : 4 (LOCKED)  (last active state before stop)
+	[DIAG] RX data     : 0x0000000000000000
+	[DIAG] EXP data    : 0x1212121212121212
+	[DIAG] Time to lock      : 4136 cycles
+	[DIAG] Locked cycle cnt  : 400912416
+	[DIAG] At-lock data      : 0x1212121212121212  (valid=1)
+	[DIAG] At-1st-err GOT    : 0x1212121210121212  (valid=1)
+	[DIAG] At-1st-err EXP    : 0x1212121212121212
+	[DIAG] At-1st-err XOR    : 0x0000000002000000  (popcount = bit-flip count)
+	[DIAG] Per-CH errors     : CH0=0 CH1=572 CH2=0 CH3=0
+	[DIAG] RX byte realign   : CH0=152 CH1=1380 CH2=34645 CH3=59162
+	[DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] === trial 6: pattern = 0x12341234 ===
+
+[PROBE] trial 6 snapshot (running):
+	[DIAG] FSM         : 4 (LOCKED)
+	[DIAG] RX aligned  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	[DIAG] Aligned seen: 0xF [CH3=1 CH2=1 CH1=1 CH0=1]  (sticky)
+	[DIAG] RX charisk  : 0x0
+	[DIAG] Locked      : 1
+	[DIAG] Ever locked : 1  (1 = FSM reached LOCKED at least once)
+	[DIAG] Last state  : 4 (LOCKED)  (last active state before stop)
+	[DIAG] RX data     : 0x1234123412341234
+	[DIAG] EXP data    : 0x1234123412341234
+	[DIAG] Time to lock      : 4117 cycles
+	[DIAG] Locked cycle cnt  : 239139469
+	[DIAG] At-lock data      : 0xBCBCBCBC12341234  (valid=1)
+	[DIAG] At-1st-err GOT    : 0x1234123410341234  (valid=1)
+	[DIAG] At-1st-err EXP    : 0x1234123412341234
+	[DIAG] At-1st-err XOR    : 0x0000000002000000  (popcount = bit-flip count)
+	[DIAG] Per-CH errors     : CH0=0 CH1=249 CH2=0 CH3=0
+	[DIAG] RX byte realign   : CH0=152 CH1=1380 CH2=34645 CH3=59162
+	[DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] trial 6 snapshot (after stop):
+	[DIAG] FSM         : 0 (IDLE)
+	[DIAG] RX aligned  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	[DIAG] Aligned seen: 0xF [CH3=1 CH2=1 CH1=1 CH0=1]  (sticky)
+	[DIAG] RX charisk  : 0x0
+	[DIAG] Locked      : 0
+	[DIAG] Ever locked : 1  (1 = FSM reached LOCKED at least once)
+	[DIAG] Last state  : 4 (LOCKED)  (last active state before stop)
+	[DIAG] RX data     : 0x0000000000000000
+	[DIAG] EXP data    : 0x1234123412341234
+	[DIAG] Time to lock      : 4117 cycles
+	[DIAG] Locked cycle cnt  : 400912435
+	[DIAG] At-lock data      : 0xBCBCBCBC12341234  (valid=1)
+	[DIAG] At-1st-err GOT    : 0x1234123410341234  (valid=1)
+	[DIAG] At-1st-err EXP    : 0x1234123412341234
+	[DIAG] At-1st-err XOR    : 0x0000000002000000  (popcount = bit-flip count)
+	[DIAG] Per-CH errors     : CH0=0 CH1=316 CH2=0 CH3=0
+	[DIAG] RX byte realign   : CH0=152 CH1=1380 CH2=34645 CH3=59162
+	[DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] === trial 7: pattern = 0x12345678 ===
+
+[PROBE] trial 7 snapshot (running):
+	[DIAG] FSM         : 4 (LOCKED)
+	[DIAG] RX aligned  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	[DIAG] Aligned seen: 0xF [CH3=1 CH2=1 CH1=1 CH0=1]  (sticky)
+	[DIAG] RX charisk  : 0x0
+	[DIAG] Locked      : 1
+	[DIAG] Ever locked : 1  (1 = FSM reached LOCKED at least once)
+	[DIAG] Last state  : 4 (LOCKED)  (last active state before stop)
+	[DIAG] RX data     : 0x1234567812345678
+	[DIAG] EXP data    : 0x1234567812345678
+	[DIAG] Time to lock      : 29 cycles
+	[DIAG] Locked cycle cnt  : 239143527
+	[DIAG] At-lock data      : 0x000000001234BCBC  (valid=1)
+	[DIAG] At-1st-err GOT    : 0x1234567810345678  (valid=1)
+	[DIAG] At-1st-err EXP    : 0x1234567812345678
+	[DIAG] At-1st-err XOR    : 0x0000000002000000  (popcount = bit-flip count)
+	[DIAG] Per-CH errors     : CH0=0 CH1=272 CH2=0 CH3=0
+	[DIAG] RX byte realign   : CH0=152 CH1=1380 CH2=34645 CH3=59162
+	[DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] trial 7 snapshot (after stop):
+	[DIAG] FSM         : 0 (IDLE)
+	[DIAG] RX aligned  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	[DIAG] Aligned seen: 0xF [CH3=1 CH2=1 CH1=1 CH0=1]  (sticky)
+	[DIAG] RX charisk  : 0x0
+	[DIAG] Locked      : 0
+	[DIAG] Ever locked : 1  (1 = FSM reached LOCKED at least once)
+	[DIAG] Last state  : 4 (LOCKED)  (last active state before stop)
+	[DIAG] RX data     : 0x0000000000000000
+	[DIAG] EXP data    : 0x1234567812345678
+	[DIAG] Time to lock      : 29 cycles
+	[DIAG] Locked cycle cnt  : 400265511
+	[DIAG] At-lock data      : 0x000000001234BCBC  (valid=1)
+	[DIAG] At-1st-err GOT    : 0x1234567810345678  (valid=1)
+	[DIAG] At-1st-err EXP    : 0x1234567812345678
+	[DIAG] At-1st-err XOR    : 0x0000000002000000  (popcount = bit-flip count)
+	[DIAG] Per-CH errors     : CH0=0 CH1=300 CH2=0 CH3=0
+	[DIAG] RX byte realign   : CH0=152 CH1=1380 CH2=34645 CH3=59162
+	[DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[MUROSYNC] === pattern sweep complete, entering main loop ===
+[MUROSYNC] alive #0 (M v1.3)
+[MUROSYNC] SERDES LINK UP
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #1 (M v1.3)
+[MUROSYNC] alive #2 (M v1.3)
+[MUROSYNC] alive #3 (M v1.3)
+[MUROSYNC] alive #4 (M v1.3)
+[MUROSYNC] alive #5 (M v1.3)
+[MUROSYNC] alive #6 (M v1.3)
+[MUROSYNC] alive #7 (M v1.3)
+[MUROSYNC] alive #8 (M v1.3)
+[MUROSYNC] alive #9 (M v1.3)
+[MUROSYNC] alive #10 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #11 (M v1.3)
+[MUROSYNC] alive #12 (M v1.3)
+[MUROSYNC] alive #13 (M v1.3)
+[MUROSYNC] alive #14 (M v1.3)
+[MUROSYNC] alive #15 (M v1.3)
+[MUROSYNC] alive #16 (M v1.3)
+[MUROSYNC] alive #17 (M v1.3)
+[MUROSYNC] alive #18 (M v1.3)
+[MUROSYNC] alive #19 (M v1.3)
+[MUROSYNC] alive #20 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #21 (M v1.3)
+[MUROSYNC] alive #22 (M v1.3)
+[MUROSYNC] alive #23 (M v1.3)
+[MUROSYNC] alive #24 (M v1.3)
+[MUROSYNC] alive #25 (M v1.3)
+[MUROSYNC] alive #26 (M v1.3)
+[MUROSYNC] alive #27 (M v1.3)
+[MUROSYNC] alive #28 (M v1.3)
+[MUROSYNC] alive #29 (M v1.3)
+[MUROSYNC] alive #30 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #31 (M v1.3)
+[MUROSYNC] alive #32 (M v1.3)
+[MUROSYNC] alive #33 (M v1.3)
+[MUROSYNC] alive #34 (M v1.3)
+[MUROSYNC] alive #35 (M v1.3)
+[MUROSYNC] alive #36 (M v1.3)
+[MUROSYNC] alive #37 (M v1.3)
+[MUROSYNC] alive #38 (M v1.3)
+[MUROSYNC] alive #39 (M v1.3)
+[MUROSYNC] alive #40 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #41 (M v1.3)
+[MUROSYNC] alive #42 (M v1.3)
+[MUROSYNC] alive #43 (M v1.3)
+[MUROSYNC] alive #44 (M v1.3)
+[MUROSYNC] alive #45 (M v1.3)
+[MUROSYNC] alive #46 (M v1.3)
+[MUROSYNC] alive #47 (M v1.3)
+[MUROSYNC] alive #48 (M v1.3)
+[MUROSYNC] alive #49 (M v1.3)
+[MUROSYNC] alive #50 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #51 (M v1.3)
+[MUROSYNC] alive #52 (M v1.3)
+[MUROSYNC] alive #53 (M v1.3)
+[MUROSYNC] alive #54 (M v1.3)
+[MUROSYNC] alive #55 (M v1.3)
+[MUROSYNC] alive #56 (M v1.3)
+[MUROSYNC] alive #57 (M v1.3)
+[MUROSYNC] alive #58 (M v1.3)
+[MUROSYNC] alive #59 (M v1.3)
+[MUROSYNC] alive #60 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #61 (M v1.3)
+[MUROSYNC] alive #62 (M v1.3)
+[MUROSYNC] alive #63 (M v1.3)
+[MUROSYNC] alive #64 (M v1.3)
+[MUROSYNC] alive #65 (M v1.3)
+[MUROSYNC] alive #66 (M v1.3)
+[MUROSYNC] alive #67 (M v1.3)
+[MUROSYNC] alive #68 (M v1.3)
+[MUROSYNC] alive #69 (M v1.3)
+[MUROSYNC] alive #70 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #71 (M v1.3)
+[MUROSYNC] alive #72 (M v1.3)
+[MUROSYNC] alive #73 (M v1.3)
+[MUROSYNC] alive #74 (M v1.3)
+[MUROSYNC] alive #75 (M v1.3)
+[MUROSYNC] alive #76 (M v1.3)
+[MUROSYNC] alive #77 (M v1.3)
+[MUROSYNC] alive #78 (M v1.3)
+[MUROSYNC] alive #79 (M v1.3)
+[MUROSYNC] alive #80 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #81 (M v1.3)
+[MUROSYNC] alive #82 (M v1.3)
+[MUROSYNC] alive #83 (M v1.3)
+[MUROSYNC] alive #84 (M v1.3)
+[MUROSYNC] alive #85 (M v1.3)
+[MUROSYNC] alive #86 (M v1.3)
+[MUROSYNC] alive #87 (M v1.3)
+[MUROSYNC] alive #88 (M v1.3)
+[MUROSYNC] alive #89 (M v1.3)
+[MUROSYNC] alive #90 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #91 (M v1.3)
+[MUROSYNC] alive #92 (M v1.3)
+[MUROSYNC] alive #93 (M v1.3)
+[MUROSYNC] alive #94 (M v1.3)
+[MUROSYNC] alive #95 (M v1.3)
+[MUROSYNC] alive #96 (M v1.3)
+[MUROSYNC] alive #97 (M v1.3)
+[MUROSYNC] alive #98 (M v1.3)
+[MUROSYNC] alive #99 (M v1.3)
+[MUROSYNC] alive #100 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #101 (M v1.3)
+[MUROSYNC] alive #102 (M v1.3)
+[MUROSYNC] alive #103 (M v1.3)
+[MUROSYNC] alive #104 (M v1.3)
+[MUROSYNC] alive #105 (M v1.3)
+[MUROSYNC] alive #106 (M v1.3)
+[MUROSYNC] alive #107 (M v1.3)
+[MUROSYNC] alive #108 (M v1.3)
+[MUROSYNC] alive #109 (M v1.3)
+[MUROSYNC] alive #110 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #111 (M v1.3)
+[MUROSYNC] alive #112 (M v1.3)
+[MUROSYNC] alive #113 (M v1.3)
+[MUROSYNC] alive #114 (M v1.3)
+[MUROSYNC] alive #115 (M v1.3)
+[MUROSYNC] alive #116 (M v1.3)
+[MUROSYNC] alive #117 (M v1.3)
+[MUROSYNC] alive #118 (M v1.3)
+[MUROSYNC] alive #119 (M v1.3)
+[MUROSYNC] alive #120 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #121 (M v1.3)
+[MUROSYNC] alive #122 (M v1.3)
+[MUROSYNC] alive #123 (M v1.3)
+[MUROSYNC] alive #124 (M v1.3)
+[MUROSYNC] alive #125 (M v1.3)
+[MUROSYNC] alive #126 (M v1.3)
+[MUROSYNC] alive #127 (M v1.3)
+[MUROSYNC] alive #128 (M v1.3)
+[MUROSYNC] alive #129 (M v1.3)
+[MUROSYNC] alive #130 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #131 (M v1.3)
+[MUROSYNC] alive #132 (M v1.3)
+[MUROSYNC] alive #133 (M v1.3)
+[MUROSYNC] alive #134 (M v1.3)
+[MUROSYNC] alive #135 (M v1.3)
+[MUROSYNC] alive #136 (M v1.3)
+[MUROSYNC] alive #137 (M v1.3)
+[MUROSYNC] alive #138 (M v1.3)
+[MUROSYNC] alive #139 (M v1.3)
+[MUROSYNC] alive #140 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #141 (M v1.3)
+[MUROSYNC] alive #142 (M v1.3)
+[MUROSYNC] alive #143 (M v1.3)
+[MUROSYNC] alive #144 (M v1.3)
+[MUROSYNC] alive #145 (M v1.3)
+[MUROSYNC] alive #146 (M v1.3)
+[MUROSYNC] alive #147 (M v1.3)
+[MUROSYNC] alive #148 (M v1.3)
+[MUROSYNC] alive #149 (M v1.3)
+[MUROSYNC] alive #150 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #151 (M v1.3)
+[MUROSYNC] alive #152 (M v1.3)
+[MUROSYNC] alive #153 (M v1.3)
+[MUROSYNC] alive #154 (M v1.3)
+[MUROSYNC] alive #155 (M v1.3)
+[MUROSYNC] alive #156 (M v1.3)
+[MUROSYNC] alive #157 (M v1.3)
+[MUROSYNC] alive #158 (M v1.3)
+[MUROSYNC] alive #159 (M v1.3)
+[MUROSYNC] alive #160 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #161 (M v1.3)
+[MUROSYNC] alive #162 (M v1.3)
+[MUROSYNC] alive #163 (M v1.3)
+[MUROSYNC] alive #164 (M v1.3)
+[MUROSYNC] alive #165 (M v1.3)
+[MUROSYNC] alive #166 (M v1.3)
+[MUROSYNC] alive #167 (M v1.3)
+[MUROSYNC] alive #168 (M v1.3)
+[MUROSYNC] alive #169 (M v1.3)
+[MUROSYNC] alive #170 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #171 (M v1.3)
+[MUROSYNC] alive #172 (M v1.3)
+[MUROSYNC] alive #173 (M v1.3)
+[MUROSYNC] alive #174 (M v1.3)
+[MUROSYNC] alive #175 (M v1.3)
+[MUROSYNC] alive #176 (M v1.3)
+[MUROSYNC] alive #177 (M v1.3)
+[MUROSYNC] alive #178 (M v1.3)
+[MUROSYNC] alive #179 (M v1.3)
+[MUROSYNC] alive #180 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #181 (M v1.3)
+[MUROSYNC] alive #182 (M v1.3)
+[MUROSYNC] alive #183 (M v1.3)
+[MUROSYNC] alive #184 (M v1.3)
+[MUROSYNC] alive #185 (M v1.3)
+[MUROSYNC] alive #186 (M v1.3)
+[MUROSYNC] alive #187 (M v1.3)
+[MUROSYNC] alive #188 (M v1.3)
+[MUROSYNC] alive #189 (M v1.3)
+[MUROSYNC] alive #190 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #191 (M v1.3)
+[MUROSYNC] alive #192 (M v1.3)
+[MUROSYNC] alive #193 (M v1.3)
+[MUROSYNC] alive #194 (M v1.3)
+[MUROSYNC] alive #195 (M v1.3)
+[MUROSYNC] alive #196 (M v1.3)
+[MUROSYNC] alive #197 (M v1.3)
+[MUROSYNC] alive #198 (M v1.3)
+[MUROSYNC] alive #199 (M v1.3)
+[MUROSYNC] alive #200 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #201 (M v1.3)
+[MUROSYNC] alive #202 (M v1.3)
+[MUROSYNC] alive #203 (M v1.3)
+[MUROSYNC] alive #204 (M v1.3)
+[MUROSYNC] alive #205 (M v1.3)
+[MUROSYNC] alive #206 (M v1.3)
+[MUROSYNC] alive #207 (M v1.3)
+[MUROSYNC] alive #208 (M v1.3)
+[MUROSYNC] alive #209 (M v1.3)
+[MUROSYNC] alive #210 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #211 (M v1.3)
+[MUROSYNC] alive #212 (M v1.3)
+[MUROSYNC] alive #213 (M v1.3)
+[MUROSYNC] alive #214 (M v1.3)
+[MUROSYNC] alive #215 (M v1.3)
+[MUROSYNC] alive #216 (M v1.3)
+[MUROSYNC] alive #217 (M v1.3)
+[MUROSYNC] alive #218 (M v1.3)
+[MUROSYNC] alive #219 (M v1.3)
+[MUROSYNC] alive #220 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #221 (M v1.3)
+[MUROSYNC] alive #222 (M v1.3)
+[MUROSYNC] alive #223 (M v1.3)
+[MUROSYNC] alive #224 (M v1.3)
+[MUROSYNC] alive #225 (M v1.3)
+[MUROSYNC] alive #226 (M v1.3)
+[MUROSYNC] alive #227 (M v1.3)
+[MUROSYNC] alive #228 (M v1.3)
+[MUROSYNC] alive #229 (M v1.3)
+[MUROSYNC] alive #230 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #231 (M v1.3)
+[MUROSYNC] alive #232 (M v1.3)
+[MUROSYNC] alive #233 (M v1.3)
+[MUROSYNC] alive #234 (M v1.3)
+[MUROSYNC] alive #235 (M v1.3)
+[MUROSYNC] alive #236 (M v1.3)
+[MUROSYNC] alive #237 (M v1.3)
+[MUROSYNC] alive #238 (M v1.3)
+[MUROSYNC] alive #239 (M v1.3)
+[MUROSYNC] alive #240 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #241 (M v1.3)
+[MUROSYNC] alive #242 (M v1.3)
+[MUROSYNC] alive #243 (M v1.3)
+[MUROSYNC] alive #244 (M v1.3)
+[MUROSYNC] alive #245 (M v1.3)
+[MUROSYNC] alive #246 (M v1.3)
+[MUROSYNC] alive #247 (M v1.3)
+[MUROSYNC] alive #248 (M v1.3)
+[MUROSYNC] alive #249 (M v1.3)
+[MUROSYNC] alive #250 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #251 (M v1.3)
+[MUROSYNC] alive #252 (M v1.3)
+[MUROSYNC] alive #253 (M v1.3)
+[MUROSYNC] alive #254 (M v1.3)
+[MUROSYNC] alive #255 (M v1.3)
+[MUROSYNC] alive #256 (M v1.3)
+[MUROSYNC] alive #257 (M v1.3)
+[MUROSYNC] alive #258 (M v1.3)
+[MUROSYNC] alive #259 (M v1.3)
+[MUROSYNC] alive #260 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #261 (M v1.3)
+[MUROSYNC] alive #262 (M v1.3)
+[MUROSYNC] alive #263 (M v1.3)
+[MUROSYNC] alive #264 (M v1.3)
+[MUROSYNC] alive #265 (M v1.3)
+[MUROSYNC] alive #266 (M v1.3)
+[MUROSYNC] alive #267 (M v1.3)
+[MUROSYNC] alive #268 (M v1.3)
+[MUROSYNC] alive #269 (M v1.3)
+[MUROSYNC] alive #270 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #271 (M v1.3)
+[MUROSYNC] alive #272 (M v1.3)
+[MUROSYNC] alive #273 (M v1.3)
+[MUROSYNC] alive #274 (M v1.3)
+[MUROSYNC] alive #275 (M v1.3)
+[MUROSYNC] alive #276 (M v1.3)
+[MUROSYNC] alive #277 (M v1.3)
+[MUROSYNC] alive #278 (M v1.3)
+[MUROSYNC] alive #279 (M v1.3)
+[MUROSYNC] alive #280 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #281 (M v1.3)
+[MUROSYNC] alive #282 (M v1.3)
+[MUROSYNC] alive #283 (M v1.3)
+[MUROSYNC] alive #284 (M v1.3)
+[MUROSYNC] alive #285 (M v1.3)
+[MUROSYNC] alive #286 (M v1.3)
+[MUROSYNC] alive #287 (M v1.3)
+[MUROSYNC] alive #288 (M v1.3)
+[MUROSYNC] alive #289 (M v1.3)
+[MUROSYNC] alive #290 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #291 (M v1.3)
+[MUROSYNC] alive #292 (M v1.3)
+[MUROSYNC] alive #293 (M v1.3)
+[MUROSYNC] alive #294 (M v1.3)
+[MUROSYNC] alive #295 (M v1.3)
+[MUROSYNC] alive #296 (M v1.3)
+[MUROSYNC] alive #297 (M v1.3)
+[MUROSYNC] alive #298 (M v1.3)
+[MUROSYNC] alive #299 (M v1.3)
+[MUROSYNC] alive #300 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #301 (M v1.3)
+[MUROSYNC] alive #302 (M v1.3)
+[MUROSYNC] alive #303 (M v1.3)
+[MUROSYNC] alive #304 (M v1.3)
+[MUROSYNC] alive #305 (M v1.3)
+[MUROSYNC] alive #306 (M v1.3)
+[MUROSYNC] alive #307 (M v1.3)
+[MUROSYNC] alive #308 (M v1.3)
+[MUROSYNC] alive #309 (M v1.3)
+[MUROSYNC] alive #310 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #311 (M v1.3)
+[MUROSYNC] alive #312 (M v1.3)
+[MUROSYNC] alive #313 (M v1.3)
+[MUROSYNC] alive #314 (M v1.3)
+[MUROSYNC] alive #315 (M v1.3)
+[MUROSYNC] alive #316 (M v1.3)
+[MUROSYNC] alive #317 (M v1.3)
+[MUROSYNC] alive #318 (M v1.3)
+[MUROSYNC] alive #319 (M v1.3)
+[MUROSYNC] alive #320 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #321 (M v1.3)
+[MUROSYNC] alive #322 (M v1.3)
+[MUROSYNC] alive #323 (M v1.3)
+[MUROSYNC] alive #324 (M v1.3)
+[MUROSYNC] alive #325 (M v1.3)
+[MUROSYNC] alive #326 (M v1.3)
+[MUROSYNC] alive #327 (M v1.3)
+[MUROSYNC] alive #328 (M v1.3)
+[MUROSYNC] alive #329 (M v1.3)
+[MUROSYNC] alive #330 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #331 (M v1.3)
+[MUROSYNC] alive #332 (M v1.3)
+[MUROSYNC] alive #333 (M v1.3)
+[MUROSYNC] alive #334 (M v1.3)
+[MUROSYNC] alive #335 (M v1.3)
+[MUROSYNC] alive #336 (M v1.3)
+[MUROSYNC] alive #337 (M v1.3)
+[MUROSYNC] alive #338 (M v1.3)
+[MUROSYNC] alive #339 (M v1.3)
+[MUROSYNC] alive #340 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #341 (M v1.3)
+[MUROSYNC] alive #342 (M v1.3)
+[MUROSYNC] alive #343 (M v1.3)
+[MUROSYNC] alive #344 (M v1.3)
+[MUROSYNC] alive #345 (M v1.3)
+[MUROSYNC] alive #346 (M v1.3)
+[MUROSYNC] alive #347 (M v1.3)
+[MUROSYNC] alive #348 (M v1.3)
+[MUROSYNC] alive #349 (M v1.3)
+[MUROSYNC] alive #350 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #351 (M v1.3)
+[MUROSYNC] alive #352 (M v1.3)
+[MUROSYNC] alive #353 (M v1.3)
+[MUROSYNC] alive #354 (M v1.3)
+[MUROSYNC] alive #355 (M v1.3)
+[MUROSYNC] alive #356 (M v1.3)
+[MUROSYNC] alive #357 (M v1.3)
+[MUROSYNC] alive #358 (M v1.3)
+[MUROSYNC] alive #359 (M v1.3)
+[MUROSYNC] alive #360 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #361 (M v1.3)
+[MUROSYNC] alive #362 (M v1.3)
+[MUROSYNC] alive #363 (M v1.3)
+[MUROSYNC] alive #364 (M v1.3)
+[MUROSYNC] alive #365 (M v1.3)
+[MUROSYNC] alive #366 (M v1.3)
+[MUROSYNC] alive #367 (M v1.3)
+[MUROSYNC] alive #368 (M v1.3)
+[MUROSYNC] alive #369 (M v1.3)
+[MUROSYNC] alive #370 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #371 (M v1.3)
+[MUROSYNC] alive #372 (M v1.3)
+[MUROSYNC] alive #373 (M v1.3)
+[MUROSYNC] alive #374 (M v1.3)
+[MUROSYNC] alive #375 (M v1.3)
+[MUROSYNC] alive #376 (M v1.3)
+[MUROSYNC] alive #377 (M v1.3)
+[MUROSYNC] alive #378 (M v1.3)
+[MUROSYNC] alive #379 (M v1.3)
+[MUROSYNC] alive #380 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #381 (M v1.3)
+[MUROSYNC] alive #382 (M v1.3)
+[MUROSYNC] alive #383 (M v1.3)
+[MUROSYNC] alive #384 (M v1.3)
+[MUROSYNC] alive #385 (M v1.3)
+[MUROSYNC] alive #386 (M v1.3)
+[MUROSYNC] alive #387 (M v1.3)
+[MUROSYNC] alive #388 (M v1.3)
+[MUROSYNC] alive #389 (M v1.3)
+[MUROSYNC] alive #390 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #391 (M v1.3)
+[MUROSYNC] alive #392 (M v1.3)
+[MUROSYNC] alive #393 (M v1.3)
+[MUROSYNC] alive #394 (M v1.3)
+[MUROSYNC] alive #395 (M v1.3)
+[MUROSYNC] alive #396 (M v1.3)
+[MUROSYNC] alive #397 (M v1.3)
+[MUROSYNC] alive #398 (M v1.3)
+[MUROSYNC] alive #399 (M v1.3)
+[MUROSYNC] alive #400 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #401 (M v1.3)
+[MUROSYNC] alive #402 (M v1.3)
+[MUROSYNC] alive #403 (M v1.3)
+[MUROSYNC] alive #404 (M v1.3)
+[MUROSYNC] alive #405 (M v1.3)
+[MUROSYNC] alive #406 (M v1.3)
+[MUROSYNC] alive #407 (M v1.3)
+[MUROSYNC] alive #408 (M v1.3)
+[MUROSYNC] alive #409 (M v1.3)
+[MUROSYNC] alive #410 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #411 (M v1.3)
+[MUROSYNC] alive #412 (M v1.3)
+[MUROSYNC] alive #413 (M v1.3)
+[MUROSYNC] alive #414 (M v1.3)
+[MUROSYNC] alive #415 (M v1.3)
+[MUROSYNC] alive #416 (M v1.3)
+[MUROSYNC] alive #417 (M v1.3)
+[MUROSYNC] alive #418 (M v1.3)
+[MUROSYNC] alive #419 (M v1.3)
+[MUROSYNC] alive #420 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #421 (M v1.3)
+[MUROSYNC] alive #422 (M v1.3)
+[MUROSYNC] alive #423 (M v1.3)
+[MUROSYNC] alive #424 (M v1.3)
+[MUROSYNC] alive #425 (M v1.3)
+[MUROSYNC] alive #426 (M v1.3)
+[MUROSYNC] alive #427 (M v1.3)
+[MUROSYNC] alive #428 (M v1.3)
+[MUROSYNC] alive #429 (M v1.3)
+[MUROSYNC] alive #430 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #431 (M v1.3)
+[MUROSYNC] alive #432 (M v1.3)
+[MUROSYNC] alive #433 (M v1.3)
+[MUROSYNC] alive #434 (M v1.3)
+[MUROSYNC] alive #435 (M v1.3)
+[MUROSYNC] alive #436 (M v1.3)
+[MUROSYNC] alive #437 (M v1.3)
+[MUROSYNC] alive #438 (M v1.3)
+[MUROSYNC] alive #439 (M v1.3)
+[MUROSYNC] alive #440 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #441 (M v1.3)
+[MUROSYNC] alive #442 (M v1.3)
+[MUROSYNC] alive #443 (M v1.3)
+[MUROSYNC] alive #444 (M v1.3)
+[MUROSYNC] alive #445 (M v1.3)
+[MUROSYNC] alive #446 (M v1.3)
+[MUROSYNC] alive #447 (M v1.3)
+[MUROSYNC] alive #448 (M v1.3)
+[MUROSYNC] alive #449 (M v1.3)
+[MUROSYNC] alive #450 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #451 (M v1.3)
+[MUROSYNC] alive #452 (M v1.3)
+[MUROSYNC] alive #453 (M v1.3)
+[MUROSYNC] alive #454 (M v1.3)
+[MUROSYNC] alive #455 (M v1.3)
+[MUROSYNC] alive #456 (M v1.3)
+[MUROSYNC] alive #457 (M v1.3)
+[MUROSYNC] alive #458 (M v1.3)
+[MUROSYNC] alive #459 (M v1.3)
+[MUROSYNC] alive #460 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #461 (M v1.3)
+[MUROSYNC] alive #462 (M v1.3)
+[MUROSYNC] alive #463 (M v1.3)
+[MUROSYNC] alive #464 (M v1.3)
+[MUROSYNC] alive #465 (M v1.3)
+[MUROSYNC] alive #466 (M v1.3)
+[MUROSYNC] alive #467 (M v1.3)
+[MUROSYNC] alive #468 (M v1.3)
+[MUROSYNC] alive #469 (M v1.3)
+[MUROSYNC] alive #470 (M v1.3)
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+	RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+	RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+	RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #471 (M v1.3)
+[MUROSYNC] alive #472 (M v1.3)

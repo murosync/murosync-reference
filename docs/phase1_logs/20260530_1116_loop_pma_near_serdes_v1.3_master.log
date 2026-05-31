@@ -1,0 +1,340 @@
+
+============================================================
+                    M U R O S Y N C
+      High-Precision Optical Timing & Synchronization
+============================================================
+ Platform : FPGA  XCAU15P
+ CPU      : MicroBlaze
+ Firmware : v1.104  (code 65640)
+ Build    : GT Bring-Up
+ Built at : 2026-05-30 21:14:29 UTC
+            (1780175668 UTC)
+============================================================
+
+        MUROSYNC SERDES | Checking RD-access over AXI
+                AXI OK: TEST_CONST = 0x4D55524F
+        MUROSYNC SERDES | Checking WR/RD-access over AXI
+                TEST_SCRATCH PAT1 pattern 0xA5A55A5A
+                TEST_SCRATCH PAT2 pattern 0x5AA5A55A
+                AXI OK: TEST_SCRATCH write/readback OK
+
+[MUROSYNC] === IP INFO ===
+        Raw          : 0x04000312
+        Mode         : MASTER
+        IP version   : v1.3
+        NUM_CHANNELS : 4
+
+[MUROSYNC] === MASTER FLOW ===
+[MUROSYNC] Phase 1: pattern sweep diagnostic
+
+AXI MUROSYNC SERDES BTING-UP
+        MUROSYNC SERDES | Checking RD-access over AXI
+                AXI OK: TEST_CONST = 0x4D55524F
+        MUROSYNC SERDES | Checking WR/RD-access over AXI
+                TEST_SCRATCH PAT1 pattern 0xA5A55A5A
+                TEST_SCRATCH PAT2 pattern 0x5AA5A55A
+                AXI OK: TEST_SCRATCH write/readback OK
+        MUROSYNC SERDES | Reset sequence
+                Pulse LINK_LATCH_RESET...
+                Pulse GT_RESET_ALL...
+        MUROSYNC SERDES | Set loopback = 2
+        MUROSYNC SERDES | Waiting link up...
+        MUROSYNC SERDES | Link is up, clear sticky latch again...
+        MUROSYNC SERDES | LINK UP! STATUS=0xFFFF0001
+        MUROSYNC SERDES | STATUS=0xFFFF0001
+                LINK_UP            : 1
+                LINK_DOWN_LATCHED  : 0
+                PLL_LOCK_VEC       : 0xF
+                GTPOWERGOOD_VEC    : 0xF
+                TXPMARESETDONE_VEC : 0xF
+                RXPMARESETDONE_VEC : 0xF
+        MUROSYNC SERDES | DBG=0x000000003E1FFFF2
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (post bring-up) ===
+        RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+        RXBYTEISALIGNED  : 0x4 [CH3=0 CH2=1 CH1=0 CH0=0]
+        RXBYTEREALIGN    : 0x0
+
+[PROBE] === trial 1: pattern = 0xAAAAAAAA ===
+
+[PROBE] trial 1 snapshot (running):
+        [DIAG] FSM         : 4 (LOCKED)
+        [DIAG] RX aligned  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+        [DIAG] Aligned seen: 0xF [CH3=1 CH2=1 CH1=1 CH0=1]  (sticky)
+        [DIAG] RX charisk  : 0x0
+        [DIAG] Locked      : 1
+        [DIAG] Ever locked : 1  (1 = FSM reached LOCKED at least once)
+        [DIAG] Last state  : 4 (LOCKED)  (last active state before stop)
+        [DIAG] RX data     : 0xAAAAAAAAAAAAAAAA
+        [DIAG] EXP data    : 0xAAAAAAAAAAAAAAAA
+        [DIAG] Time to lock      : 4128 cycles
+        [DIAG] Locked cycle cnt  : 239139601
+        [DIAG] At-lock data      : 0xAAAAAAAAAAAAAAAA  (valid=1)
+        [DIAG] At-1st-err data   : N/A (no errors observed, valid=0)
+        [DIAG] Per-CH errors     : CH0=0 CH1=0 CH2=0 CH3=0
+        [DIAG] RX byte realign   : CH0=2 CH1=4 CH2=6 CH3=4
+        [DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] trial 1 snapshot (after stop):
+        [DIAG] FSM         : 0 (IDLE)
+        [DIAG] RX aligned  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+        [DIAG] Aligned seen: 0xF [CH3=1 CH2=1 CH1=1 CH0=1]  (sticky)
+        [DIAG] RX charisk  : 0x0
+        [DIAG] Locked      : 0
+        [DIAG] Ever locked : 1  (1 = FSM reached LOCKED at least once)
+        [DIAG] Last state  : 4 (LOCKED)  (last active state before stop)
+        [DIAG] RX data     : 0x0000000000000000
+        [DIAG] EXP data    : 0xAAAAAAAAAAAAAAAA
+        [DIAG] Time to lock      : 4128 cycles
+        [DIAG] Locked cycle cnt  : 356644733
+        [DIAG] At-lock data      : 0xAAAAAAAAAAAAAAAA  (valid=1)
+        [DIAG] At-1st-err data   : N/A (no errors observed, valid=0)
+        [DIAG] Per-CH errors     : CH0=0 CH1=0 CH2=0 CH3=0
+        [DIAG] RX byte realign   : CH0=2 CH1=4 CH2=6 CH3=4
+        [DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] === trial 2: pattern = 0x00000000 ===
+
+[PROBE] trial 2 snapshot (running):
+        [DIAG] FSM         : 4 (LOCKED)
+        [DIAG] RX aligned  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+        [DIAG] Aligned seen: 0xF [CH3=1 CH2=1 CH1=1 CH0=1]  (sticky)
+        [DIAG] RX charisk  : 0x0
+        [DIAG] Locked      : 1
+        [DIAG] Ever locked : 1  (1 = FSM reached LOCKED at least once)
+        [DIAG] Last state  : 4 (LOCKED)  (last active state before stop)
+        [DIAG] RX data     : 0x0000000000000000
+        [DIAG] EXP data    : 0x0000000000000000
+        [DIAG] Time to lock      : 2 cycles
+        [DIAG] Locked cycle cnt  : 239143757
+        [DIAG] At-lock data      : 0x0000000000000000  (valid=1)
+        [DIAG] At-1st-err GOT    : 0xAA00AA00AA00AAAA  (valid=1)
+        [DIAG] At-1st-err EXP    : 0x0000000000000000
+        [DIAG] At-1st-err XOR    : 0xAA00AA00AA00AAAA  (popcount = bit-flip count)
+        [DIAG] Per-CH errors     : CH0=0 CH1=4 CH2=0 CH3=0
+        [DIAG] RX byte realign   : CH0=2 CH1=4 CH2=6 CH3=4
+        [DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] trial 2 snapshot (after stop):
+        [DIAG] FSM         : 0 (IDLE)
+        [DIAG] RX aligned  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+        [DIAG] Aligned seen: 0xF [CH3=1 CH2=1 CH1=1 CH0=1]  (sticky)
+        [DIAG] RX charisk  : 0x0
+        [DIAG] Locked      : 0
+        [DIAG] Ever locked : 1  (1 = FSM reached LOCKED at least once)
+        [DIAG] Last state  : 4 (LOCKED)  (last active state before stop)
+        [DIAG] RX data     : 0x0000000000000000
+        [DIAG] EXP data    : 0x0000000000000000
+        [DIAG] Time to lock      : 2 cycles
+        [DIAG] Locked cycle cnt  : 395057847
+        [DIAG] At-lock data      : 0x0000000000000000  (valid=1)
+        [DIAG] At-1st-err GOT    : 0xAA00AA00AA00AAAA  (valid=1)
+        [DIAG] At-1st-err EXP    : 0x0000000000000000
+        [DIAG] At-1st-err XOR    : 0xAA00AA00AA00AAAA  (popcount = bit-flip count)
+        [DIAG] Per-CH errors     : CH0=0 CH1=4 CH2=0 CH3=0
+        [DIAG] RX byte realign   : CH0=2 CH1=4 CH2=6 CH3=4
+        [DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] === trial 3: pattern = 0xFFFFFFFF ===
+
+[PROBE] trial 3 snapshot (running):
+        [DIAG] FSM         : 4 (LOCKED)
+        [DIAG] RX aligned  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+        [DIAG] Aligned seen: 0xF [CH3=1 CH2=1 CH1=1 CH0=1]  (sticky)
+        [DIAG] RX charisk  : 0x0
+        [DIAG] Locked      : 1
+        [DIAG] Ever locked : 1  (1 = FSM reached LOCKED at least once)
+        [DIAG] Last state  : 4 (LOCKED)  (last active state before stop)
+        [DIAG] RX data     : 0xFFFFFFFFFFFFFFFF
+        [DIAG] EXP data    : 0xFFFFFFFFFFFFFFFF
+        [DIAG] Time to lock      : 4127 cycles
+        [DIAG] Locked cycle cnt  : 239139621
+        [DIAG] At-lock data      : 0xFFFFFFFFFFFFFFFF  (valid=1)
+        [DIAG] At-1st-err data   : N/A (no errors observed, valid=0)
+        [DIAG] Per-CH errors     : CH0=0 CH1=0 CH2=0 CH3=0
+        [DIAG] RX byte realign   : CH0=2 CH1=4 CH2=6 CH3=4
+        [DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] trial 3 snapshot (after stop):
+        [DIAG] FSM         : 0 (IDLE)
+        [DIAG] RX aligned  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+        [DIAG] Aligned seen: 0xF [CH3=1 CH2=1 CH1=1 CH0=1]  (sticky)
+        [DIAG] RX charisk  : 0x0
+        [DIAG] Locked      : 0
+        [DIAG] Ever locked : 1  (1 = FSM reached LOCKED at least once)
+        [DIAG] Last state  : 4 (LOCKED)  (last active state before stop)
+        [DIAG] RX data     : 0x0000000000000000
+        [DIAG] EXP data    : 0xFFFFFFFFFFFFFFFF
+        [DIAG] Time to lock      : 4127 cycles
+        [DIAG] Locked cycle cnt  : 356644757
+        [DIAG] At-lock data      : 0xFFFFFFFFFFFFFFFF  (valid=1)
+        [DIAG] At-1st-err data   : N/A (no errors observed, valid=0)
+        [DIAG] Per-CH errors     : CH0=0 CH1=0 CH2=0 CH3=0
+        [DIAG] RX byte realign   : CH0=2 CH1=4 CH2=6 CH3=4
+        [DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] === trial 4: pattern = 0x55555555 ===
+
+[PROBE] trial 4 snapshot (running):
+        [DIAG] FSM         : 4 (LOCKED)
+        [DIAG] RX aligned  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+        [DIAG] Aligned seen: 0xF [CH3=1 CH2=1 CH1=1 CH0=1]  (sticky)
+        [DIAG] RX charisk  : 0x0
+        [DIAG] Locked      : 1
+        [DIAG] Ever locked : 1  (1 = FSM reached LOCKED at least once)
+        [DIAG] Last state  : 4 (LOCKED)  (last active state before stop)
+        [DIAG] RX data     : 0x5555555555555555
+        [DIAG] EXP data    : 0x5555555555555555
+        [DIAG] Time to lock      : 4127 cycles
+        [DIAG] Locked cycle cnt  : 239139621
+        [DIAG] At-lock data      : 0x5555555555555555  (valid=1)
+        [DIAG] At-1st-err data   : N/A (no errors observed, valid=0)
+        [DIAG] Per-CH errors     : CH0=0 CH1=0 CH2=0 CH3=0
+        [DIAG] RX byte realign   : CH0=2 CH1=4 CH2=6 CH3=4
+        [DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] trial 4 snapshot (after stop):
+        [DIAG] FSM         : 0 (IDLE)
+        [DIAG] RX aligned  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+        [DIAG] Aligned seen: 0xF [CH3=1 CH2=1 CH1=1 CH0=1]  (sticky)
+        [DIAG] RX charisk  : 0x0
+        [DIAG] Locked      : 0
+        [DIAG] Ever locked : 1  (1 = FSM reached LOCKED at least once)
+        [DIAG] Last state  : 4 (LOCKED)  (last active state before stop)
+        [DIAG] RX data     : 0x0000000000000000
+        [DIAG] EXP data    : 0x5555555555555555
+        [DIAG] Time to lock      : 4127 cycles
+        [DIAG] Locked cycle cnt  : 356644756
+        [DIAG] At-lock data      : 0x5555555555555555  (valid=1)
+        [DIAG] At-1st-err data   : N/A (no errors observed, valid=0)
+        [DIAG] Per-CH errors     : CH0=0 CH1=0 CH2=0 CH3=0
+        [DIAG] RX byte realign   : CH0=2 CH1=4 CH2=6 CH3=4
+        [DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] === trial 5: pattern = 0x12121212 ===
+
+[PROBE] trial 5 snapshot (running):
+        [DIAG] FSM         : 4 (LOCKED)
+        [DIAG] RX aligned  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+        [DIAG] Aligned seen: 0xF [CH3=1 CH2=1 CH1=1 CH0=1]  (sticky)
+        [DIAG] RX charisk  : 0x0
+        [DIAG] Locked      : 1
+        [DIAG] Ever locked : 1  (1 = FSM reached LOCKED at least once)
+        [DIAG] Last state  : 4 (LOCKED)  (last active state before stop)
+        [DIAG] RX data     : 0x1212121212121212
+        [DIAG] EXP data    : 0x1212121212121212
+        [DIAG] Time to lock      : 4128 cycles
+        [DIAG] Locked cycle cnt  : 239139613
+        [DIAG] At-lock data      : 0x1212121212121212  (valid=1)
+        [DIAG] At-1st-err data   : N/A (no errors observed, valid=0)
+        [DIAG] Per-CH errors     : CH0=0 CH1=0 CH2=0 CH3=0
+        [DIAG] RX byte realign   : CH0=2 CH1=4 CH2=6 CH3=4
+        [DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] trial 5 snapshot (after stop):
+        [DIAG] FSM         : 0 (IDLE)
+        [DIAG] RX aligned  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+        [DIAG] Aligned seen: 0xF [CH3=1 CH2=1 CH1=1 CH0=1]  (sticky)
+        [DIAG] RX charisk  : 0x0
+        [DIAG] Locked      : 0
+        [DIAG] Ever locked : 1  (1 = FSM reached LOCKED at least once)
+        [DIAG] Last state  : 4 (LOCKED)  (last active state before stop)
+        [DIAG] RX data     : 0x0000000000000000
+        [DIAG] EXP data    : 0x1212121212121212
+        [DIAG] Time to lock      : 4128 cycles
+        [DIAG] Locked cycle cnt  : 356644746
+        [DIAG] At-lock data      : 0x1212121212121212  (valid=1)
+        [DIAG] At-1st-err data   : N/A (no errors observed, valid=0)
+        [DIAG] Per-CH errors     : CH0=0 CH1=0 CH2=0 CH3=0
+        [DIAG] RX byte realign   : CH0=2 CH1=4 CH2=6 CH3=4
+        [DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] === trial 6: pattern = 0x12341234 ===
+
+[PROBE] trial 6 snapshot (running):
+        [DIAG] FSM         : 3 (SEARCH)
+        [DIAG] RX aligned  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+        [DIAG] Aligned seen: 0xF [CH3=1 CH2=1 CH1=1 CH0=1]  (sticky)
+        [DIAG] RX charisk  : 0x0
+        [DIAG] Locked      : 0
+        [DIAG] Ever locked : 0  (1 = FSM reached LOCKED at least once)
+        [DIAG] Last state  : 3 (SEARCH)  (last active state before stop)
+        [DIAG] RX data     : 0x3412341234121234
+        [DIAG] EXP data    : 0x1212121212121212
+        [DIAG] Time to lock      : 239143658 cycles
+        [DIAG] Locked cycle cnt  : 0
+        [DIAG] At-lock data      : N/A (snapshot not taken, valid=0)
+        [DIAG] At-1st-err data   : N/A (no errors observed, valid=0)
+        [DIAG] Per-CH errors     : CH0=0 CH1=0 CH2=0 CH3=0
+        [DIAG] RX byte realign   : CH0=2 CH1=4 CH2=6 CH3=4
+        [DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] trial 6 snapshot (after stop):
+        [DIAG] FSM         : 0 (IDLE)
+        [DIAG] RX aligned  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+        [DIAG] Aligned seen: 0xF [CH3=1 CH2=1 CH1=1 CH0=1]  (sticky)
+        [DIAG] RX charisk  : 0x0
+        [DIAG] Locked      : 0
+        [DIAG] Ever locked : 0  (1 = FSM reached LOCKED at least once)
+        [DIAG] Last state  : 3 (SEARCH)  (last active state before stop)
+        [DIAG] RX data     : 0x0000000000000000
+        [DIAG] EXP data    : 0x1212121212121212
+        [DIAG] Time to lock      : 506053396 cycles
+        [DIAG] Locked cycle cnt  : 0
+        [DIAG] At-lock data      : N/A (snapshot not taken, valid=0)
+        [DIAG] At-1st-err data   : N/A (no errors observed, valid=0)
+        [DIAG] Per-CH errors     : CH0=0 CH1=0 CH2=0 CH3=0
+        [DIAG] RX byte realign   : CH0=2 CH1=4 CH2=6 CH3=4
+        [DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] === trial 7: pattern = 0x12345678 ===
+
+[PROBE] trial 7 snapshot (running):
+        [DIAG] FSM         : 3 (SEARCH)
+        [DIAG] RX aligned  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+        [DIAG] Aligned seen: 0xF [CH3=1 CH2=1 CH1=1 CH0=1]  (sticky)
+        [DIAG] RX charisk  : 0x0
+        [DIAG] Locked      : 0
+        [DIAG] Ever locked : 0  (1 = FSM reached LOCKED at least once)
+        [DIAG] Last state  : 3 (SEARCH)  (last active state before stop)
+        [DIAG] RX data     : 0x3412785634125678
+        [DIAG] EXP data    : 0x1212121212121212
+        [DIAG] Time to lock      : 239143648 cycles
+        [DIAG] Locked cycle cnt  : 0
+        [DIAG] At-lock data      : N/A (snapshot not taken, valid=0)
+        [DIAG] At-1st-err data   : N/A (no errors observed, valid=0)
+        [DIAG] Per-CH errors     : CH0=0 CH1=0 CH2=0 CH3=0
+        [DIAG] RX byte realign   : CH0=2 CH1=4 CH2=6 CH3=4
+        [DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[PROBE] trial 7 snapshot (after stop):
+        [DIAG] FSM         : 0 (IDLE)
+        [DIAG] RX aligned  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+        [DIAG] Aligned seen: 0xF [CH3=1 CH2=1 CH1=1 CH0=1]  (sticky)
+        [DIAG] RX charisk  : 0x0
+        [DIAG] Locked      : 0
+        [DIAG] Ever locked : 0  (1 = FSM reached LOCKED at least once)
+        [DIAG] Last state  : 3 (SEARCH)  (last active state before stop)
+        [DIAG] RX data     : 0x0000000000000000
+        [DIAG] EXP data    : 0x1212121212121212
+        [DIAG] Time to lock      : 506053390 cycles
+        [DIAG] Locked cycle cnt  : 0
+        [DIAG] At-lock data      : N/A (snapshot not taken, valid=0)
+        [DIAG] At-1st-err data   : N/A (no errors observed, valid=0)
+        [DIAG] Per-CH errors     : CH0=0 CH1=0 CH2=0 CH3=0
+        [DIAG] RX byte realign   : CH0=2 CH1=4 CH2=6 CH3=4
+        [DIAG] Eye scan errors   : CH0=0 CH1=0 CH2=0 CH3=0
+
+[MUROSYNC] === pattern sweep complete, entering main loop ===
+[MUROSYNC] alive #0 (M v1.3)
+[MUROSYNC] SERDES LINK UP
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+        RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+        RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+        RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #1 (M v1.3)
+[MUROSYNC] alive #2 (M v1.3)
+[MUROSYNC] alive #3 (M v1.3)
+[MUROSYNC] alive #4 (M v1.3)
+[MUROSYNC] alive #5 (M v1.3)
