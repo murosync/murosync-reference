@@ -1,0 +1,84 @@
+
+============================================================
+                    M U R O S Y N C
+      High-Precision Optical Timing & Synchronization
+============================================================
+ Platform : FPGA  XCAU15P
+ CPU      : MicroBlaze
+ Firmware : v1.116  (code 65652)
+ Build    : GT Bring-Up
+ Built at : 2026-06-05 17:38:25 UTC
+            (1780681105 UTC)
+============================================================
+
+        MUROSYNC SERDES | Checking RD-access over AXI
+                AXI OK: TEST_CONST = 0x4D55524F
+        MUROSYNC SERDES | Checking WR/RD-access over AXI
+                TEST_SCRATCH PAT1 pattern 0xA5A55A5A
+                TEST_SCRATCH PAT2 pattern 0x5AA5A55A
+                AXI OK: TEST_SCRATCH write/readback OK
+
+[MUROSYNC] === IP INFO ===
+        Raw          : 0x04000712
+        Mode         : MASTER
+        IP version   : v1.7
+        NUM_CHANNELS : 4
+
+[MUROSYNC] === MASTER FLOW ===
+
+AXI MUROSYNC SERDES BRING-UP
+        MUROSYNC SERDES | Checking RD-access over AXI
+                AXI OK: TEST_CONST = 0x4D55524F
+        MUROSYNC SERDES | Checking WR/RD-access over AXI
+                TEST_SCRATCH PAT1 pattern 0xA5A55A5A
+                TEST_SCRATCH PAT2 pattern 0x5AA5A55A
+                AXI OK: TEST_SCRATCH write/readback OK
+        MUROSYNC SERDES | Reset sequence
+                Pulse LINK_LATCH_RESET...
+                Pulse GT_RESET_ALL...
+        MUROSYNC SERDES | Set loopback = 2
+        MUROSYNC SERDES | Waiting link up...
+        MUROSYNC SERDES | Link is up, clear sticky latch again...
+        MUROSYNC SERDES | LINK UP! STATUS=0xFFFF0001
+        MUROSYNC SERDES | STATUS=0xFFFF0001
+                LINK_UP            : 1
+                LINK_DOWN_LATCHED  : 0
+                PLL_LOCK_VEC       : 0xF
+                GTPOWERGOOD_VEC    : 0xF
+                TXPMARESETDONE_VEC : 0xF
+                RXPMARESETDONE_VEC : 0xF
+        MUROSYNC SERDES | DBG=0x000000003C1FFFF2
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (post bring-up) ===
+        RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+        RXBYTEISALIGNED  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+        RXBYTEREALIGN    : 0x0
+
+=== SWEEP ch_mask=0x1 (2000 ms each) ===
+
+  pattern     lock  WER         BER(est)    comma  verdict
+  ----------  ----  ----------  ----------  -----  ----------
+  0xAAAAAAAA  OK    < 4.71e-09  < 2.94e-10  -      CLEAN
+  0x00000000  OK    6.28e-09    3.14e-09    -      DEGRADED
+  0xFFFFFFFF  OK    < 4.71e-09  < 2.94e-10  -      CLEAN
+  0x55555555  OK    < 4.71e-09  < 2.94e-10  -      CLEAN
+  0x12121212  OK    < 4.71e-09  < 2.94e-10  -      CLEAN
+  0x12341234  OK    < 4.71e-09  < 2.94e-10  -      CLEAN
+  0x12345678  OK    < 4.71e-09  < 2.94e-10  -      CLEAN
+  ----------  ----  ----------  ----------  -----  ----------
+  WORST: 0x00000000  ->  overall DEGRADED
+
+[MUROSYNC] === entering main loop ===
+[MUROSYNC] alive #0 (M v1.7)
+[MUROSYNC] SERDES LINK UP
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+        RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+        RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+        RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #1 (M v1.7)
+[MUROSYNC] alive #2 (M v1.7)
+[MUROSYNC] alive #3 (M v1.7)
+[MUROSYNC] alive #4 (M v1.7)
+[MUROSYNC] alive #5 (M v1.7)
+[MUROSYNC] alive #6 (M v1.7)

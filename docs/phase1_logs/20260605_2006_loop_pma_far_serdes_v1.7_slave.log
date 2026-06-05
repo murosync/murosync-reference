@@ -1,0 +1,75 @@
+============================================================
+                    M U R O S Y N C
+      High-Precision Optical Timing & Synchronization
+============================================================
+ Platform : FPGA  XCAU15P
+ CPU      : MicroBlaze
+ Firmware : v1.118  (code 65654)
+ Build    : GT Bring-Up
+ Built at : 2026-06-05 17:48:06 UTC
+            (1780681686 UTC)
+============================================================
+        MUROSYNC SERDES | Checking RD-access over AXI
+                AXI OK: TEST_CONST = 0x4D55524F
+        MUROSYNC SERDES | Checking WR/RD-access over AXI
+                TEST_SCRATCH PAT1 pattern 0xA5A55A5A
+                TEST_SCRATCH PAT2 pattern 0x5AA5A55A
+                AXI OK: TEST_SCRATCH write/readback OK
+[MUROSYNC] === IP INFO ===
+        Raw          : 0x04000711
+        Mode         : SLAVE
+        IP version   : v1.7
+        NUM_CHANNELS : 4
+[MUROSYNC] === SLAVE FLOW ===
+AXI MUROSYNC SERDES BRING-UP
+        MUROSYNC SERDES | Checking RD-access over AXI
+                AXI OK: TEST_CONST = 0x4D55524F
+        MUROSYNC SERDES | Checking WR/RD-access over AXI
+                TEST_SCRATCH PAT1 pattern 0xA5A55A5A
+                TEST_SCRATCH PAT2 pattern 0x5AA5A55A
+                AXI OK: TEST_SCRATCH write/readback OK
+        MUROSYNC SERDES | Reset sequence
+                Pulse LINK_LATCH_RESET...
+                Pulse GT_RESET_ALL...
+        MUROSYNC SERDES | Set loopback = 4
+        MUROSYNC SERDES | Waiting link up...
+        MUROSYNC SERDES | Link is up, clear sticky latch again...
+        MUROSYNC SERDES | LINK UP! STATUS=0xFFFF0001
+        MUROSYNC SERDES | STATUS=0xFFFF0001
+                LINK_UP            : 1
+                LINK_DOWN_LATCHED  : 0
+                PLL_LOCK_VEC       : 0xF
+                GTPOWERGOOD_VEC    : 0xF
+                TXPMARESETDONE_VEC : 0xF
+                RXPMARESETDONE_VEC : 0xF
+        MUROSYNC SERDES | DBG=0x000000003C1FFFF2
+[MUROSYNC] === GT WIZARD GROUND TRUTH (post bring-up) ===
+        RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+        RXBYTEISALIGNED  : 0x6 [CH3=0 CH2=1 CH1=1 CH0=0]
+        RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #0 (S v1.7)
+[MUROSYNC] SERDES LINK UP
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+        RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+        RXBYTEISALIGNED  : 0x6 [CH3=0 CH2=1 CH1=1 CH0=0]
+        RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #1 (S v1.7)
+[MUROSYNC] alive #2 (S v1.7)
+[MUROSYNC] alive #3 (S v1.7)
+[MUROSYNC] alive #4 (S v1.7)
+[MUROSYNC] alive #5 (S v1.7)
+[MUROSYNC] alive #6 (S v1.7)
+[MUROSYNC] alive #7 (S v1.7)
+[MUROSYNC] alive #8 (S v1.7)
+[MUROSYNC] alive #9 (S v1.7)
+[MUROSYNC] alive #10 (S v1.7)
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+        RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+        RXBYTEISALIGNED  : 0x6 [CH3=0 CH2=1 CH1=1 CH0=0]
+        RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #11 (S v1.7)
+[MUROSYNC] alive #12 (S v1.7)
+[MUROSYNC] alive #13 (S v1.7)
+[MUROSYNC] alive #14 (S v1.7)
+[MUROSYNC] alive #15 (S v1.7)
+[MUROSYNC] alive #16 (S v1.7)

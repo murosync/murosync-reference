@@ -276,30 +276,48 @@ module murosync_serdes_link_test #(
         end            
     end
 
-    // Simple fabric logical loopback register for Slave mode
+    // ------------------------------------------------------------
+    // SLAVE cascade pipeline (rx_clk == tx_clk under loop-timing fix):
+    //   data:    rx_data    -> rx_data_r    -> tx_data        (2 stages)
+    //   charisk: rxcharisk  -> rxcharisk_r  -> txctrl2_out    (2 stages)
+    //
+    // The rxcharisk_r stage is REQUIRED to keep K-symbol markers aligned
+    // with their byte payload after the rx_data_r retiming. Without it,
+    // txctrl2_out led tx_data by 1 cycle → MASTER's K28.5 came back as
+    // D28.5 (byte 0xBC arriving as data) → ~1/COMMA_PERIOD ≈ 1e-3 WER.
+    // ------------------------------------------------------------
     reg [63:0] rx_data_r;
-    always @(posedge tx_clk or negedge core_rst_n) 
+    reg [3:0]  rxcharisk_r;
+    always @(posedge tx_clk or negedge core_rst_n)
     begin
-        if (!core_rst_n) rx_data_r <= 64'h0;
-        else             rx_data_r <= rx_data;
+        if (!core_rst_n) begin
+            rx_data_r   <= 64'h0;
+            rxcharisk_r <= 4'h0;
+        end else begin
+            rx_data_r   <= rx_data;
+            rxcharisk_r <= rxcharisk;
+        end
     end
 
-// TXCHARISK — K-symbol control
-    //   IS_SLAVE: echo RXCHARISK back to TX so K-symbols (comma) are preserved
-    //             through fabric cascade loopback. Each rxcharisk[ch] bit is
-    //             duplicated to txctrl2_out[2*ch +: 2] because each 16-bit
-    //             channel slice carries 2 bytes, each with its own TXCHARISK bit.
-    //             Without this, MASTER would receive its own comma back as
-    //             D-symbols → checker mismatch → ~18M errors over 60s.
-    //   MASTER:   normal comma maintenance (send_comma drives all 8 bits high
-    //             during K28.5 burst, low otherwise).
+    // TXCHARISK — K-symbol control
+    //   IS_SLAVE: echo RXCHARISK (delayed 1 cycle via rxcharisk_r) back to
+    //             TX so K-symbols (comma) are preserved through fabric
+    //             cascade loopback. Each rxcharisk_r[ch] bit is duplicated
+    //             to txctrl2_out[2*ch +: 2] because each 16-bit channel
+    //             slice carries 2 bytes, each with its own TXCHARISK bit.
+    //             Pipeline depth matches the data path (2 stages) so the
+    //             K-marker arrives on the same cycle as its byte. Without
+    //             this, MASTER would receive its own comma back as
+    //             D-symbols → ~1e-3 WER, 0xBC signature in first-err.
+    //   MASTER:   normal comma maintenance (send_comma drives all 8 bits
+    //             high during K28.5 burst, low otherwise).
     always @(posedge tx_clk or negedge core_rst_n)
     begin
         if (!core_rst_n)     txctrl2_out <= 8'h0;
-        else if (IS_SLAVE)   txctrl2_out <= {rxcharisk[3], rxcharisk[3],
-                                             rxcharisk[2], rxcharisk[2],
-                                             rxcharisk[1], rxcharisk[1],
-                                             rxcharisk[0], rxcharisk[0]};
+        else if (IS_SLAVE)   txctrl2_out <= {rxcharisk_r[3], rxcharisk_r[3],
+                                             rxcharisk_r[2], rxcharisk_r[2],
+                                             rxcharisk_r[1], rxcharisk_r[1],
+                                             rxcharisk_r[0], rxcharisk_r[0]};
         else if (send_comma) txctrl2_out <= 8'hFF;
         else                 txctrl2_out <= 8'h0;
     end

@@ -103,7 +103,7 @@ static int murosync_app_bringup_master(void)
     }
     murosync_serdes_print_gt_ground_truth("post bring-up");
 
-    murosync_diag_phase1_pattern_sweep();
+    murosync_diag_link_sweep_verdict();
 
     xil_printf("\r\n[MUROSYNC] === entering main loop ===\r\n");
     return XST_SUCCESS;
