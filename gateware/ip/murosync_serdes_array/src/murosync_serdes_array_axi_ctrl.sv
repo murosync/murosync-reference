@@ -366,15 +366,15 @@ module murosync_serdes_array_axi_ctrl #(
     wire link_latched_axi = link_lat_sync[1];
 
     (* ASYNC_REG="TRUE" *) logic [1:0] pll0_sync, pll1_sync, pll2_sync, pll3_sync;
-    always @(posedge axi_clk or negedge axi_rst_n) 
+    always @(posedge axi_clk or negedge axi_rst_n)
     begin
-        if (!axi_rst_n) 
+        if (!axi_rst_n)
         begin
-            pll0_sync <= 2'b00; 
-            pll1_sync <= 2'b00; 
-            pll2_sync <= 2'b00; 
+            pll0_sync <= 2'b00;
+            pll1_sync <= 2'b00;
+            pll2_sync <= 2'b00;
             pll3_sync <= 2'b00;
-        end else 
+        end else
         begin
             pll0_sync <= {pll0_sync[0], pll_lock_in[0]};
             pll1_sync <= {pll1_sync[0], pll_lock_in[1]};
@@ -391,17 +391,17 @@ module murosync_serdes_array_axi_ctrl #(
 
     genvar gi;
     generate
-        for (gi = 0; gi < 4; gi = gi + 1) 
+        for (gi = 0; gi < 4; gi = gi + 1)
         begin : g_status_vec_sync
-            always @(posedge axi_clk or negedge axi_rst_n) 
+            always @(posedge axi_clk or negedge axi_rst_n)
             begin
-                if (!axi_rst_n) 
+                if (!axi_rst_n)
                 begin
                     gtp_sync[gi] <= 2'b00;
                     txp_sync[gi] <= 2'b00;
                     rxp_sync[gi] <= 2'b00;
-                end 
-                else 
+                end
+                else
                 begin
                     gtp_sync[gi] <= {gtp_sync[gi][0], gtpowergood_in[gi]};
                     txp_sync[gi] <= {txp_sync[gi][0], txpmaresetdone_in[gi]};

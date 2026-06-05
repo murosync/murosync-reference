@@ -44,7 +44,7 @@ module murosync_serdes_array #(
     //   MINOR: auto-incremented by update_ip_ports.tcl on every re-package.
     //          Synced to IP-XACT <spirit:version> by the same script.
     parameter integer IP_VERSION_MAJOR = 1,
-    parameter integer IP_VERSION_MINOR = 5,
+    parameter integer IP_VERSION_MINOR = 7,
 
     parameter integer C_S00_AXI_DATA_WIDTH = 32,
 

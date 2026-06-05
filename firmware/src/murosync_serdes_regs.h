@@ -40,7 +40,7 @@
  *           [1]      RESET                Reset Test Counters (W1P)
  *
  *    0x020  MUROSYNC_LNK_TEST_CNFG        (RW)
- *           [1:0]    MODE_SEL             Test Mode: 0=Fixed, 1=Counter, 2=PRBS
+ *           [1:0]    MODE_SEL             Test Mode: 0=Fixed, 1=Toggle, 2=Counter
  *
  *    0x024  MUROSYNC_LNK_TEST_PATT        (RW)  Fixed Test Pattern [31:0]
  *    0x028  MUROSYNC_LNK_RX_ERR_CNT       (RO)  RX Error Counter [31:0]
@@ -774,6 +774,40 @@
 
     #define MUROSYNC_IP_INFO_NUM_CHANNELS_OFS           24
     #define MUROSYNC_IP_INFO_NUM_CHANNELS_MSK           (0xFu << MUROSYNC_IP_INFO_NUM_CHANNELS_OFS)
+
+
+/* ========================================================================
+ * Naming-consistency aliases — `_REG` suffix for Tier 0/1 offsets.
+ *
+ * Tier 2+ register offsets were added with a `_REG` suffix; Tier 0/1
+ * were originally added without. These aliases let new code use the
+ * uniform `_REG` style everywhere without forcing a rename of every
+ * existing caller. Either spelling resolves to the same offset.
+ * ======================================================================== */
+#define MUROSYNC_SERDES_CTRL_REG                MUROSYNC_SERDES_CTRL
+#define MUROSYNC_SERDES_LOOPBACK_REG            MUROSYNC_SERDES_LOOPBACK
+#define MUROSYNC_SERDES_STATUS_REG              MUROSYNC_SERDES_STATUS
+#define MUROSYNC_SERDES_DBG_LO_REG              MUROSYNC_SERDES_DBG_LO
+#define MUROSYNC_SERDES_DBG_HI_REG              MUROSYNC_SERDES_DBG_HI
+#define MUROSYNC_SERDES_TEST_CONST_REG          MUROSYNC_SERDES_TEST_CONST
+#define MUROSYNC_SERDES_TEST_SCRATCH_REG        MUROSYNC_SERDES_TEST_SCRATCH
+
+#define MUROSYNC_LNK_TEST_CTRL_REG              MUROSYNC_LNK_TEST_CTRL
+#define MUROSYNC_LNK_TEST_CNFG_REG              MUROSYNC_LNK_TEST_CNFG
+#define MUROSYNC_LNK_TEST_PATT_REG              MUROSYNC_LNK_TEST_PATT
+#define MUROSYNC_LNK_RX_ERR_CNT_REG             MUROSYNC_LNK_RX_ERR_CNT
+#define MUROSYNC_LNK_RX_WRD_CNT_REG             MUROSYNC_LNK_RX_WRD_CNT
+
+#define MUROSYNC_LNK_DIAG_STATUS_REG            MUROSYNC_LNK_DIAG_STATUS
+#define MUROSYNC_LNK_DIAG_RX_LO_REG             MUROSYNC_LNK_DIAG_RX_LO
+#define MUROSYNC_LNK_DIAG_RX_HI_REG             MUROSYNC_LNK_DIAG_RX_HI
+#define MUROSYNC_LNK_DIAG_EXP_LO_REG            MUROSYNC_LNK_DIAG_EXP_LO
+#define MUROSYNC_LNK_DIAG_EXP_HI_REG            MUROSYNC_LNK_DIAG_EXP_HI
+#define MUROSYNC_LNK_DIAG_TX_DATA_LO_REG        MUROSYNC_LNK_DIAG_TX_DATA_LO
+#define MUROSYNC_LNK_DIAG_TX_DATA_HI_REG        MUROSYNC_LNK_DIAG_TX_DATA_HI
+#define MUROSYNC_LNK_DIAG_TX_COUNTERS_LO_REG    MUROSYNC_LNK_DIAG_TX_COUNTERS_LO
+#define MUROSYNC_LNK_DIAG_TX_COUNTERS_HI_REG    MUROSYNC_LNK_DIAG_TX_COUNTERS_HI
+#define MUROSYNC_LNK_DIAG_TX_STATUS_REG         MUROSYNC_LNK_DIAG_TX_STATUS
 
 
 #endif // MUROSYNC_SERDES_ARRAY_REGS_H

@@ -53,3 +53,16 @@
 
 # MGT_REFCLK: 156.25 MHz => 6.400 ns period
 # create_clock -name gth_refclk -period 6.400 -waveform {0.000 3.200} [get_ports GTH_REF_P]
+
+# Primary clocks (sys_clk_p, clk_mgtrefclk0_x0y1_p, clk_freerun) are created by
+# BD interface parameters and IP-XACT XDC (GT Wizard). Do NOT redefine them here
+# - duplicate create_clock causes TIMING-4 "Invalid primary clock redefinition".
+
+# Mark physically asynchronous clock domains.
+set_clock_groups -name async_sys_vs_mgtref -asynchronous \
+    -group [get_clocks -include_generated_clocks sys_clk_p] \
+    -group [get_clocks -include_generated_clocks clk_mgtrefclk0_x0y1_p]
+
+set_clock_groups -name async_freerun_vs_mgtref -asynchronous \
+    -group [get_clocks -include_generated_clocks clk_freerun] \
+    -group [get_clocks -include_generated_clocks clk_mgtrefclk0_x0y1_p]

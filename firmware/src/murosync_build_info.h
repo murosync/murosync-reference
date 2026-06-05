@@ -29,16 +29,16 @@
 
 /* Product/version */
 #define MUROSYNC_VERSION_MAJOR          1
-#define MUROSYNC_VERSION_SUB            110
-#define MUROSYNC_VERSION_CODE           65646UL
+#define MUROSYNC_VERSION_SUB            112
+#define MUROSYNC_VERSION_CODE           65648UL
 
 /* Build time (UTC) */
-#define MUROSYNC_BUILD_UNIX_TIME        1780232539UL
-#define MUROSYNC_BUILD_TIME_STR         "2026-05-31 13:02:19 UTC"
+#define MUROSYNC_BUILD_UNIX_TIME        1780442111UL
+#define MUROSYNC_BUILD_TIME_STR         "2026-06-02 23:15:11 UTC"
 
 /* Optional: compile-time string helpers */
 #define MUROSYNC_STR_IMPL(x)            #x
 #define MUROSYNC_STR(x)                 MUROSYNC_STR_IMPL(x)
-#define MUROSYNC_VERSION_STR            MUROSYNC_STR(1).MUROSYNC_STR(110)
+#define MUROSYNC_VERSION_STR            MUROSYNC_STR(1).MUROSYNC_STR(112)
 
 #endif /* MUROSYNC_BUILD_INFO_H */

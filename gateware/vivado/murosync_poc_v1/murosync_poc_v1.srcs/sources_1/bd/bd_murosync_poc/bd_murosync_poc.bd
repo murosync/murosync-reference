@@ -835,9 +835,9 @@
         }
       },
       "murosync_serdes_array_0": {
-        "vlnv": "xilinx.com:user:murosync_serdes_array:1.5",
-        "xci_name": "bd_murosync_poc_murosync_serdes_array_0_1",
-        "xci_path": "ip\\bd_murosync_poc_murosync_serdes_array_0_1\\bd_murosync_poc_murosync_serdes_array_0_1.xci",
+        "vlnv": "xilinx.com:user:murosync_serdes_array:1.7",
+        "xci_name": "bd_murosync_poc_murosync_serdes_array_0_0",
+        "xci_path": "ip\\bd_murosync_poc_murosync_serdes_array_0_0_1\\bd_murosync_poc_murosync_serdes_array_0_0.xci",
         "inst_hier_path": "murosync_serdes_array_0",
         "parameters": {
           "MODE": {
@@ -1060,7 +1060,7 @@
           "GTH_OUT_CH0_TX_P"
         ]
       },
-      "murosync_serdes_array_0_refclk_out": {
+      "murosync_serdes_array_0_pll_lock_out": {
         "ports": [
           "murosync_serdes_array_0/pll_lock_out",
           "ila_0/probe2"
@@ -1122,7 +1122,7 @@
               },
               "SEG_murosync_serdes_array_0_reg0": {
                 "address_block": "/murosync_serdes_array_0/s00_axi/reg0",
-                "offset": "0x40800000",
+                "offset": "0x00010000",
                 "range": "4K"
               }
             }

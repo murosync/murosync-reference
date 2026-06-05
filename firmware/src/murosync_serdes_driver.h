@@ -58,11 +58,30 @@
 #define MUROSYNC_SERDES_EVENT_LINK_UP     1
 #define MUROSYNC_SERDES_EVENT_LINK_DOWN   2
 
+/* GT loopback modes — values match GTH LOOPBACK[2:0] per UG576/PG182.
+ *
+ * Canonical names (preferred):
+ *   NONE      = 0x0  Normal operation, no loopback
+ *   NEAR_PCS  = 0x1  Near-End PCS loopback   (post-8B/10B encoder)
+ *   NEAR_PMA  = 0x2  Near-End PMA loopback   (post-serializer, pre-driver)
+ *   FAR_PMA   = 0x4  Far-End PMA loopback    (post-CDR, pre-deserializer)
+ *   FAR_PCS   = 0x6  Far-End PCS loopback    (post-comma align, pre-8B/10B)
+ *
+ * Legacy aliases (NEAR/FAR/EXT) kept for source-compat with older firmware.
+ * They were historically misnamed — NEAR_PCS was called NEAR, NEAR_PMA was
+ * called FAR, FAR_PMA was called EXT. Prefer the canonical names in new code.
+ */
 typedef enum {
-    MUROSYNC_SERDES_LOOPBACK_NONE  = 0x0,
-    MUROSYNC_SERDES_LOOPBACK_NEAR  = 0x1,
-    MUROSYNC_SERDES_LOOPBACK_FAR   = 0x2,
-    MUROSYNC_SERDES_LOOPBACK_EXT   = 0x4
+    MUROSYNC_SERDES_LOOPBACK_NONE     = 0x0,
+    MUROSYNC_SERDES_LOOPBACK_NEAR_PCS = 0x1,
+    MUROSYNC_SERDES_LOOPBACK_NEAR_PMA = 0x2,
+    MUROSYNC_SERDES_LOOPBACK_FAR_PMA  = 0x4,
+    MUROSYNC_SERDES_LOOPBACK_FAR_PCS  = 0x6,
+
+    /* Legacy aliases — do not use in new code */
+    MUROSYNC_SERDES_LOOPBACK_NEAR     = MUROSYNC_SERDES_LOOPBACK_NEAR_PCS,
+    MUROSYNC_SERDES_LOOPBACK_FAR      = MUROSYNC_SERDES_LOOPBACK_NEAR_PMA,
+    MUROSYNC_SERDES_LOOPBACK_EXT      = MUROSYNC_SERDES_LOOPBACK_FAR_PMA
 } murosync_serdes_loopback_t;
 
 /* IP mode enum — populated by murosync_serdes_get_ip_info() from IP_INFO register */
@@ -81,14 +100,21 @@ typedef struct {
     unsigned int    raw;          /* full 32-bit register value for debug */
 } murosync_ip_info_t;
 
-/************************* Register access ******************************/
+/*************************** Register access ****************************
+ * Low-level AXI-Lite register read/write/modify primitives. All higher
+ * level helpers in this header ultimately go through these.
+ * Return XST_SUCCESS / XST_FAILURE.
+ ************************************************************************/
 int  murosync_serdes_reg_rd(unsigned int reg_ofs, unsigned int *data);
 int  murosync_serdes_reg_wr(unsigned int reg_ofs, unsigned int data);
 int  murosync_serdes_reg_modify(unsigned int reg_ofs, unsigned int data, unsigned int mask);
 void murosync_serdes_dump_registers(unsigned int start_ofs, unsigned int end_ofs);
 /************************************************************************/
 
-/*************************** Commands ***********************************/
+/*************************** Commands ***********************************
+ * Side-effecting control entry points: loopback config, W1P pulses,
+ * reset sequencing. Return XST_SUCCESS / XST_FAILURE.
+ ************************************************************************/
 int murosync_serdes_set_loopback(unsigned char loopback);
 int murosync_serdes_w1p_pulse(unsigned int bit_mask);
 int murosync_serdes_pulse_link_latch_reset(void);
@@ -96,14 +122,21 @@ int murosync_serdes_pulse_gt_reset_all(void);
 int murosync_serdes_reset_sequence(void);
 /************************************************************************/
 
-/************************* Status helpers *******************************/
+/*************************** Status helpers *****************************
+ * Read STATUS register and derived link state. wait_link_up() polls at
+ * MUROSYNC_SERDES_POLL_INTERVAL_USEC until link_up or timeout.
+ ************************************************************************/
 int murosync_serdes_get_status(unsigned int *stat);
 int murosync_serdes_is_link_up(void);
 int murosync_serdes_wait_link_up(int timeout_usec);
 void murosync_serdes_print_status(void);
 /************************************************************************/
 
-/************************* Debug helpers ********************************/
+/*************************** Debug helpers ******************************
+ * 64-bit DBG register access and AXI self-tests. selftest_const reads a
+ * RO constant; selftest_scratch does write/read/restore on the scratch
+ * register. Both must pass before trusting any other AXI access.
+ ************************************************************************/
 int  murosync_serdes_get_dbg64(unsigned long long *dbg);
 void murosync_serdes_print_dbg(void);
 int  murosync_serdes_selftest_const(void);
@@ -111,11 +144,19 @@ int  murosync_serdes_scratch_wr_rd_check(unsigned int pattern, const char *tag);
 int  murosync_serdes_selftest_scratch(void);
 /************************************************************************/
 
-/*************************** BTRING-UP **********************************/
+/*************************** BRING-UP ***********************************
+ * Reset the GT array, wait for link_up, configure the requested loopback.
+ * Returns XST_SUCCESS only if link_up was observed before timeout_usec.
+ ************************************************************************/
 int murosync_serdes_bring_up(unsigned char loopback, int timeout_usec);
 /************************************************************************/
 
-/************************* LINK TEST ************************************/
+/*************************** LINK TEST **********************************
+ * 8B/10B-aware in-fabric pattern generator + RX checker. Configured via
+ * mode (FIXED/TOGGLE/COUNTER), per-channel mask, optional polarity
+ * inversion, and a 32-bit pattern operand. State and counters exposed
+ * via Tier 1/2 registers; getters below.
+ ************************************************************************/
 int murosync_serdes_link_test_set_mode(unsigned char mode);
 int murosync_serdes_link_test_set_ch_mask(unsigned char ch_mask);
 int murosync_serdes_link_test_set_pol_mask(unsigned char rx_pol_mask, unsigned char tx_pol_mask);
