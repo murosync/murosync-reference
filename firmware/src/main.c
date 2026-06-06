@@ -105,6 +105,18 @@ static int murosync_app_bringup_master(void)
 
     murosync_diag_link_sweep_verdict();
 
+    /* Long-form diagnostic on the worst-residual patterns from the sweep.
+     * Prints full at-1st-err snapshot (Got / Exp / XOR / Hamming weight)
+     * so we can see WHICH bits flip — bit-flip signature vs decorrelation
+     * vs byte-boundary issue. Used during Phase 1 BER reduction. */
+    xil_printf("\r\n=== LONG-FORM: 0x12341234 (residual ~1e-3) ===\r\n");
+    murosync_diag_link_test_verdict(MUROSYNC_LNK_TEST_MODE_FIXED,
+                                     0x12341234, 0x1u, 2000u);
+
+    xil_printf("\r\n=== LONG-FORM: 0xAAAAAAAA (clean reference) ===\r\n");
+    murosync_diag_link_test_verdict(MUROSYNC_LNK_TEST_MODE_FIXED,
+                                     0xAAAAAAAA, 0x1u, 2000u);
+
     xil_printf("\r\n[MUROSYNC] === entering main loop ===\r\n");
     return XST_SUCCESS;
 }

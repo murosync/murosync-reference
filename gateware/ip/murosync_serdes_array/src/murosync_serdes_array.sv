@@ -44,7 +44,7 @@ module murosync_serdes_array #(
     //   MINOR: auto-incremented by update_ip_ports.tcl on every re-package.
     //          Synced to IP-XACT <spirit:version> by the same script.
     parameter integer IP_VERSION_MAJOR = 1,
-    parameter integer IP_VERSION_MINOR = 9,
+    parameter integer IP_VERSION_MINOR = 10,
 
     parameter integer C_S00_AXI_DATA_WIDTH = 32,
 
@@ -550,6 +550,32 @@ module murosync_serdes_array #(
     };
 
     // ============================================================
+    // Per-byte K-marker for SLAVE cascade
+    // ============================================================
+    // 8 bits = 2 K-flags per channel (one per byte in the 16-bit slice).
+    // Keeps the byte-resolution that rxcharisk_int OR-collapses away.
+    // Used only on SLAVE side: driven straight into txctrl2_out (after 1-cycle
+    // pipeline register matching rx_data_r retiming) so each byte's K-marker
+    // travels with its own byte through the cascade — no duplication, no
+    // phase-ambiguity around K28.5 cycles.
+    //
+    // Mapping matches txctrl2_out layout: txctrl2[2*ch + b] = channel ch, byte b.
+    //   CH0 byte0 → rxctrl0_int[0]  → rxctrl0_per_byte_int[0] → txctrl2[0]
+    //   CH0 byte1 → rxctrl0_int[1]  → rxctrl0_per_byte_int[1] → txctrl2[1]
+    //   CH1 byte0 → rxctrl0_int[16] → rxctrl0_per_byte_int[2] → txctrl2[2]
+    //   CH1 byte1 → rxctrl0_int[17] → rxctrl0_per_byte_int[3] → txctrl2[3]
+    //   CH2 byte0 → rxctrl0_int[32] → rxctrl0_per_byte_int[4] → txctrl2[4]
+    //   CH2 byte1 → rxctrl0_int[33] → rxctrl0_per_byte_int[5] → txctrl2[5]
+    //   CH3 byte0 → rxctrl0_int[48] → rxctrl0_per_byte_int[6] → txctrl2[6]
+    //   CH3 byte1 → rxctrl0_int[49] → rxctrl0_per_byte_int[7] → txctrl2[7]
+    wire [7:0]  rxctrl0_per_byte_int = {
+        rxctrl0_int[49], rxctrl0_int[48],   // CH3 byte1, byte0 → [7:6]
+        rxctrl0_int[33], rxctrl0_int[32],   // CH2 byte1, byte0 → [5:4]
+        rxctrl0_int[17], rxctrl0_int[16],   // CH1 byte1, byte0 → [3:2]
+        rxctrl0_int[1],  rxctrl0_int[0]     // CH0 byte1, byte0 → [1:0]
+    };
+
+    // ============================================================
     // GT wrapper (simplified wrapper internally uses murosync_gtwizard_ports)
     // ============================================================
     murosync_gt_wrapper #(
@@ -706,6 +732,7 @@ module murosync_serdes_array #(
                                                           //    was wrong for current IP configuration; bypassed.
                                                           //    Verified by ground-truth probe 2026-05-21.)
         .rxcharisk       (rxcharisk_int),           // K-symbol indicator — skip in checker
+        .rxctrl0_per_byte(rxctrl0_per_byte_int),    // 8-bit per-byte K-flags for SLAVE cascade
         .tx_data         (link_test_tx_data),
         .rx_data         (gtwiz_userdata_rx_int),
         .txctrl2_out     (link_test_txctrl2),      // 8B10B K-symbol control

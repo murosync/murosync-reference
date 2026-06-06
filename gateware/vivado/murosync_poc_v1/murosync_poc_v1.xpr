@@ -65,13 +65,13 @@
     <Option Name="WTVcsLaunchSim" Val="0"/>
     <Option Name="WTRivieraLaunchSim" Val="0"/>
     <Option Name="WTActivehdlLaunchSim" Val="0"/>
-    <Option Name="WTXSimExportSim" Val="111"/>
-    <Option Name="WTModelSimExportSim" Val="111"/>
-    <Option Name="WTQuestaExportSim" Val="111"/>
+    <Option Name="WTXSimExportSim" Val="112"/>
+    <Option Name="WTModelSimExportSim" Val="112"/>
+    <Option Name="WTQuestaExportSim" Val="112"/>
     <Option Name="WTIesExportSim" Val="0"/>
-    <Option Name="WTVcsExportSim" Val="111"/>
-    <Option Name="WTRivieraExportSim" Val="111"/>
-    <Option Name="WTActivehdlExportSim" Val="111"/>
+    <Option Name="WTVcsExportSim" Val="112"/>
+    <Option Name="WTRivieraExportSim" Val="112"/>
+    <Option Name="WTActivehdlExportSim" Val="112"/>
     <Option Name="GenerateIPUpgradeLog" Val="TRUE"/>
     <Option Name="XSimRadix" Val="hex"/>
     <Option Name="XSimTimeUnit" Val="ns"/>
@@ -95,11 +95,11 @@
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
-        <CompFileExtendedInfo CompFileName="bd_murosync_poc.bd" FileRelPathName="ip/bd_murosync_poc_xbar_0/bd_murosync_poc_xbar_0.xci">
-          <Proxy FileSetName="bd_murosync_poc_xbar_0"/>
-        </CompFileExtendedInfo>
         <CompFileExtendedInfo CompFileName="bd_murosync_poc.bd" FileRelPathName="ip/bd_murosync_poc_dlmb_bram_if_cntlr_0/bd_murosync_poc_dlmb_bram_if_cntlr_0.xci">
           <Proxy FileSetName="bd_murosync_poc_dlmb_bram_if_cntlr_0"/>
+        </CompFileExtendedInfo>
+        <CompFileExtendedInfo CompFileName="bd_murosync_poc.bd" FileRelPathName="ip/bd_murosync_poc_xbar_0/bd_murosync_poc_xbar_0.xci">
+          <Proxy FileSetName="bd_murosync_poc_xbar_0"/>
         </CompFileExtendedInfo>
       </File>
       <File Path="$PSRCDIR/sources_1/new/murosync_poc_top.sv">

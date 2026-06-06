@@ -55,6 +55,13 @@ module murosync_serdes_link_test #(
     // Checker must skip these words — they are comma/control, not data
     input  wire [3:0]  rxcharisk,
 
+    // 8B10B: per-byte K-flag — 2 bits per channel (one per byte in the 16-bit slice)
+    // Layout: [2*ch + b] = channel ch, byte b. Same as txctrl2_out layout.
+    // SLAVE cascade drives this straight to txctrl2_out (1-stage retimed) so
+    // each byte's K-marker travels with its own byte through the loopback —
+    // no per-channel collapse, no phase-ambiguity around K28.5 cycles.
+    input  wire [7:0]  rxctrl0_per_byte,
+
     // Data interfaces
     output logic [63:0] tx_data,
     input  wire  [63:0] rx_data,
@@ -278,46 +285,49 @@ module murosync_serdes_link_test #(
 
     // ------------------------------------------------------------
     // SLAVE cascade pipeline (rx_clk == tx_clk under loop-timing fix):
-    //   data:    rx_data    -> rx_data_r    -> tx_data        (2 stages)
-    //   charisk: rxcharisk  -> rxcharisk_r  -> txctrl2_out    (2 stages)
+    //   data:           rx_data          -> rx_data_r          -> tx_data        (2 stages)
+    //   per-byte K-flag: rxctrl0_per_byte -> rxctrl0_per_byte_r -> txctrl2_out   (2 stages)
     //
-    // The rxcharisk_r stage is REQUIRED to keep K-symbol markers aligned
-    // with their byte payload after the rx_data_r retiming. Without it,
-    // txctrl2_out led tx_data by 1 cycle → MASTER's K28.5 came back as
-    // D28.5 (byte 0xBC arriving as data) → ~1/COMMA_PERIOD ≈ 1e-3 WER.
+    // Each byte's K-flag travels with its own byte through the cascade —
+    // no per-channel collapse, no phase ambiguity if GT byte-aligner sits
+    // on a phase where K28.5 straddles the cycle boundary.
+    //
+    // History (v1.7 -> v1.9 -> v1.10):
+    //   v1.7: rxcharisk[3:0] (per-channel OR of byte0|byte1) fed straight
+    //         into txctrl2_out without retiming -> 1-cycle skew vs data path,
+    //         every K28.5 came back as D28.5 -> ~1/COMMA_PERIOD ≈ 1e-3 WER.
+    //   v1.9: added rxcharisk_r register matching rx_data_r retiming.
+    //         Skew fixed but per-channel collapse still hid byte-resolution
+    //         -> two stable byte-alignment phases, one of them showed
+    //         ~1/COMMA_PERIOD WER on a subset of patterns.
+    //   v1.10 (current): per-byte K-flag plumbed straight from RXCTRL0
+    //         (see rxctrl0_per_byte_int in murosync_serdes_array.sv).
+    //         No collapse, no duplication.
     // ------------------------------------------------------------
     reg [63:0] rx_data_r;
-    reg [3:0]  rxcharisk_r;
+    reg [7:0]  rxctrl0_per_byte_r;
     always @(posedge tx_clk or negedge core_rst_n)
     begin
         if (!core_rst_n) begin
-            rx_data_r   <= 64'h0;
-            rxcharisk_r <= 4'h0;
+            rx_data_r          <= 64'h0;
+            rxctrl0_per_byte_r <= 8'h0;
         end else begin
-            rx_data_r   <= rx_data;
-            rxcharisk_r <= rxcharisk;
+            rx_data_r          <= rx_data;
+            rxctrl0_per_byte_r <= rxctrl0_per_byte;
         end
     end
 
     // TXCHARISK — K-symbol control
-    //   IS_SLAVE: echo RXCHARISK (delayed 1 cycle via rxcharisk_r) back to
-    //             TX so K-symbols (comma) are preserved through fabric
-    //             cascade loopback. Each rxcharisk_r[ch] bit is duplicated
-    //             to txctrl2_out[2*ch +: 2] because each 16-bit channel
-    //             slice carries 2 bytes, each with its own TXCHARISK bit.
-    //             Pipeline depth matches the data path (2 stages) so the
-    //             K-marker arrives on the same cycle as its byte. Without
-    //             this, MASTER would receive its own comma back as
-    //             D-symbols → ~1e-3 WER, 0xBC signature in first-err.
+    //   IS_SLAVE: drive per-byte K-flags from RX straight through the cascade
+    //             (1-stage retimed via rxctrl0_per_byte_r to match rx_data_r).
+    //             Each byte's K-marker corresponds 1:1 to the byte it travels
+    //             with — no information lost across the loopback.
     //   MASTER:   normal comma maintenance (send_comma drives all 8 bits
     //             high during K28.5 burst, low otherwise).
     always @(posedge tx_clk or negedge core_rst_n)
     begin
         if (!core_rst_n)     txctrl2_out <= 8'h0;
-        else if (IS_SLAVE)   txctrl2_out <= {rxcharisk_r[3], rxcharisk_r[3],
-                                             rxcharisk_r[2], rxcharisk_r[2],
-                                             rxcharisk_r[1], rxcharisk_r[1],
-                                             rxcharisk_r[0], rxcharisk_r[0]};
+        else if (IS_SLAVE)   txctrl2_out <= rxctrl0_per_byte_r;
         else if (send_comma) txctrl2_out <= 8'hFF;
         else                 txctrl2_out <= 8'h0;
     end

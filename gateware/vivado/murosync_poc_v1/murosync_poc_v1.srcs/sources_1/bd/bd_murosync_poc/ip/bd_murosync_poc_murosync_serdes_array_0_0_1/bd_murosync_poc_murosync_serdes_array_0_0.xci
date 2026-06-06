@@ -3,14 +3,14 @@
   "ip_inst": {
     "xci_name": "bd_murosync_poc_murosync_serdes_array_0_0",
     "cell_name": "murosync_serdes_array_0",
-    "component_reference": "xilinx.com:user:murosync_serdes_array:1.9",
+    "component_reference": "xilinx.com:user:murosync_serdes_array:1.10",
     "ip_revision": "1",
     "gen_directory": "../../../../../../murosync_poc_v1.gen/sources_1/bd/bd_murosync_poc/ip/bd_murosync_poc_murosync_serdes_array_0_0",
     "parameters": {
       "component_parameters": {
         "MODE": [ { "value": "SLAVE", "value_src": "user", "resolve_type": "user", "usage": "all" } ],
         "IP_VERSION_MAJOR": [ { "value": "1", "resolve_type": "dependent", "format": "long", "usage": "all" } ],
-        "IP_VERSION_MINOR": [ { "value": "9", "resolve_type": "dependent", "format": "long", "usage": "all" } ],
+        "IP_VERSION_MINOR": [ { "value": "10", "resolve_type": "dependent", "format": "long", "usage": "all" } ],
         "C_S00_AXI_DATA_WIDTH": [ { "value": "32", "resolve_type": "dependent", "format": "long", "usage": "all" } ],
         "C_S00_AXI_NUM_REGS": [ { "value": "49", "resolve_type": "dependent", "format": "long", "usage": "all" } ],
         "OPT_MEM_ADDR_BITS": [ { "value": "6", "resolve_type": "dependent", "format": "long", "usage": "all" } ],
@@ -20,7 +20,7 @@
       "model_parameters": {
         "MODE": [ { "value": "SLAVE", "resolve_type": "generated", "usage": "all" } ],
         "IP_VERSION_MAJOR": [ { "value": "1", "resolve_type": "generated", "format": "long", "usage": "all" } ],
-        "IP_VERSION_MINOR": [ { "value": "9", "resolve_type": "generated", "format": "long", "usage": "all" } ],
+        "IP_VERSION_MINOR": [ { "value": "10", "resolve_type": "generated", "format": "long", "usage": "all" } ],
         "C_S00_AXI_DATA_WIDTH": [ { "value": "32", "resolve_type": "generated", "format": "long", "usage": "all" } ],
         "C_S00_AXI_NUM_REGS": [ { "value": "49", "resolve_type": "generated", "format": "long", "usage": "all" } ],
         "OPT_MEM_ADDR_BITS": [ { "value": "6", "resolve_type": "dependent", "format": "long", "usage": "all" } ],
