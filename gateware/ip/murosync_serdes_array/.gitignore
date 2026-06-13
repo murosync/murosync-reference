@@ -19,6 +19,10 @@
 !xgui/
 !xgui/**
 
+# keep IP documentation (GT param snapshot, Phase 1 research, etc.)
+!docs/
+!docs/**
+
 # keep GT wizard config "recipe"
 !prj/
 !prj/gtwizard_ultrascale_0.xci

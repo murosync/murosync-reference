@@ -835,7 +835,7 @@
         }
       },
       "murosync_serdes_array_0": {
-        "vlnv": "xilinx.com:user:murosync_serdes_array:1.10",
+        "vlnv": "xilinx.com:user:murosync_serdes_array:1.13",
         "xci_name": "bd_murosync_poc_murosync_serdes_array_0_0",
         "xci_path": "ip\\bd_murosync_poc_murosync_serdes_array_0_0_1\\bd_murosync_poc_murosync_serdes_array_0_0.xci",
         "inst_hier_path": "murosync_serdes_array_0",
