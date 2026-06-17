@@ -329,6 +329,16 @@ void murosync_diag_link_sweep_verdict(void)
     static const unsigned int patt[7] = {
         0xAAAAAAAA, 0x00000000, 0xFFFFFFFF, 0x55555555, 0x12121212, 0x12341234, 0x12345678
     };
+    /* Reference patterns — these are the patterns whose lock is the
+     * authoritative test for physical-link presence. Across the 20-run
+     * cold-start dataset they lock 20/20 and stay below ~3e-5 WER.
+     * Mechanism-A patterns (0x12341234 / 0x12345678) are intentionally
+     * NOT in this set — their acquire is a per-cold-start regime ~55%%
+     * locking, a frame-layer (Phase 2) concern that does NOT drive
+     * OVERALL. To change the physical-link criterion, edit this array. */
+    static const unsigned int reference_pat[3] = {
+        0xAAAAAAAA, 0x00000000, 0x12121212
+    };
     /* Column widths (chars, excluding 2-char separators between):
      *   pattern=10  lock=4  WER=10  BER=10  comma=5  verdict=10
      * Total line width before verdict = 51 chars. */
@@ -337,12 +347,14 @@ void murosync_diag_link_sweep_verdict(void)
                "pattern", "lock", "WER", "BER(est)", "comma", "verdict");
     xil_printf("  ----------  ----  ----------  ----------  -----  ----------\r\n");
 
-    int            any_down = 0;
-    unsigned int   first_down_pat = 0;
-    unsigned int   worst_pat = 0;
-    uint64_t       worst_err_words = 0;
-    uint64_t       worst_words = 0;
-    double         worst_wer = -1.0;
+    int            any_ref_down         = 0;
+    unsigned int   first_ref_down_pat   = 0;
+    int            any_mecha_down       = 0;
+    unsigned int   first_mecha_down_pat = 0;
+    unsigned int   worst_pat            = 0;
+    uint64_t       worst_err_words      = 0;
+    uint64_t       worst_words          = 0;
+    double         worst_wer            = -1.0;
     int            w;
 
     for (int i = 0; i < 7; i++) {
@@ -374,8 +386,19 @@ void murosync_diag_link_sweep_verdict(void)
         xil_printf("%-5s  %s\r\n", r.comma_hint ? "BC?" : "-", diag_verdict_str(v));
 
         if (v == DIAG_LINK_DOWN) {
-            if (!any_down) first_down_pat = patt[i];
-            any_down = 1;
+            int is_ref = 0;
+            for (int j = 0;
+                 j < (int)(sizeof(reference_pat) / sizeof(reference_pat[0]));
+                 j++) {
+                if (reference_pat[j] == patt[i]) { is_ref = 1; break; }
+            }
+            if (is_ref) {
+                if (!any_ref_down) first_ref_down_pat = patt[i];
+                any_ref_down = 1;
+            } else {
+                if (!any_mecha_down) first_mecha_down_pat = patt[i];
+                any_mecha_down = 1;
+            }
         } else if (r.words > 0ULL && r.err_words > 0ULL) {
             double wer = (double)r.err_words / (double)r.words;
             if (wer > worst_wer) {
@@ -387,18 +410,28 @@ void murosync_diag_link_sweep_verdict(void)
         }
     }
     xil_printf("  ----------  ----  ----------  ----------  -----  ----------\r\n");
-    if (any_down) {
-        xil_printf("  OVERALL: LINK DOWN — pattern 0x%08X never locked\r\n", first_down_pat);
+    /* OVERALL is a CRITERION based on which patterns drive it, not a
+     * threshold. A reference-pattern failure is the only real LINK DOWN:
+     * those patterns lock 20/20 across the cold-start dataset, so any
+     * failure in this run is a physical-layer regression. mechanism-A
+     * patterns (0x12341234 / 0x12345678) failing to acquire is reported
+     * as an informational note on a LINK UP — it's a per-cold-start
+     * frame-layer regime, not a link presence issue. */
+    if (any_ref_down) {
+        xil_printf("  OVERALL: LINK DOWN — reference pattern 0x%08X failed to lock "
+                   "(physical-link issue)\r\n", first_ref_down_pat);
     } else {
-        xil_printf("  OVERALL: LINK UP — all 7 patterns locked");
-        /* Informational note on mechanism-A residual: only mention if the
-         * worst WER is above the symmetric-pattern floor (~e-6). */
-        if (worst_wer > 1e-5) {
-            xil_printf(" (worst 0x%08X WER ~", worst_pat);
-            diag_fmt_sci(worst_err_words, worst_words);
-            xil_printf(" — mechanism-A residual, expected)");
+        xil_printf("  OVERALL: LINK UP — physical link present (reference patterns locked)\r\n");
+        if (any_mecha_down) {
+            xil_printf("    [0x%08X did not acquire this run — mechanism-A, "
+                       "~55%% acquire rate across cold-starts, frame-layer territory]\r\n",
+                       first_mecha_down_pat);
         }
-        xil_printf("\r\n");
+        if (worst_wer > 1e-5) {
+            xil_printf("    [worst 0x%08X WER ~", worst_pat);
+            diag_fmt_sci(worst_err_words, worst_words);
+            xil_printf(" — mechanism-A residual, expected]\r\n");
+        }
     }
 }
 

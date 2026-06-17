@@ -1,3 +1,5 @@
-/Debug/
+/Debug/*
+!/Debug/
+!/Debug/murosync_poc_fw.elf
 /Release/
 .settings/
