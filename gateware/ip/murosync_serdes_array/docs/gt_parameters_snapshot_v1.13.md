@@ -2,12 +2,15 @@
 
 **Extracted:** 2026-05-29 01:49
 **Re-captured:** 2026-06-13 (post WORD 2→1 revert) — values confirmed **identical** to the 2026-05-29 baseline below. Wrapper IP was labeled `murosync_serdes_array:1.13` at re-capture, but that bitstream's RTL logic equals v1.10 (the comma-align-gating latch was not present in the synthesized design). The GT Wizard CONFIG is unchanged: `RX_COMMA_ALIGN_WORD=1`, `RX_COMMA_DOUBLE_ENABLE=false`, `RX_COMMA_SHOW_REALIGN_ENABLE=true`, `RX_PPM_OFFSET=200`, `RX_COUPLING=AC`, `RX_TERMINATION=AVTT`, 6.25 Gb/s, QPLL0. CORE_REVISION advanced to 14 (WORD 2↔1 regen churn) but functional state is the baseline.
-**Method:** Vivado TCL `get_property CONFIG.*` against live main project IP
+**Re-verified (r2):** 2026-07-14 — **two-level verification.** Level 1: full `CONFIG.*` dump against live IP object — **identical to baseline, zero diffs** (third consecutive confirmation: 05-29, 06-13, 07-14). Level 2 (**new**): GTHE4_CHANNEL primitive attributes read from the synthesized netlist (`open_run synth_1`) — see §"Primitive attributes" below. **Verdict: buffered RX and TX, clock correction disabled at silicon level.** This corrects the "buffer-bypass" wording in the RTL Architecture H2 lesson (the empirical lesson itself — never freeze `RXPCOMMAALIGNEN` — stands unchanged; only the configuration characterisation in its text was wrong).
+**Method:** Vivado TCL `get_property CONFIG.*` against live main project IP; r2 adds `get_property` on GTHE4_CHANNEL cells in the synthesized netlist
 **Source project:** murosync_poc_v1 at C:/_vivado/murosync_poc_v1
 **IP_DIR (build chain):**
-  \`c:/_vivado/murosync_poc_v1/murosync_poc_v1.gen/sources_1/bd/bd_murosync_poc/ip/bd_murosync_poc_murosync_serdes_array_0_1/prj/gtwizard_ultrascale_0_ex.srcs/sources_1/ip/gtwizard_ultrascale_0\`
+  `c:/_vivado/murosync_poc_v1/murosync_poc_v1.gen/sources_1/bd/bd_murosync_poc/ip/bd_murosync_poc_murosync_serdes_array_0_1/prj/gtwizard_ultrascale_0_ex.srcs/sources_1/ip/gtwizard_ultrascale_0`
 **Authority:** This is the IP that synthesis uses to build the bitstream.
 Output products from this IP propagate directly into MASTER and SLAVE .bit files.
+This document is the canonical **GT configuration baseline** (Phase1 GT Research §9, update-plan item 3).
+
 ## IP State
 
 | Property | Value |
@@ -20,6 +23,34 @@ Output products from this IP propagate directly into MASTER and SLAVE .bit files
 | CORE_REVISION | 14 |
 | SW_VERSION | 2022.2 |
 | PART | xcau15p-ffvb676-2-i |
+
+## Primitive attributes (synthesized netlist, r2 — 2026-07-14)
+
+Read from GTHE4_CHANNEL cells in `synth_1`; **all four channels (X0Y4–X0Y7) identical**:
+
+| Attribute | Value | Meaning |
+|---|---|---|
+| `RXBUF_EN` | `TRUE` | RX elastic buffer **in the datapath** (not bypass) |
+| `RX_XCLK_SEL` | `RXDES` | RX read side clocked through the buffer (buffered mode) |
+| `CLK_CORRECT_USE` | `FALSE` | GT clock correction **disabled** — buffer never inserts/removes symbols |
+| `CLK_COR_SEQ_LEN` | `1` | inactive (CC disabled) |
+| `CLK_COR_KEEP_IDLE` | `FALSE` | inactive |
+| `CLK_COR_MIN_LAT` / `MAX_LAT` | `4` / `6` | defaults, inactive |
+| `CBCC_DATA_SOURCE_SEL` | `DECODED` | default, CB/CC both disabled |
+| `TXBUF_EN` | `TRUE` | TX buffer in the datapath |
+| `TX_XCLK_SEL` | `TXOUT` | buffered TX clocking |
+| `ALIGN_MCOMMA_DET` / `ALIGN_PCOMMA_DET` | `TRUE` | comma detection active both polarities |
+| `SHOW_REALIGN_COMMA` | `FALSE` | see divergence note below |
+
+**Configuration verdict (authoritative):** v1.13 RX path = **elastic buffer, no clock correction, no channel bonding** (`RX_CB_NUM_SEQ=0`, `RX_CC_NUM_SEQ=0` at CONFIG level, `CLK_CORRECT_USE=FALSE` at primitive level — consistent). RX user clocks derive from `RX_OUTCLK_SOURCE = RXOUTCLKPMA` of `RX_MASTER_CHANNEL = X0Y4`.
+
+**Observed CONFIG-vs-primitive divergence (informational):** `CONFIG.RX_COMMA_SHOW_REALIGN_ENABLE = true` but primitive `SHOW_REALIGN_COMMA = FALSE` — the wizard forces the attribute off in the buffered configuration (realign inside the buffer must not propagate an alignment glitch downstream). Typical example of CONFIG saying one thing and the primitive another; always verify at netlist level.
+
+**Timing implications (recorded for error-budget / DC-loop sessions):**
+1. **CH0 / dev bench:** buffer write side (own recovered clock) and read side (RXOUTCLK of X0Y4 = the same recovered clock) are frequency-identical → static fill, no slips. Current bench and the slave uplink are stable by construction; **protocol-level CCS frames are not needed** (Command Spec §6 CCS item → resolved).
+2. **GT clock correction must stay disabled permanently:** CC inserts/removes symbols → variable transport latency → breaks the LOAD_TIME zero-tick contract and RTT constancy. Structural invariant, not a tuning choice.
+3. **Multi-uplink master (channels ≠ X0Y4 with live traffic):** each RX writes on its own slave's recovered clock, all read on X0Y4's — with unsyntonised downstream TX (QPLL ← local osc, v1.13) the ppm difference makes those buffers creep and periodically slip. Resolution candidates (deferred to TX-mux / scaling design): per-channel RX user clocking, or downstream TX syntonisation (QPLL from cleaned recovered clock).
+4. **Buffer fill = per-session constant:** RX latency through the buffer is constant within a link session but need not reproduce across buffer resets / re-locks. Periodic RTT re-measures it; zero-tick contract requires within-session determinism only.
 
 ## All CONFIG.* Parameters (sorted)
 
@@ -198,8 +229,8 @@ Output products from this IP propagate directly into MASTER and SLAVE .bit files
 | RX_PPM_OFFSET | 200 | 200 = applied for plesiochronous link |
 | RX_TERMINATION | AVTT | AVTT = SFP+ standard |
 | RX_COUPLING | AC | AC required for SFP+ |
-| RX_EQ_MODE | AUTO | AUTO  LPM at 7 dB IL |
-| INS_LOSS_NYQ | 7 | dB; =14  LPM |
+| RX_EQ_MODE | AUTO | AUTO → LPM at 7 dB IL |
+| INS_LOSS_NYQ | 7 | dB; <14 → LPM |
 
 ### Rate & data path
 
@@ -224,15 +255,15 @@ Output products from this IP propagate directly into MASTER and SLAVE .bit files
 | RX_COMMA_ALIGN_WORD | 1 |
 | RX_SLIDE_MODE | PCS |
 
-### Buffer config
+### Buffer config (r2: verified at primitive level)
 
-| Parameter | Value |
-|---|---|
-| RX_BUFFER_MODE | 1 |
-| TX_BUFFER_MODE | 1 |
-| RX_BUFFER_RESET_ON_COMMAALIGN | DISABLE |
-| RX_BUFFER_RESET_ON_RATE_CHANGE | ENABLE |
-| TX_BUFFER_RESET_ON_RATE_CHANGE | ENABLE |
+| Parameter | CONFIG value | Primitive attribute |
+|---|---|---|
+| RX buffer | RX_BUFFER_MODE = 1 | RXBUF_EN = TRUE, RX_XCLK_SEL = RXDES |
+| TX buffer | TX_BUFFER_MODE = 1 | TXBUF_EN = TRUE, TX_XCLK_SEL = TXOUT |
+| Clock correction | RX_CC_NUM_SEQ = 0 | CLK_CORRECT_USE = FALSE |
+| Channel bonding | RX_CB_NUM_SEQ = 0 | (disabled) |
+| RX_BUFFER_RESET_ON_COMMAALIGN | DISABLE | — |
 
 ### Channels & PLL
 
@@ -271,7 +302,10 @@ TXPRECURSOR=0, TXPOSTCURSOR=0 — direct mode, no emphasis.
 
 This snapshot is the canonical GT-parameter record. Values were read with
 `get_property CONFIG.*` / `report_property` against the **live IP object** in
-the open project — not from an XCI file on disk.
+the open project — not from an XCI file on disk. The r2 primitive-attribute
+dump was read from GTHE4_CHANNEL cells in the **synthesized netlist**
+(`open_run synth_1`) — one level below CONFIG, i.e. what actually enters the
+bitstream.
 
 **Path lesson (recurring pitfall).** An earlier attempt extracted parameters
 by reading XCI files under
@@ -282,3 +316,15 @@ synthesis actually builds from lives under the `.gen` tree
 NOT `.srcs`. Always query the live IP object, or read from `.gen`. The same
 `.srcs`-vs-`.gen` (and `src/`-vs-imported) divergence bites RTL edits too:
 verify against the synthesized netlist / live object, never a loose file in `.srcs`.
+
+**Verification lesson (r2).** CONFIG-level truth and primitive-level truth can
+diverge (observed here: `RX_COMMA_SHOW_REALIGN_ENABLE=true` vs
+`SHOW_REALIGN_COMMA=FALSE` — wizard override in buffered mode). Configuration
+claims in architecture documents must cite the primitive-attribute dump, not
+the wizard GUI or CONFIG table alone.
+
+---
+
+*GT Wizard Parameter Snapshot — v1.13-r2 — 2026-05-29 (r2: 2026-07-14) — Mikhail Vasilev / MuroSync.*
+*Engineering record; canonical GT configuration baseline for `murosync_serdes_array`.*
+*Restricted / proprietary — NOT Apache-2.0. Copyright (c) 2026 Mikhail Vasilev / MuroSync. info@murosync.com.*
