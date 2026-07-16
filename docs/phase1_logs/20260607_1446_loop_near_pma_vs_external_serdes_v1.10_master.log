@@ -1,0 +1,136 @@
+============================================================
+                    M U R O S Y N C
+      High-Precision Optical Timing & Synchronization
+============================================================
+ Platform : FPGA  XCAU15P
+ CPU      : MicroBlaze
+ Firmware : v1.122  (code 65658)
+ Build    : GT Bring-Up
+ Built at : 2026-06-07 12:42:13 UTC
+            (1780836133 UTC)
+============================================================
+
+        MUROSYNC SERDES | Checking RD-access over AXI
+                AXI OK: TEST_CONST = 0x4D55524F
+        MUROSYNC SERDES | Checking WR/RD-access over AXI
+                TEST_SCRATCH PAT1 pattern 0xA5A55A5A
+                TEST_SCRATCH PAT2 pattern 0x5AA5A55A
+                AXI OK: TEST_SCRATCH write/readback OK
+
+[MUROSYNC] === IP INFO ===
+        Raw          : 0x04000A12
+        Mode         : MASTER
+        IP version   : v1.10
+        NUM_CHANNELS : 4
+
+[MUROSYNC] === MASTER FLOW ===
+
+AXI MUROSYNC SERDES BRING-UP
+        MUROSYNC SERDES | Checking RD-access over AXI
+                AXI OK: TEST_CONST = 0x4D55524F
+        MUROSYNC SERDES | Checking WR/RD-access over AXI
+                TEST_SCRATCH PAT1 pattern 0xA5A55A5A
+                TEST_SCRATCH PAT2 pattern 0x5AA5A55A
+                AXI OK: TEST_SCRATCH write/readback OK
+        MUROSYNC SERDES | Reset sequence
+                Pulse LINK_LATCH_RESET...
+                Pulse GT_RESET_ALL...
+        MUROSYNC SERDES | Set loopback = 0
+        MUROSYNC SERDES | Waiting link up...
+        MUROSYNC SERDES | Link is up, clear sticky latch again...
+        MUROSYNC SERDES | LINK UP! STATUS=0xFFFF0001
+        MUROSYNC SERDES | STATUS=0xFFFF0001
+                LINK_UP            : 1
+                LINK_DOWN_LATCHED  : 0
+                PLL_LOCK_VEC       : 0xF
+                GTPOWERGOOD_VEC    : 0xF
+                TXPMARESETDONE_VEC : 0xF
+                RXPMARESETDONE_VEC : 0xF
+        MUROSYNC SERDES | DBG=0x000000003C1FFFF2
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (post bring-up) ===
+        RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+        RXBYTEISALIGNED  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+        RXBYTEREALIGN    : 0x0
+
+[MUROSYNC] === NEAR_PMA discriminator (internal) ===
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (after NEAR_PMA loopback) ===
+        RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+        RXBYTEISALIGNED  : 0xE [CH3=1 CH2=1 CH1=1 CH0=0]
+        RXBYTEREALIGN    : 0x0
+
+=== SWEEP ch_mask=0x1 (2000 ms each) ===
+
+  pattern     lock  WER         BER(est)    realign  comma  verdict
+  ----------  ----  ----------  ----------  -------  -----  ----------
+  0xAAAAAAAA  OK    < 4.71e-09  < 2.94e-10  2        -      FAIL
+  0x00000000  OK    6.28e-09    1.57e-09    0        -      DEGRADED
+  0xFFFFFFFF  OK    < 4.71e-09  < 2.94e-10  0        -      CLEAN
+  0x55555555  OK    < 4.71e-09  < 2.94e-10  0        -      CLEAN
+  0x12121212  OK    < 4.71e-09  < 2.94e-10  0        -      CLEAN
+  0x12341234  BAD   N/A         N/A         0        -      FAIL
+  0x12345678  BAD   N/A         N/A         0        -      FAIL
+  ----------  ----  ----------  ----------  -------  -----  ----------
+  WORST: 0x12341234  ->  overall FAIL
+
+[MUROSYNC] === restoring external (cascade) path ===
+        MUROSYNC SERDES | CH0 aligned stable: 100 ms continuous (after 20 polls, wall 95 ms)
+        MUROSYNC SERDES | CDR settle delay: 500000 us
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (after settle-gate) ===
+        RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+        RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+        RXBYTEREALIGN    : 0x0
+
+[MUROSYNC] === EXTERNAL sweep (cascade via SLAVE+fiber) ===
+
+=== SWEEP ch_mask=0x1 (2000 ms each) ===
+
+  pattern     lock  WER         BER(est)    realign  comma  verdict
+  ----------  ----  ----------  ----------  -------  -----  ----------
+  0xAAAAAAAA  OK    2.47e-06    3.09e-07    2        -      FAIL
+  0x00000000  OK    2.46e-06    1.23e-06    0        -      DEGRADED
+  0xFFFFFFFF  OK    6.61e-07    8.26e-08    0        -      DEGRADED
+  0x55555555  OK    4.70e-06    5.87e-07    0        -      DEGRADED
+  0x12121212  OK    8.35e-07    4.17e-07    0        -      DEGRADED
+  0x12341234  OK    1.29e-03    1.61e-04    1493     -      FAIL
+  0x12345678  OK    1.54e-05    1.92e-06    8        -      FAIL
+  ----------  ----  ----------  ----------  -------  -----  ----------
+  WORST: 0x12341234  ->  overall FAIL
+
+=== LONG-FORM: 0x12341234 (residual ~1e-3) ===
+
+=== MUROSYNC LINK TEST ===  ch_mask=0x1  FIXED 0x12341234
+  duration       : 2000 ms
+  observed       : 6.36e+08 words / 1.01e+10 bits
+  lock           : OK  t_lock=4145 cyc  realign(test)=1336
+  word errors    : 9.48e+05   WER = 1.48e-03
+  BER            : 9.30e-05 (est, 1-bit/err sample)
+  first err XOR  : 0x0200 (1 bits)  got=0x1034 exp=0x1234
+  --------------------------------------------------
+  VERDICT: FAIL  -- lost byte alignment during test
+
+=== LONG-FORM: 0xAAAAAAAA (clean reference) ===
+
+=== MUROSYNC LINK TEST ===  ch_mask=0x1  FIXED 0xAAAAAAAA
+  duration       : 2000 ms
+  observed       : 6.36e+08 words / 1.01e+10 bits
+  lock           : OK  t_lock=4144 cyc  realign(test)=0
+  word errors    : 4.59e+03   WER = 7.21e-06
+  BER            : 9.02e-07 (est, 2-bit/err sample)
+  first err XOR  : 0x0500 (2 bits)  got=0xAFAA exp=0xAAAA
+  --------------------------------------------------
+  VERDICT: DEGRADED  -- link carries data, but has errors
+
+[MUROSYNC] === entering main loop ===
+[MUROSYNC] alive #0 (M v1.10)
+[MUROSYNC] SERDES LINK UP
+
+[MUROSYNC] === GT WIZARD GROUND TRUTH (periodic) ===
+        RXCOMMADET       : 0x0 [CH3=0 CH2=0 CH1=0 CH0=0]
+        RXBYTEISALIGNED  : 0xF [CH3=1 CH2=1 CH1=1 CH0=1]
+        RXBYTEREALIGN    : 0x0
+[MUROSYNC] alive #1 (M v1.10)
+[MUROSYNC] alive #2 (M v1.10)
+[MUROSYNC] alive #3 (M v1.10)

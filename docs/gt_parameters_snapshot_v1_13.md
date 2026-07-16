@@ -2,14 +2,14 @@
 
 **Extracted:** 2026-05-29 01:49
 **Re-captured:** 2026-06-13 (post WORD 2→1 revert) — values confirmed **identical** to the 2026-05-29 baseline below. Wrapper IP was labeled `murosync_serdes_array:1.13` at re-capture, but that bitstream's RTL logic equals v1.10 (the comma-align-gating latch was not present in the synthesized design). The GT Wizard CONFIG is unchanged: `RX_COMMA_ALIGN_WORD=1`, `RX_COMMA_DOUBLE_ENABLE=false`, `RX_COMMA_SHOW_REALIGN_ENABLE=true`, `RX_PPM_OFFSET=200`, `RX_COUPLING=AC`, `RX_TERMINATION=AVTT`, 6.25 Gb/s, QPLL0. CORE_REVISION advanced to 14 (WORD 2↔1 regen churn) but functional state is the baseline.
-**Re-verified (r2):** 2026-07-14 — **two-level verification.** Level 1: full `CONFIG.*` dump against live IP object — **identical to baseline, zero diffs** (third consecutive confirmation: 05-29, 06-13, 07-14). Level 2 (**new**): GTHE4_CHANNEL primitive attributes read from the synthesized netlist (`open_run synth_1`) — see §"Primitive attributes" below. **Verdict: buffered RX and TX, clock correction disabled at silicon level.** This corrects the "buffer-bypass" wording in the RTL Architecture H2 lesson (the empirical lesson itself — never freeze `RXPCOMMAALIGNEN` — stands unchanged; only the configuration characterisation in its text was wrong).
+**Re-verified (r2):** 2026-07-14 — **two-level verification.** Level 1: full `CONFIG.*` dump against live IP object — **identical to baseline, zero diffs** (third consecutive confirmation: 05-29, 06-13, 07-14). Level 2 (**new**): GTHE4_CHANNEL primitive attributes read from the synthesized netlist (`open_run synth_1`) — see §"Primitive attributes" below. **Verdict: buffered RX and TX, clock correction disabled at silicon level.** (Empirical bring-up lesson, unchanged: never freeze `RXPCOMMAALIGNEN` — doing so collapses continuous phase tracking and kills the link.)
 **Method:** Vivado TCL `get_property CONFIG.*` against live main project IP; r2 adds `get_property` on GTHE4_CHANNEL cells in the synthesized netlist
 **Source project:** murosync_poc_v1 at C:/_vivado/murosync_poc_v1
 **IP_DIR (build chain):**
   `c:/_vivado/murosync_poc_v1/murosync_poc_v1.gen/sources_1/bd/bd_murosync_poc/ip/bd_murosync_poc_murosync_serdes_array_0_1/prj/gtwizard_ultrascale_0_ex.srcs/sources_1/ip/gtwizard_ultrascale_0`
 **Authority:** This is the IP that synthesis uses to build the bitstream.
 Output products from this IP propagate directly into MASTER and SLAVE .bit files.
-This document is the canonical **GT configuration baseline** (Phase1 GT Research §9, update-plan item 3).
+This document is the canonical **GT configuration baseline** for the open `murosync_serdes_array` transport IP (Phase1 GT Research §9, update-plan item 3). Public, configuration-only edition.
 
 ## IP State
 
@@ -44,13 +44,9 @@ Read from GTHE4_CHANNEL cells in `synth_1`; **all four channels (X0Y4–X0Y7) id
 
 **Configuration verdict (authoritative):** v1.13 RX path = **elastic buffer, no clock correction, no channel bonding** (`RX_CB_NUM_SEQ=0`, `RX_CC_NUM_SEQ=0` at CONFIG level, `CLK_CORRECT_USE=FALSE` at primitive level — consistent). RX user clocks derive from `RX_OUTCLK_SOURCE = RXOUTCLKPMA` of `RX_MASTER_CHANNEL = X0Y4`.
 
-**Observed CONFIG-vs-primitive divergence (informational):** `CONFIG.RX_COMMA_SHOW_REALIGN_ENABLE = true` but primitive `SHOW_REALIGN_COMMA = FALSE` — the wizard forces the attribute off in the buffered configuration (realign inside the buffer must not propagate an alignment glitch downstream). Typical example of CONFIG saying one thing and the primitive another; always verify at netlist level.
+*(This public copy is configuration-only. Timing-plane implications of the buffer configuration are analysed in the private architecture documents.)*
 
-**Timing implications (recorded for error-budget / DC-loop sessions):**
-1. **CH0 / dev bench:** buffer write side (own recovered clock) and read side (RXOUTCLK of X0Y4 = the same recovered clock) are frequency-identical → static fill, no slips. Current bench and the slave uplink are stable by construction; **protocol-level CCS frames are not needed** (Command Spec §6 CCS item → resolved).
-2. **GT clock correction must stay disabled permanently:** CC inserts/removes symbols → variable transport latency → breaks the LOAD_TIME zero-tick contract and RTT constancy. Structural invariant, not a tuning choice.
-3. **Multi-uplink master (channels ≠ X0Y4 with live traffic):** each RX writes on its own slave's recovered clock, all read on X0Y4's — with unsyntonised downstream TX (QPLL ← local osc, v1.13) the ppm difference makes those buffers creep and periodically slip. Resolution candidates (deferred to TX-mux / scaling design): per-channel RX user clocking, or downstream TX syntonisation (QPLL from cleaned recovered clock).
-4. **Buffer fill = per-session constant:** RX latency through the buffer is constant within a link session but need not reproduce across buffer resets / re-locks. Periodic RTT re-measures it; zero-tick contract requires within-session determinism only.
+**Observed CONFIG-vs-primitive divergence (informational):** `CONFIG.RX_COMMA_SHOW_REALIGN_ENABLE = true` but primitive `SHOW_REALIGN_COMMA = FALSE` — the wizard forces the attribute off in the buffered configuration (realign inside the buffer must not propagate an alignment glitch downstream). Typical example of CONFIG saying one thing and the primitive another; always verify at netlist level.
 
 ## All CONFIG.* Parameters (sorted)
 
@@ -327,4 +323,5 @@ the wizard GUI or CONFIG table alone.
 
 *GT Wizard Parameter Snapshot — v1.13-r2 — 2026-05-29 (r2: 2026-07-14) — Mikhail Vasilev / MuroSync.*
 *Engineering record; canonical GT configuration baseline for `murosync_serdes_array`.*
-*Restricted / proprietary — NOT Apache-2.0. Copyright (c) 2026 Mikhail Vasilev / MuroSync. info@murosync.com.*
+*Open engineering record of the `murosync-reference` transport layer. Repository license to be finalized; until then all rights reserved.*
+*Copyright (c) 2026 Mikhail Vasilev / MuroSync — attribution retained. info@murosync.com.*

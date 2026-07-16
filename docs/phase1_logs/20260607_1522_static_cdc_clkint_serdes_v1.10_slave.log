@@ -1,0 +1,186 @@
+open_run impl_1
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.158 . Memory (MB): peak = 7378.852 ; gain = 0.000
+INFO: [Netlist 29-17] Analyzing 520 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
+INFO: [Project 1-479] Netlist was created with Vivado 2022.2
+INFO: [Project 1-570] Preparing netlist for logic optimization
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'bd_murosync_poc/murosync_serdes_array_0/dbg[0]' is not directly connected to top level port. Synthesis is ignored for IBUF_LOW_PWR but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'bd_murosync_poc/murosync_serdes_array_0/hb_gtwiz_reset_all_in' is not directly connected to top level port. Synthesis is ignored for IBUF_LOW_PWR but preserved for implementation.
+INFO: [Timing 38-478] Restoring timing data from binary archive.
+INFO: [Timing 38-479] Binary timing data restore complete.
+INFO: [Project 1-856] Restoring constraints from binary archive.
+INFO: [Project 1-853] Binary constraint restore complete.
+Reading XDEF placement.
+Reading placer database...
+Reading XDEF routing.
+Read XDEF Files: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.815 . Memory (MB): peak = 7378.852 ; gain = 0.000
+Restored from archive | CPU: 0.000000 secs | Memory: 0.000000 MB |
+Finished XDEF File Restore: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.831 . Memory (MB): peak = 7378.852 ; gain = 0.000
+Generating merged BMM file for the design top 'murosync_poc_top'...
+INFO: [Memdata 28-144] Successfully populated the BRAM INIT strings from the following elf files: c:/_vivado/murosync_poc_v1/murosync_poc_v1.gen/sources_1/bd/bd_murosync_poc/ip/bd_murosync_poc_microblaze_0_0/data/mb_bootloop_le.elf 
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.007 . Memory (MB): peak = 7378.852 ; gain = 0.000
+INFO: [Project 1-111] Unisim Transformation Summary:
+  A total of 177 instances were transformed.
+  CFGLUT5 => CFGLUT5 (SRL16E, SRLC32E): 72 instances
+  IBUF => IBUF (IBUFCTRL, INBUF): 2 instances
+  IBUFDS => IBUFDS (DIFFINBUF, IBUFCTRL): 1 instance 
+  LUT6_2 => LUT6_2 (LUT5, LUT6): 79 instances
+  RAM32M => RAM32M (RAMD32(x6), RAMS32(x2)): 16 instances
+  RAM32M16 => RAM32M16 (RAMD32(x14), RAMS32(x2)): 2 instances
+  RAM32X1D => RAM32X1D (RAMD32(x2)): 4 instances
+  SRLC16E => SRL16E: 1 instance 
+
+open_run: Time (s): cpu = 00:00:20 ; elapsed = 00:00:11 . Memory (MB): peak = 7378.852 ; gain = 0.000
+impl_1
+report_cdc
+INFO: [Timing 38-91] UpdateTimingParams: No interconnect No Cell Dly, Speed grade: -2, Temperature grade: I, Delay Type: max.
+INFO: [Timing 38-191] Multithreading enabled for timing update using a maximum of 2 CPUs
+INFO: [Timing 38-433] Consider using Xilinx recommended XPM_CDC modules to avoid Critical severities
+INFO: [Timing 38-314] The report_cdc command only analyzes and reports clock domain crossing paths where clocks have been defined on both source and destination sides. Ports with no input delay constraint are skipped. Please run check_timing to verify there are no missing clock definitions in your design, nor any unconstrained input port.
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+-----------------------------------------------------------------------------------------
+| Tool Version      : Vivado v.2022.2 (win64) Build 3671981 Fri Oct 14 05:00:03 MDT 2022
+| Date              : Sun Jun  7 15:22:07 2026
+| Host              : <host> running 64-bit major release  (build 9200)
+| Command           : report_cdc
+| Design            : murosync_poc_top
+| Device            : xcau15p-ffvb676
+| Speed File        : -2  PRODUCTION 1.29 03-25-2022
+| Temperature Grade : I
+-----------------------------------------------------------------------------------------
+
+CDC Report
+
+Severity  Source Clock                                                                                Destination Clock                                                                           CDC Type                 Exceptions               Endpoints  Safe  Unsafe  Unknown  No ASYNC_REG  
+--------  ------------------------------------------------------------------------------------------  ------------------------------------------------------------------------------------------  -----------------------  -----------------------  ---------  ----  ------  -------  ------------  
+Critical  clk_out1_bd_murosync_poc_clk_wiz_0_0                                                        clk_freerun                                                                                 No Common Primary Clock  None                            18    16       1        1             0  
+Critical  rxoutclk_out[0]                                                                             clk_freerun                                                                                 No Common Primary Clock  Asynch Clock Groups              3     2       0        1             0  
+Critical  clk_freerun                                                                                 clk_out1_bd_murosync_poc_clk_wiz_0_0                                                        No Common Primary Clock  None                            12     1       4        7             0  
+Critical  clk_mgtrefclk0_x0y1_p                                                                       clk_out1_bd_murosync_poc_clk_wiz_0_0                                                        No Common Primary Clock  Asynch Clock Groups              3     0       1        2             0  
+Critical  rxoutclk_out[0]                                                                             clk_out1_bd_murosync_poc_clk_wiz_0_0                                                        No Common Primary Clock  Asynch Clock Groups            773   399      11      363             0  
+Critical  clk_freerun                                                                                 rxoutclk_out[0]                                                                             No Common Primary Clock  Asynch Clock Groups            143    66       3       74             0  
+Critical  clk_out1_bd_murosync_poc_clk_wiz_0_0                                                        rxoutclk_out[0]                                                                             No Common Primary Clock  Asynch Clock Groups            162    64       2       96             0  
+Warning   dbg_hub/inst/BSCANID.u_xsdbm_id/SWITCH_N_EXT_BSCAN.bscan_inst/SERIES7_BSCAN.bscan_inst/TCK  clk_out1_bd_murosync_poc_clk_wiz_0_0                                                        No Common Primary Clock  Max Delay Datapath Only         11    11       0        0             0  
+Warning   clk_out1_bd_murosync_poc_clk_wiz_0_0                                                        dbg_hub/inst/BSCANID.u_xsdbm_id/SWITCH_N_EXT_BSCAN.bscan_inst/SERIES7_BSCAN.bscan_inst/TCK  No Common Primary Clock  Max Delay Datapath Only          4     4       0        0             0  
+Info      bd_murosync_poc/mdm_1/U0/Use_E2.BSCAN_I/Use_E2.BSCANE2_I/DRCK                               clk_out1_bd_murosync_poc_clk_wiz_0_0                                                        No Common Primary Clock  Asynch Clock Groups              1     1       0        0             0  
+Info      bd_murosync_poc/mdm_1/U0/Use_E2.BSCAN_I/Use_E2.BSCANE2_I/UPDATE                             clk_out1_bd_murosync_poc_clk_wiz_0_0                                                        No Common Primary Clock  Asynch Clock Groups              8     8       0        0             0  
+Info      input port clock                                                                            clk_out1_bd_murosync_poc_clk_wiz_0_0                                                        No Common Primary Clock  False Path                       2     2       0        0             0  
+
+report_clock_interaction
+INFO: [Timing 38-91] UpdateTimingParams: Speed grade: -2, Temperature grade: I, Delay Type: max.
+INFO: [Timing 38-191] Multithreading enabled for timing update using a maximum of 2 CPUs
+WARNING: [Timing 38-164] This design has multiple clocks. Inter clock paths are considered valid unless explicitly excluded by timing constraints such as set_clock_groups or set_false_path.
+WARNING: [Timing 38-127] No common period was found between clocks clk_out1_bd_murosync_poc_clk_wiz_0_0 {rise@0ns fall@2.5ns period=5ns} and bd_murosync_poc/mdm_1/U0/Use_E2.BSCAN_I/Use_E2.BSCANE2_I/UPDATE {rise@0ns fall@33.333ns period=66.666ns} in 1000 cycles.
+WARNING: [Timing 38-127] No common period was found between clocks clk_out1_bd_murosync_poc_clk_wiz_0_0 {rise@0ns fall@2.5ns period=5ns} and bd_murosync_poc/mdm_1/U0/Use_E2.BSCAN_I/Use_E2.BSCANE2_I/DRCK {rise@0ns fall@16.6665ns period=33.333ns} in 1000 cycles.
+WARNING: [Timing 38-127] No common period was found between clocks bd_murosync_poc/mdm_1/U0/Use_E2.BSCAN_I/Use_E2.BSCANE2_I/UPDATE {rise@0ns fall@33.333ns period=66.666ns} and clk_out1_bd_murosync_poc_clk_wiz_0_0 {rise@0ns fall@2.5ns period=5ns} in 1000 cycles.
+WARNING: [Timing 38-127] No common period was found between clocks bd_murosync_poc/mdm_1/U0/Use_E2.BSCAN_I/Use_E2.BSCANE2_I/DRCK {rise@0ns fall@16.6665ns period=33.333ns} and clk_out1_bd_murosync_poc_clk_wiz_0_0 {rise@0ns fall@2.5ns period=5ns} in 1000 cycles.
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+-----------------------------------------------------------------------------------------
+| Tool Version      : Vivado v.2022.2 (win64) Build 3671981 Fri Oct 14 05:00:03 MDT 2022
+| Date              : Sun Jun  7 15:22:41 2026
+| Host              : Mikhail-Laptop running 64-bit major release  (build 9200)
+| Command           : report_clock_interaction
+| Design            : murosync_poc_top
+| Device            : xcau15p-ffvb676
+| Speed File        : -2  PRODUCTION 1.29 03-25-2022
+| Temperature Grade : I
+-----------------------------------------------------------------------------------------
+
+Clock Interaction Report
+
+Clock Interaction Table
+-----------------------
+
+                                                                                                                                                                                        WNS                            TNS Failing  TNS Total    WNS Path         Clock-Pair           Inter-Clock                  
+From Clock                                                                                  To Clock                                                                                    Clock Edges  WNS(ns)  TNS(ns)    Endpoints    Endpoints  Requirement(ns)  Classification       Constraints                  
+------------------------------------------------------------------------------------------  ------------------------------------------------------------------------------------------  -----------  -------  -------  -----------  -----------  ---------------  -------------------  ---------------------------  
+GTHE4_CHANNEL_RXOUTCLKPCS[0]                                                                GTHE4_CHANNEL_RXOUTCLKPCS[0]                                                                rise - rise     2.05     0.00            0           34             3.20  Clean                Timed                        
+GTHE4_CHANNEL_RXOUTCLKPCS[1]                                                                GTHE4_CHANNEL_RXOUTCLKPCS[1]                                                                rise - rise     2.29     0.00            0           34             3.20  Clean                Timed                        
+GTHE4_CHANNEL_RXOUTCLKPCS[2]                                                                GTHE4_CHANNEL_RXOUTCLKPCS[2]                                                                rise - rise     2.14     0.00            0           34             3.20  Clean                Timed                        
+GTHE4_CHANNEL_RXOUTCLKPCS[3]                                                                GTHE4_CHANNEL_RXOUTCLKPCS[3]                                                                rise - rise     2.19     0.00            0           34             3.20  Clean                Timed                        
+bd_murosync_poc/mdm_1/U0/Use_E2.BSCAN_I/Use_E2.BSCANE2_I/DRCK                               bd_murosync_poc/mdm_1/U0/Use_E2.BSCAN_I/Use_E2.BSCANE2_I/DRCK                               fall - rise    15.42     0.00            0          228            16.67  Clean                Timed                        
+bd_murosync_poc/mdm_1/U0/Use_E2.BSCAN_I/Use_E2.BSCANE2_I/DRCK                               bd_murosync_poc/mdm_1/U0/Use_E2.BSCAN_I/Use_E2.BSCANE2_I/INTERNAL_TCK                                                                0            1                   Ignored              Asynchronous Groups          
+bd_murosync_poc/mdm_1/U0/Use_E2.BSCAN_I/Use_E2.BSCANE2_I/DRCK                               bd_murosync_poc/mdm_1/U0/Use_E2.BSCAN_I/Use_E2.BSCANE2_I/UPDATE                                                                      0           46                   Ignored              Asynchronous Groups          
+bd_murosync_poc/mdm_1/U0/Use_E2.BSCAN_I/Use_E2.BSCANE2_I/DRCK                               clk_out1_bd_murosync_poc_clk_wiz_0_0                                                                                                 0           92                   Ignored              Asynchronous Groups          
+bd_murosync_poc/mdm_1/U0/Use_E2.BSCAN_I/Use_E2.BSCANE2_I/INTERNAL_TCK                       bd_murosync_poc/mdm_1/U0/Use_E2.BSCAN_I/Use_E2.BSCANE2_I/DRCK                                                                        0          145                   Ignored              Asynchronous Groups          
+bd_murosync_poc/mdm_1/U0/Use_E2.BSCAN_I/Use_E2.BSCANE2_I/INTERNAL_TCK                       bd_murosync_poc/mdm_1/U0/Use_E2.BSCAN_I/Use_E2.BSCANE2_I/UPDATE                                                                      0           28                   Ignored              Asynchronous Groups          
+bd_murosync_poc/mdm_1/U0/Use_E2.BSCAN_I/Use_E2.BSCANE2_I/UPDATE                             bd_murosync_poc/mdm_1/U0/Use_E2.BSCAN_I/Use_E2.BSCANE2_I/DRCK                                                                        0           82                   Ignored              Asynchronous Groups          
+bd_murosync_poc/mdm_1/U0/Use_E2.BSCAN_I/Use_E2.BSCANE2_I/UPDATE                             bd_murosync_poc/mdm_1/U0/Use_E2.BSCAN_I/Use_E2.BSCANE2_I/INTERNAL_TCK                                                                0            1                   Ignored              Asynchronous Groups          
+bd_murosync_poc/mdm_1/U0/Use_E2.BSCAN_I/Use_E2.BSCANE2_I/UPDATE                             bd_murosync_poc/mdm_1/U0/Use_E2.BSCAN_I/Use_E2.BSCANE2_I/UPDATE                             fall - rise    30.62     0.00            0           46            33.33  Clean                Timed                        
+bd_murosync_poc/mdm_1/U0/Use_E2.BSCAN_I/Use_E2.BSCANE2_I/UPDATE                             clk_out1_bd_murosync_poc_clk_wiz_0_0                                                                                                 0           17                   Ignored              Asynchronous Groups          
+clk_freerun                                                                                 clk_freerun                                                                                 rise - rise     8.20     0.00            0          385            10.00  Clean                Partial False Path           
+clk_freerun                                                                                 clk_out1_bd_murosync_poc_clk_wiz_0_0                                                        rise - rise     3.71     0.00            0           12             5.00  No Common Clock      Timed (unsafe)               
+clk_freerun                                                                                 rxoutclk_out[0]                                                                                                                      0          153                   Ignored              Asynchronous Groups          
+clk_mgtrefclk0_x0y1_p                                                                       clk_out1_bd_murosync_poc_clk_wiz_0_0                                                                                                 0            3                   Ignored              Asynchronous Groups          
+clk_out1_bd_murosync_poc_clk_wiz_0_0                                                        bd_murosync_poc/mdm_1/U0/Use_E2.BSCAN_I/Use_E2.BSCANE2_I/DRCK                                                                        0           46                   Ignored              Asynchronous Groups          
+clk_out1_bd_murosync_poc_clk_wiz_0_0                                                        bd_murosync_poc/mdm_1/U0/Use_E2.BSCAN_I/Use_E2.BSCANE2_I/UPDATE                                                                      0            6                   Ignored              Asynchronous Groups          
+clk_out1_bd_murosync_poc_clk_wiz_0_0                                                        clk_freerun                                                                                 rise - rise     3.27     0.00            0           57             5.00  No Common Clock      Partial False Path (unsafe)  
+clk_out1_bd_murosync_poc_clk_wiz_0_0                                                        clk_out1_bd_murosync_poc_clk_wiz_0_0                                                        rise - rise     1.51     0.00            0         9611             5.00  Clean                Partial False Path           
+clk_out1_bd_murosync_poc_clk_wiz_0_0                                                        dbg_hub/inst/BSCANID.u_xsdbm_id/SWITCH_N_EXT_BSCAN.bscan_inst/SERIES7_BSCAN.bscan_inst/TCK  rise - rise     4.62     0.00            0          102             5.00  Ignored              Max Delay Datapath Only      
+clk_out1_bd_murosync_poc_clk_wiz_0_0                                                        rxoutclk_out[0]                                                                                                                      0          164                   Ignored              Asynchronous Groups          
+dbg_hub/inst/BSCANID.u_xsdbm_id/SWITCH_N_EXT_BSCAN.bscan_inst/SERIES7_BSCAN.bscan_inst/TCK  clk_out1_bd_murosync_poc_clk_wiz_0_0                                                        rise - rise    32.56     0.00            0           86            33.00  Ignored              Max Delay Datapath Only      
+dbg_hub/inst/BSCANID.u_xsdbm_id/SWITCH_N_EXT_BSCAN.bscan_inst/SERIES7_BSCAN.bscan_inst/TCK  dbg_hub/inst/BSCANID.u_xsdbm_id/SWITCH_N_EXT_BSCAN.bscan_inst/SERIES7_BSCAN.bscan_inst/TCK  rise - rise    30.80     0.00            0         1010            33.00  Clean                Timed                        
+rxoutclk_out[0]                                                                             clk_freerun                                                                                                                          0            3                   Ignored              Asynchronous Groups          
+rxoutclk_out[0]                                                                             clk_out1_bd_murosync_poc_clk_wiz_0_0                                                                                                 0          773                   Ignored              Asynchronous Groups          
+rxoutclk_out[0]                                                                             rxoutclk_out[0]                                                                             rise - rise     0.86     0.00            0         2171             3.20  Clean                Timed                        
+
+
+get_cells -hier -filter {REF_NAME =~ *serdes_array*}
+bd_murosync_poc/murosync_serdes_array_0 bd_murosync_poc/murosync_serdes_array_0/inst bd_murosync_poc/murosync_serdes_array_0/inst/u_axi_ctrl bd_murosync_poc/murosync_serdes_array_0/inst/u_cdc_lte_rst_rx bd_murosync_poc/murosync_serdes_array_0/inst/u_gtw bd_murosync_poc/murosync_serdes_array_0/inst/u_link_test bd_murosync_poc/murosync_serdes_array_0/inst/u_axi_ctrl/u_axi bd_murosync_poc/murosync_serdes_array_0/inst/u_axi_ctrl/u_cdc_diag_aligned bd_murosync_poc/murosync_serdes_array_0/inst/u_axi_ctrl/u_cdc_diag_aligned_seen bd_murosync_poc/murosync_serdes_array_0/inst/u_axi_ctrl/u_cdc_diag_at_lock_valid bd_murosync_poc/murosync_serdes_array_0/inst/u_axi_ctrl/u_cdc_diag_charisk bd_murosync_poc/murosync_serdes_array_0/inst/u_axi_ctrl/u_cdc_diag_ever_locked bd_murosync_poc/murosync_serdes_array_0/inst/u_axi_ctrl/u_cdc_diag_first_err_valid bd_murosync_poc/murosync_serdes_array_0/inst/u_axi_ctrl/u_cdc_diag_fsm bd_murosync_poc/murosync_serdes_array_0/inst/u_axi_ctrl/u_cdc_diag_last_fsm bd_murosync_poc/murosync_serdes_array_0/inst/u_axi_ctrl/u_cdc_diag_locked bd_murosync_poc/murosync_serdes_array_0/inst/u_axi_ctrl/u_cdc_gt_reset_pulse bd_murosync_poc/murosync_serdes_array_0/inst/u_axi_ctrl/u_cdc_latch_reset bd_murosync_poc/murosync_serdes_array_0/inst/u_axi_ctrl/u_cdc_link_test_ctrl_rst bd_murosync_poc/murosync_serdes_array_0/inst/u_axi_ctrl/u_cdc_t2_err_ch0 bd_murosync_poc/murosync_serdes_array_0/inst/u_axi_ctrl/u_cdc_t2_err_ch1 bd_murosync_poc/murosync_serdes_array_0/inst/u_axi_ctrl/u_cdc_t2_err_ch2 bd_murosync_poc/murosync_serdes_array_0/inst/u_axi_ctrl/u_cdc_t2_err_ch3 bd_murosync_poc/murosync_serdes_array_0/inst/u_axi_ctrl/u_cdc_t2_exp_at_err bd_murosync_poc/murosync_serdes_array_0/inst/u_axi_ctrl/u_cdc_t2_locked_cnt bd_murosync_poc/murosync_serdes_array_0/inst/u_axi_ctrl/u_cdc_t2_rx_at_err bd_murosync_poc/murosync_serdes_array_0/inst/u_axi_ctrl/u_cdc_t2_rx_at_lock bd_murosync_poc/murosync_serdes_array_0/inst/u_axi_ctrl/u_cdc_t2_time_to_lock bd_murosync_poc/murosync_serdes_array_0/inst/u_gtw/u_ports bd_murosync_poc/murosync_serdes_array_0/inst/u_gtw/u_userclk_rx bd_murosync_poc/murosync_serdes_array_0/inst/u_gtw/u_userclk_tx bd_murosync_poc/murosync_serdes_array_0/inst/u_gtw/u_ports/u_gt bd_murosync_poc/murosync_serdes_array_0/inst/u_gtw/u_ports/u_gt/inst bd_murosync_poc/murosync_serdes_array_0/inst/u_gtw/u_ports/u_gt/inst/gen_gtwizard_gthe4_top.gtwizard_ultrascale_0_gtwizard_gthe4_inst bd_murosync_poc/murosync_serdes_array_0/inst/u_gtw/u_ports/u_gt/inst/gen_gtwizard_gthe4_top.gtwizard_ultrascale_0_gtwizard_gthe4_inst/gen_gtwizard_gthe4.gen_channel_container[1].gen_enabled_channel.gthe4_channel_wrapper_inst bd_murosync_poc/murosync_serdes_array_0/inst/u_gtw/u_ports/u_gt/inst/gen_gtwizard_gthe4_top.gtwizard_ultrascale_0_gtwizard_gthe4_inst/gen_gtwizard_gthe4.gen_common.gen_common_container[1].gen_enabled_common.gthe4_common_wrapper_inst bd_murosync_poc/murosync_serdes_array_0/inst/u_gtw/u_ports/u_gt/inst/gen_gtwizard_gthe4_top.gtwizard_ultrascale_0_gtwizard_gthe4_inst/gen_gtwizard_gthe4.gen_pwrgood_delay_inst[0].delay_powergood_inst bd_murosync_poc/murosync_serdes_array_0/inst/u_gtw/u_ports/u_gt/inst/gen_gtwizard_gthe4_top.gtwizard_ultrascale_0_gtwizard_gthe4_inst/gen_gtwizard_gthe4.gen_pwrgood_delay_inst[1].delay_powergood_inst bd_murosync_poc/murosync_serdes_array_0/inst/u_gtw/u_ports/u_gt/inst/gen_gtwizard_gthe4_top.gtwizard_ultrascale_0_gtwizard_gthe4_inst/gen_gtwizard_gthe4.gen_pwrgood_delay_inst[2].delay_powergood_inst bd_murosync_poc/murosync_serdes_array_0/inst/u_gtw/u_ports/u_gt/inst/gen_gtwizard_gthe4_top.gtwizard_ultrascale_0_gtwizard_gthe4_inst/gen_gtwizard_gthe4.gen_pwrgood_delay_inst[3].delay_powergood_inst bd_murosync_poc/murosync_serdes_array_0/inst/u_gtw/u_ports/u_gt/inst/gen_gtwizard_gthe4_top.gtwizard_ultrascale_0_gtwizard_gthe4_inst/gen_gtwizard_gthe4.gen_reset_controller_internal.gen_single_instance.gen_ch_xrd[0].bit_synchronizer_rxresetdone_inst bd_murosync_poc/murosync_serdes_array_0/inst/u_gtw/u_ports/u_gt/inst/gen_gtwizard_gthe4_top.gtwizard_ultrascale_0_gtwizard_gthe4_inst/gen_gtwizard_gthe4.gen_reset_controller_internal.gen_single_instance.gen_ch_xrd[0].bit_synchronizer_txresetdone_inst bd_murosync_poc/murosync_serdes_array_0/inst/u_gtw/u_ports/u_gt/inst/gen_gtwizard_gthe4_top.gtwizard_ultrascale_0_gtwizard_gthe4_inst/gen_gtwizard_gthe4.gen_reset_controller_internal.gen_single_instance.gen_ch_xrd[1].bit_synchronizer_rxresetdone_inst bd_murosync_poc/murosync_serdes_array_0/inst/u_gtw/u_ports/u_gt/inst/gen_gtwizard_gthe4_top.gtwizard_ultrascale_0_gtwizard_gthe4_inst/gen_gtwizard_gthe4.gen_reset_controller_internal.gen_single_instance.gen_ch_xrd[1].bit_synchronizer_txresetdone_inst bd_murosync_poc/murosync_serdes_array_0/inst/u_gtw/u_ports/u_gt/inst/gen_gtwizard_gthe4_top.gtwizard_ultrascale_0_gtwizard_gthe4_inst/gen_gtwizard_gthe4.gen_reset_controller_internal.gen_single_instance.gen_ch_xrd[2].bit_synchronizer_rxresetdone_inst bd_murosync_poc/murosync_serdes_array_0/inst/u_gtw/u_ports/u_gt/inst/gen_gtwizard_gthe4_top.gtwizard_ultrascale_0_gtwizard_gthe4_inst/gen_gtwizard_gthe4.gen_reset_controller_internal.gen_single_instance.gen_ch_xrd[2].bit_synchronizer_txresetdone_inst bd_murosync_poc/murosync_serdes_array_0/inst/u_gtw/u_ports/u_gt/inst/gen_gtwizard_gthe4_top.gtwizard_ultrascale_0_gtwizard_gthe4_inst/gen_gtwizard_gthe4.gen_reset_controller_internal.gen_single_instance.gen_ch_xrd[3].bit_synchronizer_rxresetdone_inst bd_murosync_poc/murosync_serdes_array_0/inst/u_gtw/u_ports/u_gt/inst/gen_gtwizard_gthe4_top.gtwizard_ultrascale_0_gtwizard_gthe4_inst/gen_gtwizard_gthe4.gen_reset_controller_internal.gen_single_instance.gen_ch_xrd[3].bit_synchronizer_txresetdone_inst bd_murosync_poc/murosync_serdes_array_0/inst/u_gtw/u_ports/u_gt/inst/gen_gtwizard_gthe4_top.gtwizard_ultrascale_0_gtwizard_gthe4_inst/gen_gtwizard_gthe4.gen_reset_controller_internal.gen_single_instance.gtwiz_reset_inst bd_murosync_poc/murosync_serdes_array_0/inst/u_gtw/u_ports/u_gt/inst/gen_gtwizard_gthe4_top.gtwizard_ultrascale_0_gtwizard_gthe4_inst/gen_gtwizard_gthe4.gen_channel_container[1].gen_enabled_channel.gthe4_channel_wrapper_inst/channel_inst bd_murosync_poc/murosync_serdes_array_0/inst/u_gtw/u_ports/u_gt/inst/gen_gtwizard_gthe4_top.gtwizard_ultrascale_0_gtwizard_gthe4_inst/gen_gtwizard_gthe4.gen_common.gen_common_container[1].gen_enabled_common.gthe4_common_wrapper_inst/common_inst bd_murosync_poc/murosync_serdes_array_0/inst/u_gtw/u_ports/u_gt/inst/gen_gtwizard_gthe4_top.gtwizard_ultrascale_0_gtwizard_gthe4_inst/gen_gtwizard_gthe4.gen_reset_controller_internal.gen_single_instance.gtwiz_reset_inst/bit_synchronizer_gtpowergood_inst bd_murosync_poc/murosync_serdes_array_0/inst/u_gtw/u_ports/u_gt/inst/gen_gtwizard_gthe4_top.gtwizard_ultrascale_0_gtwizard_gthe4_inst/gen_gtwizard_gthe4.gen_reset_controller_internal.gen_single_instance.gtwiz_reset_inst/bit_synchronizer_gtwiz_reset_rx_datapath_dly_inst bd_murosync_poc/murosync_serdes_array_0/inst/u_gtw/u_ports/u_gt/inst/gen_gtwizard_gthe4_top.gtwizard_ultrascale_0_gtwizard_gthe4_inst/gen_gtwizard_gthe4.gen_reset_controller_internal.gen_single_instance.gtwiz_reset_inst/bit_synchronizer_gtwiz_reset_rx_pll_and_datapath_dly_inst bd_murosync_poc/murosync_serdes_array_0/inst/u_gtw/u_ports/u_gt/inst/gen_gtwizard_gthe4_top.gtwizard_ultrascale_0_gtwizard_gthe4_inst/gen_gtwizard_gthe4.gen_reset_controller_internal.gen_single_instance.gtwiz_reset_inst/bit_synchronizer_gtwiz_reset_tx_datapath_dly_inst bd_murosync_poc/murosync_serdes_array_0/inst/u_gtw/u_ports/u_gt/inst/gen_gtwizard_gthe4_top.gtwizard_ultrascale_0_gtwizard_gthe4_inst/gen_gtwizard_gthe4.gen_reset_controller_internal.gen_single_instance.gtwiz_reset_inst/bit_synchronizer_gtwiz_reset_tx_pll_and_datapath_dly_inst bd_murosync_poc/murosync_serdes_array_0/inst/u_gtw/u_ports/u_gt/inst/gen_gtwizard_gthe4_top.gtwizard_ultrascale_0_gtwizard_gthe4_inst/gen_gtwizard_gthe4.gen_reset_controller_internal.gen_single_instance.gtwiz_reset_inst/bit_synchronizer_gtwiz_reset_userclk_rx_active_inst bd_murosync_poc/murosync_serdes_array_0/inst/u_gtw/u_ports/u_gt/inst/gen_gtwizard_gthe4_top.gtwizard_ultrascale_0_gtwizard_gthe4_inst/gen_gtwizard_gthe4.gen_reset_controlle...
+report_property [get_cells <inst_name>] -all | grep -i "MODE\|SLAVE\|MASTER"
+WARNING: [Vivado 12-180] No cells matched '<inst_name>'.
+ERROR: [Common 17-170] Unknown option '-i', please type 'report_property -help' for usage info.
+foreach p [list_property [get_cells bd_murosync_poc/murosync_serdes_array_0/inst]] {
+  if {[string match -nocase *MODE* $p] || [string match -nocase *SLAVE* $p] || [string match -nocase *MASTER* $p]} {
+    puts "$p = [get_property $p [get_cells bd_murosync_poc/murosync_serdes_array_0/inst]]"
+  }
+}
+C_AXI_SLAVE_TYPE = 
+C_BSCAN_MODE = 
+C_BSCAN_MODE_WITH_CORE = 
+C_CONNECTIVITY_MODE = 
+C_HAS_MASTER_CE = 
+C_HAS_SLAVE_CE = 
+C_LMB_NUM_SLAVES = 
+C_LOCKSTEP_MASTER = 
+C_LOCKSTEP_SLAVE = 
+C_NEXT_SLAVE = 
+C_NUM_BSCAN_MASTER_PORTS = 
+C_NUM_MASTER_SLOTS = 
+C_NUM_SLAVE_SLOTS = 
+C_OPTIMIZATION_MODE = 
+C_POWER_SAVING_MODE = 
+C_REG_SLICE_MODE_AXIS = 
+C_REG_SLICE_MODE_RACH = 
+C_REG_SLICE_MODE_RDCH = 
+C_REG_SLICE_MODE_WACH = 
+C_REG_SLICE_MODE_WDCH = 
+C_REG_SLICE_MODE_WRCH = 
+C_RX_BUFFBYPASS_MODE = 
+C_RX_BUFFER_MODE = 
+C_RX_MASTER_CHANNEL_IDX = 
+C_RX_SLIDE_MODE = 
+C_TWO_PRIM_MODE = 
+C_TX_BUFFBYPASS_MODE = 
+C_TX_BUFFER_MODE = 
+C_TX_MASTER_CHANNEL_IDX = 
+C_WRITE_MODE_A = 
+C_WRITE_MODE_B = 
+C_XSDB_NUM_SLAVES = 
+C_XSDB_SLAVE_TYPE = 
+IS_MASTER = 1'b0
+IS_SLAVE = 1'b1
+MAX_FANOUT_MODE = 
+MIG_FLOORPLAN_MODE = 
+PHASESHIFT_MODE = 
+PWR_MODE = 
+P_M_AXI_ERR_MODE = 
+TEST_MODE_COUNTER = 
+TEST_MODE_FIXED = 
+TEST_MODE_TOGGLE = 
+#  CLK_IN  userclk_tx —  ?
+get_pins -of [get_cells bd_murosync_poc/murosync_serdes_array_0/inst/u_gtw/u_userclk_tx] -filter {DIRECTION == IN && NAME =~ *clk*}
+bd_murosync_poc/murosync_serdes_array_0/inst/u_gtw/u_userclk_tx/AR[0] bd_murosync_poc/murosync_serdes_array_0/inst/u_gtw/u_userclk_tx/lopt bd_murosync_poc/murosync_serdes_array_0/inst/u_gtw/u_userclk_tx/lopt_1 bd_murosync_poc/murosync_serdes_array_0/inst/u_gtw/u_userclk_tx/rxoutclk_out[0]
+#     :
+get_property NAME [get_nets -of [get_pins -of [get_cells bd_murosync_poc/murosync_serdes_array_0/inst/u_gtw/u_userclk_tx] -filter {DIRECTION == IN && NAME =~ *clk*}]]
+{bd_murosync_poc/murosync_serdes_array_0/inst/u_gtw/AR[0]} bd_murosync_poc/murosync_serdes_array_0/inst/u_gtw/lopt_1 bd_murosync_poc/murosync_serdes_array_0/inst/u_gtw/lopt_2 bd_murosync_poc/murosync_serdes_array_0/inst/u_gtw/rxoutclk_int

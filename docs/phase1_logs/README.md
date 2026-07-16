@@ -2,7 +2,7 @@
 
 Captured UART output from the MASTER (and one SLAVE) board during Phase 1
 closure debug (XCAU15P, two-board optical link over BiDi SFP+).
-Range: 2026-05-30 .. 2026-06-05.
+Range: 2026-05-30 .. 2026-06-07.
 
 ## CRITICAL — read before comparing any logs
 
@@ -170,6 +170,124 @@ if not, revisit a 16-bit-slice byte-order effect (`0x1234` <-> `0x3412`) afterwa
   A's `~2e-3` after a power cycle).
 - Then a long-form BER run to close Phase 1.
 
+## 2026-06-07 — v1.10 NEAR_PMA vs EXTERNAL, single-run discriminator
+
+Log: `20260607_1446_loop_near_pma_vs_external_serdes_v1.10_master.log` (IP **v1.10**, firmware **v1.122**).
+
+IP advanced v1.9 -> v1.10: **per-byte K-marker plumb-through** through the SLAVE
+cascade (`RXCTRL0[7:0]` byte-resolution, replacing v1.9's 4-bit duplicated
+`rxcharisk`). This is a refinement of the Bug #4 cascade-K-symbol area, not a new
+bug class. (Numbering note: the v1.10 commit message labels this "bug #1" — that
+collides with **this** README's Bug #1 = TX-mux gating. The README's #1..#4
+numbering is the canonical one here; reconcile the commit wording when convenient.)
+
+A single firmware build now runs the discriminator as an **A/B in one boot**:
+NEAR_PMA sweep (MASTER internal, `loopback=2`), then restore the external cascade
+(`loopback=0`, SLAVE echoing) and re-run the same sweep. One reset, both paths —
+directly comparable, none of the cross-run caveats in the CRITICAL section apply.
+
+| Pattern | NEAR_PMA (internal) | EXTERNAL (cascade + fiber) |
+|---|---|---|
+| 0xAAAAAAAA | < 4.7e-9 (realign 2) | 2.5e-6 (realign 2) |
+| 0x00000000 | 6.3e-9 | 2.5e-6 |
+| 0xFFFFFFFF | < 4.7e-9 | 6.6e-7 |
+| 0x55555555 | < 4.7e-9 | 4.7e-6 |
+| 0x12121212 | < 4.7e-9 | 8.4e-7 |
+| 0x12341234 | **does not lock** (realign 0) | realign **1493**, WER 1.3e-3 |
+| 0x12345678 | **does not lock** (realign 0) | realign 8, WER 1.5e-5 |
+
+Long-form external: `0x12341234` realign(test) 1336, WER 1.48e-3, first-error XOR
+`0x0200` (1 bit, byte1: `0x1034` vs `0x1234`) — a byte-slip signature, not a bit
+error. `0xAAAAAAAA` realign 0, WER 7.2e-6.
+
+**This re-confirms the 2026-06-05 decomposition in a single run, and tightens it:**
+
+- **MASTER internal is sub-1e-9, not "~1e-8".** Every symmetric pattern in NEAR_PMA
+  is at `< 4.7e-9` (zero errors, rule-of-three bound). The earlier `~1e-8` (`_1940`)
+  was a coarser bound — the MASTER PCS / SerDes / eye is effectively perfect.
+- **The residual is external, and it is realign-driven.** `0x12341234` shows
+  realign(test) **0 internal / ~1493 external** — the false-comma re-alignment that
+  produces the ~1e-3 WER happens **only on the external path** (SLAVE cascade +
+  fiber), never in the MASTER receiver. The realign counter makes this explicit,
+  beyond the earlier 0xBC / floor evidence.
+- **The ~e-6 symmetric floor is entirely external-path.** Internal `< 4.7e-9` vs
+  external `~e-6` on the same patterns — the eye/jitter floor on the real link is the
+  cascade + optics, not silicon.
+
+**On asymmetric-not-locking in NEAR_PMA (no contradiction):**
+`0x12341234`/`0x12345678` fail to lock in NEAR_PMA here while symmetric patterns are
+clean. This is the **same raw-PMA-reflection framing artifact already documented for
+far-end PMA** in the 2026-06-05 campaign — symmetric patterns are byte-shift-invariant
+and tolerate the reflection's byte offset; asymmetric ones do not. It is **not** a
+fault, and it does **not** conflict with the `_1940` "all 7 lock at floor" note —
+`_1940` caught a favorable byte-phase; asymmetric lock through any PMA reflection is
+phase-dependent (cf. the State A/B lock behaviour in "Current state").
+
+**Relation to the State A/B hypothesis:** this run was a single reset, so it does not
+itself probe the reset-selected multi-modality. What it adds is a clean localisation —
+the realign mechanism behind the asymmetric residual lives on the **external** path.
+Whether the reset-captured phase offset (leading suspect: `rx_usrclk2 -> tx_usrclk2`
+in the fabric echo) is the same root that modulates the realign rate is still open;
+the next steps in "Current state" (PCS far-end `loopback=6` on the SLAVE;
+`report_clock_interaction` / `report_cdc`) remain the way to settle it.
+
+> Firmware here is v1.122 (settle-gate + NEAR_PMA/external A/B sequencing) on v1.10
+> gateware. The settle-gate's `CH0 aligned stable` / `CDR settle` lines appear only in
+> the external phase. Firmware and gateware versions advance independently — see banner.
+
+## 2026-06-07 — clock-crossing hypothesis DISPROVEN (static, SLAVE build)
+
+Static check on the **SLAVE** implemented design (`impl_1`, IP v1.10). Artifact:
+`20260607_1522_static_cdc_clkint_serdes_v1.10_slave.log` (`report_cdc` +
+`report_clock_interaction` + cell-property / userclk trace). This closes the
+"Current state" Next item "Static (no rebuild): report_clock_interaction / report_cdc
+on the SLAVE build."
+
+**Board confirmed SLAVE, fix #2 present in silicon:**
+- `IS_SLAVE = 1'b1`, `IS_MASTER = 1'b0` — read off the serdes cell. The reports
+  are therefore on the board where the cascade echo actually lives.
+- TX userclk is driven from `rxoutclk_int` (not `txoutclk`): the `u_userclk_tx`
+  clock input net traces to `.../u_gtw/rxoutclk_int`. Fix #2 is in the netlist —
+  TX is folded into the recovered-RX domain.
+
+**`report_clock_interaction`:** the serdes echo domain
+`rxoutclk_out[0] -> rxoutclk_out[0]` is **Clean, 0 failing, 2171 endpoints,
+WNS +0.86 ns**. There is **no separate `txoutclk` domain** and **no
+`rxoutclk <-> txoutclk` row** — TX and RX user clocks are the same BUFG_GT output.
+The `rx_data_r <= rx_data` echo register is single-domain; it does not cross an
+async boundary.
+
+**`report_cdc`:** the large `rxoutclk_out[0] -> clk_wiz` crossing (773 EP, 11
+unsafe, 363 unknown) — and the symmetric `clk_wiz -> rxoutclk_out[0]` (162 EP) —
+is the **AXI / debug 100 MHz domain** (diagnostic registers), marked Asynchronous
+Groups / Ignored. It is not the serdes data path and is unrelated to the residual.
+
+**Conclusion — the "Current state" leading suspect is wrong.** The
+`rx_usrclk2 -> tx_usrclk2` fixed-phase-offset hypothesis is **disproven**: fix #2
+already made the repeater single-domain, and that domain is clean with positive
+slack. **Do NOT do the shared-BUFG_GT repeater fix — it is already effectively
+done.** Like the earlier PPM hypothesis, the measurement overturned the theory.
+
+The external residual (mechanism A: false-comma realign on `0x12341234`, realign 0
+internal / ~1493 external per the NEAR_PMA run above) is therefore **not** a clock
+crossing. It is localised to either the **SLAVE PCS decode/encode tract** or the
+**fabric echo on data** (the data path through `rx_data_r`, which is timing-clean
+but may still be functionally wrong on asymmetric words) — not the clock domains.
+
+**This also re-frames the State A/B multi-modality.** With the clock crossing ruled
+out, the reset-selected step-changes are unlikely to be a clock *phase* offset. More
+likely the reset path selects whether the asymmetric patterns achieve byte-lock at
+all (cf. their lock/no-lock flip between State A and B) — i.e. a framing/lock-phase
+lottery, not a setup/hold phase. The PCS far-end `loopback=6` test is the way to
+confirm.
+
+**Remaining discriminator (unchanged):** PCS far-end `loopback=6` on the SLAVE —
+exercises the SLAVE 8B10B decode+encode but bypasses the fabric echo. Dirty
+(realign ~1500) → residual is in the PCS tract (frame-layer / Phase 2 territory).
+Clean (<1e-9) → residual is the fabric-echo-on-data, a targeted RTL fix. After this
+one behavioural test: **fix, do not measure** — three of four hypotheses are now
+dead (PPM, optics/MASTER-eye, clock-crossing).
+
 ## Naming convention
 
 `YYYYMMDD_HHMM_<test_type>[_<tag>]_serdes_v<X.Y>_<board>.log`
@@ -192,6 +310,8 @@ is separate, shown in the banner).
 | `20260605_2006_loop_pma_far_serdes_v1.7_slave.log` | v1.7 | EXT (0x4) | — | SLAVE side of the far-end PMA test (pure repeater — no checker / no sweep). Pairs with `_2007`. |
 | `20260605_2007_loop_none_serdes_v1.7_master.log` | v1.7 | NONE (0x0) *local* | CH0 | **Far-end PMA measurement** — MASTER lb=0 but the SLAVE was reflecting (lb=4, see `_2006`). Symmetric patterns at floor, no 0xBC; asymmetric don't lock (raw-reflection framing). NOT a normal cascade. |
 | `20260605_2316_loop_none_serdes_v1.9_master.log` | v1.9 | NONE (0x0) | CH0 | **True cascade**, post-Bug#4 fix. SLAVE ran its normal echo. `comma` column empty (0xBC gone). This is **State A** (soft `GT_RESET_ALL`): WER `1e-6..2.2e-3` by pattern. See "Current state" for the reset-selected State A/B multi-modality. Phase 1 not yet closed. |
+| `20260607_1446_loop_near_pma_vs_external_serdes_v1.10_master.log` | v1.10 | FAR (0x2) -> NONE (0x0), A/B one run | CH0 | **Single-run discriminator.** NEAR_PMA (MASTER internal) then external cascade in one boot. Internal: symmetric **< 4.7e-9 (CLEAN)** — tightens the v1.7 ~1e-8. External: symmetric ~e-6; `0x12341234` realign **1493** / WER 1.3e-3. **The asymmetric residual (false-comma realign) is external: realign 0 internal / ~1493 external.** Asymmetric don't lock in NEAR_PMA = same raw-PMA-reflection framing artifact as far-end (not a fault). Firmware v1.122 (settle-gate). |
+| `20260607_1522_static_cdc_clkint_serdes_v1.10_slave.log` | v1.10 | — (static, SLAVE impl) | — | **Static timing artifact, NOT a UART log.** `report_cdc` + `report_clock_interaction` + cell-property / userclk trace on the SLAVE `impl_1`. Confirms `IS_SLAVE=1'b1`, TX userclk from `rxoutclk_int` (fix #2), echo domain `rxoutclk_out[0]` Clean (0 failing, +0.86 ns), no separate txoutclk domain. **Disproves the clock-crossing hypothesis** — do not do the shared-BUFG_GT fix. |
 
 ## Loopback constant mapping (driver)
 
